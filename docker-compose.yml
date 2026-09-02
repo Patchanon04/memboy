@@ -1,0 +1,30 @@
+services:
+  app:
+    build: .
+    ports: ["8080:8080"]
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://pbook:pbook@db:5432/pbook
+      TZ: Asia/Bangkok
+    volumes:
+      - ./data:/data
+      - ./app:/srv/app          # dev hot-reload; remove for prod image
+    depends_on:
+      db: { condition: service_healthy }
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload --app-dir /srv
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: pbook
+      POSTGRES_PASSWORD: pbook   # ponytail: dev creds, compose-internal only
+      POSTGRES_DB: pbook
+    volumes: ["pgdata:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pbook"]
+      interval: 2s
+      timeout: 3s
+      retries: 15
+
+volumes:
+  pgdata:
