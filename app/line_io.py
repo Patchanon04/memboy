@@ -27,12 +27,20 @@ async def get_content(message_id: str) -> bytes:
 
 
 async def reply(reply_token: str, messages: list[dict]):
+    if not TOKEN:  # dev mode without LINE credentials: log instead of failing the event
+        import logging
+        logging.getLogger("pbook").info("DEV reply -> %s", messages)
+        return
     async with httpx.AsyncClient(timeout=10) as c:
         r = await c.post(f"{API}/message/reply", headers=_auth, json={"replyToken": reply_token, "messages": messages})
         r.raise_for_status()
 
 
 async def push(line_user_id: str, messages: list[dict]):
+    if not TOKEN:
+        import logging
+        logging.getLogger("pbook").info("DEV push -> %s", messages)
+        return
     async with httpx.AsyncClient(timeout=10) as c:
         r = await c.post(f"{API}/message/push", headers=_auth, json={"to": line_user_id, "messages": messages})
         r.raise_for_status()
