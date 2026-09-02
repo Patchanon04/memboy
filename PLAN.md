@@ -13,8 +13,8 @@
 | DB | PostgreSQL + SQLAlchemy | JSONB เก็บ items, query สรุปยอด |
 | ไฟล์รูป/PDF | disk ผ่าน docker volume, DB เก็บ path | ตาม proposal |
 | PDF | WeasyPrint + Jinja2 HTML template | template ภาษาไทยง่าย; ส่งเข้า LINE เป็นลิงก์ (LINE ไม่รับไฟล์ PDF ตรง) |
-| Deploy | docker-compose 2 services (app + postgres); dev ผ่าน cloudflared tunnel | ตาม proposal |
-| งานช้า | ตอบรับทันที + ส่งผลผ่าน push message | reply token หมดอายุเร็ว |
+| Deploy | docker-compose 4 services (app + worker + redis + postgres); dev ผ่าน cloudflared tunnel | worker แยกตามมติ queue |
+| งานช้า | **queue**: webhook ack 200 ทันที → enqueue ลง Redis (arq) → worker container แยกประมวล → push ผลกลับ | LLM 5-20 วิ/เทิร์น ถือ connection ไม่ได้; งานทนตาย (restart แล้วทำต่อ), retry อยู่ฝั่งเรา; ⚠️ ต่างจากดราฟอีเมล ("โปรเซสเดียว") — แจ้งอาจารย์ว่าอัปเกรดเพื่อ reliability |
 
 ## สถาปัตยกรรม
 
@@ -181,9 +181,9 @@ categories    (id, user_id FK, name UNIQUE per user)              -- หมว�
 5. **Turn log เป็น JSONL** — ทุกเทิร์นเก็บ input/tool calls/results ลงไฟล์ → ได้ทั้ง debug, conversation log ที่ต้องส่ง, และ regression: แก้ prompt แล้วรัน eval + replay เคสเดิมเทียบได้
 6. **Pin ทุกอย่างที่ pin ได้** — ชื่อโมเดลระบุรุ่นเต็ม, prompt อยู่ใน git, ผล eval ผูกกับ commit → ตอบได้เสมอว่า "ตัวเลขนี้มาจากโค้ดเวอร์ชันไหน"
 7. **วันเวลาปัจจุบันมาจากโค้ด** — inject วันที่วันนี้ (Asia/Bangkok) เข้า system prompt ทุกเทิร์น — ไม่งั้น "เดือนนี้/เมื่อวาน" โมเดลจะเดาจาก training data; TZ pin ที่ container
-8. **Serialize ต่อ user** — asyncio lock ต่อ user_id: ข้อความจากคนเดียวกันประมวลตามลำดับ — กัน draft race ตอนรัวรูปหลายใบ (คนละ user ยังขนานกันได้)
+8. **Serialize ต่อ user** — per-user lock ใน worker (arq ไม่การันตีลำดับเอง): ข้อความจากคนเดียวกันประมวลตามลำดับ — กัน draft race ตอนรัวรูปหลายใบ (คนละ user ยังขนานกันได้)
 
-**ไม่ทำ (เกินสโคป term project)** — LLM-as-judge ตรวจคำตอบ, moderation layer แยก, observability platform (Langfuse ฯลฯ), queue/circuit breaker — JSONL log + eval script ทำหน้าที่เดียวกันในสเกลนี้
+**ไม่ทำ (เกินสโคป term project)** — LLM-as-judge ตรวจคำตอบ, moderation layer แยก, observability platform (Langfuse ฯลฯ), circuit breaker — JSONL log + eval script ทำหน้าที่เดียวกันในสเกลนี้ (queue: ตัดสินใจใหม่ → ใช้ Redis+arq)
 
 ## ความเสี่ยงที่รู้แล้ว + ทางแก้
 

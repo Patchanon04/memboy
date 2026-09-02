@@ -6,3 +6,4 @@ psycopg[binary]
 weasyprint
 jinja2
 python-dotenv
+arq
