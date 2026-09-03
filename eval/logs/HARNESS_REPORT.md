@@ -14,8 +14,8 @@
 | G8 | ย่อรูปก่อนส่ง LLM | unit test | ✅ ผ่าน | 4000x3000 184KB → 1280x960 19KB |
 | D1 | temperature = 0 ทุก call | unit test | ✅ ผ่าน | payload ที่ส่งจริงมี generationConfig.temperature = 0.0 |
 | D2 | เลขเงินมาจาก SQL + เช็ค subtotal+vat≈total | unit test | ✅ ผ่าน | ยอดรวมจาก SQL = 441.5 (ตรงกับผลบวกจริง); บิลที่ 100+7≠500 ถูกติด warning อัตโนมัติ |
-| D3 | Webhook idempotency | agent loop (LLM จำลอง) | ✅ ผ่าน | event h-20b5fc2d ส่งซ้ำ → ไม่เข้า agent loop รอบสอง (ถูก dedupe จากตาราง processed_events) |
-| D4 | State machine ของบิล (draft → confirmed) | unit test | ✅ ผ่าน | บันทึกซ้ำถูกปฏิเสธที่ tool: บิล 198 ไม่ใช่ draft (status=confirmed) — บันทึกไปแล้ว |
+| D3 | Webhook idempotency | agent loop (LLM จำลอง) | ✅ ผ่าน | event h-1b3c766e ส่งซ้ำ → ไม่เข้า agent loop รอบสอง (ถูก dedupe จากตาราง processed_events) |
+| D4 | State machine ของบิล (draft → confirmed) | unit test | ✅ ผ่าน | บันทึกซ้ำถูกปฏิเสธที่ tool: บิล 216 ไม่ใช่ draft (status=confirmed) — บันทึกไปแล้ว |
 | D5 | Turn log ครบทุกเทิร์น (JSONL) | agent loop (LLM จำลอง) | ✅ ผ่าน | เทิร์นล่าสุดถูกบันทึกครบ: user/in/steps/out (1 step) |
 | D6 | Pin รุ่นโมเดล (ไม่ใช้ alias ลอยๆ) | unit test | ✅ ผ่าน | MODEL=gemma-4-26b-a4b-it · FALLBACK=gemma-4-31b-it (ระบุรุ่นเต็ม ไม่ใช่ alias) |
 | D7 | Inject วันที่ปัจจุบัน (Asia/Bangkok) | unit test | ✅ ผ่าน | system prompt มีวันที่ 2026-09-04 (เวลาไทย) → 'เดือนนี้/เมื่อวาน' คำนวณจากโค้ด ไม่ใช่ความจำโมเดล |

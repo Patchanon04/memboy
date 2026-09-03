@@ -1,0 +1,33 @@
+name: tests
+on: [push, pull_request]
+
+jobs:
+  harness:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fake env (all suites stub the LLM; no real key needed)
+        run: |
+          cat > .env <<'ENV'
+          GEMINI_API_KEY=ci-dummy-key
+          WEB_PASSWORD=ci
+          PUBLIC_BASE_URL=http://localhost:8080
+          LINE_CHANNEL_SECRET=
+          LINE_CHANNEL_ACCESS_TOKEN=
+          ENV
+      - name: Build image
+        run: docker compose build app
+      - name: Start db + redis
+        run: docker compose up -d db redis
+      - name: Tool contracts + agent loop (stubbed LLM)
+        run: |
+          docker compose run -T --rm app python -m tests.test_w2
+          docker compose run -T --rm app python -m tests.test_w3
+          docker compose run -T --rm app python -m tests.test_concurrency
+      - name: Harness conformance (guardrails + determinism)
+        run: docker compose run -T --rm app python -m tests.test_harness
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: harness-report
+          path: eval/logs/HARNESS_REPORT.md

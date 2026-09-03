@@ -70,6 +70,16 @@ if tl.exists():
     ask = sum(1 for r in rows if not any("tool" in s for s in r["steps"]) and ("?" in r["out"] or "ไหม" in r["out"]))
     errored = [r for r in rows if any("tool_error" in s for s in r["steps"])]
     recovered = sum(1 for r in errored if any("tool" in s and "tool_error" not in s for s in r["steps"][[i for i, s in enumerate(r["steps"]) if "tool_error" in s][0] + 1:]))
+    u = [x["usage"] for x in rows if x.get("usage") and x["usage"].get("calls")]
+    if u:
+        lat = sorted(x["turn_s"] for x in u)
+        pick = lambda q: lat[min(len(lat) - 1, int(q * len(lat)))]
+        md.append("\n### Latency & tokens (เทิร์นที่วัดหลังติดตั้ง instrumentation)\n")
+        md.append(f"- เวลาต่อเทิร์น: p50 **{pick(.5)}s** · p90 **{pick(.9)}s** · สูงสุด {lat[-1]}s (n={len(lat)}) — "
+                  f"{100 * sum(x['llm_s'] for x in u) / max(.01, sum(x['turn_s'] for x in u)):.0f}% ของเวลาอยู่ที่การเรียก LLM")
+        md.append(f"- token เฉลี่ยต่อเทิร์น: เข้า {sum(x['in_tok'] for x in u) / len(u):.0f} · ออก {sum(x['out_tok'] for x in u) / len(u):.0f} "
+                  f"(รวมทั้งชุด {sum(x['in_tok'] for x in u):,} / {sum(x['out_tok'] for x in u):,})")
+    
     md.append("\n### Agency depth\n")
     md.append(f"- tool-chain length distribution: {dict(sorted(chain.items()))} — turns with ≥2 tool calls: **{multi}** ({100 * multi / max(1, len(rows)):.0f}%)")
     md.append(f"- ask-back turns (no tool, clarifying question): {ask} ({100 * ask / max(1, len(rows)):.0f}%)")

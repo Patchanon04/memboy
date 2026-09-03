@@ -5,6 +5,7 @@ import inspect
 import json
 import logging
 import re
+import time
 import zoneinfo
 from pathlib import Path
 
@@ -134,6 +135,8 @@ async def run_turn(external_id: str, text: str | None = None, image_path: str | 
     """One user event in -> {"reply", "images": [paths], "files": [paths], "draft": bool}.
     draft=True means a confirmation is pending (LINE layer adds quick-reply buttons)."""
     user_id = get_user(external_id)
+    t_turn = time.monotonic()
+    usage_token = llm.USAGE.set({"calls": 0, "llm_s": 0.0, "in_tok": 0, "out_tok": 0, "models": []})
     turn_log = {"user": external_id, "in": {"text": text, "image": image_path}, "steps": []}
     out = {"reply": "", "images": [], "files": [], "draft": False}
     with session() as s:
@@ -144,10 +147,8 @@ async def run_turn(external_id: str, text: str | None = None, image_path: str | 
         sys_turn = [{"role": "user", "parts": [{"text": system_prompt(user, s)}]},
                     {"role": "model", "parts": [{"text": '{"reply": "รับทราบกติกา"}'}]}]  # Gemma has no system role
         parse_fails = 0
-        import time
-        t0 = time.monotonic()
         for _ in range(LOOP_CAP):
-            if time.monotonic() - t0 > TURN_BUDGET_S:
+            if time.monotonic() - t_turn > TURN_BUDGET_S:
                 out["reply"] = "ขอโทษค่ะ ระบบตอบช้าผิดปกติ ลองส่งใหม่อีกครั้งนะคะ"
                 turn_log["steps"].append({"timeout": True})
                 break
@@ -202,7 +203,10 @@ async def run_turn(external_id: str, text: str | None = None, image_path: str | 
         else:
             out["reply"] = "ขั้นตอนเยอะเกินไป ขอหยุดก่อนนะคะ ลองสั่งใหม่อีกครั้งได้เลย"  # loop cap hit
 
+    usage = llm.USAGE.get()
+    llm.USAGE.reset(usage_token)
     turn_log["out"] = out["reply"]
+    turn_log["usage"] = {**usage, "turn_s": round(time.monotonic() - t_turn, 2)}
     with open(LOG_DIR / "turns.jsonl", "a", encoding="utf-8") as f:
         f.write(json.dumps(turn_log, ensure_ascii=False, default=str) + "\n")
     return out

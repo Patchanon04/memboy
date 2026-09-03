@@ -1,6 +1,7 @@
 """Gemma 4 via Gemini API — one function, retries, thought-part filtering."""
 import asyncio
 import base64
+import contextvars
 import os
 from pathlib import Path
 
@@ -9,6 +10,8 @@ import logging
 import time
 
 log = logging.getLogger("pbook")
+# per-turn accounting: agent.run_turn sets this, every call adds to it (asyncio-safe)
+USAGE: contextvars.ContextVar = contextvars.ContextVar("llm_usage", default=None)
 logging.getLogger("httpx").setLevel(logging.WARNING)  # httpx INFO logs the full URL incl. ?key= — never
 
 KEY = os.environ["GEMINI_API_KEY"]
@@ -44,7 +47,16 @@ async def generate(contents: list[dict], temperature: float = 0.0, model: str | 
                 continue
             if r.status_code != 200:
                 raise LLMError(f"LLM http {r.status_code}: {r.text[:200]}")
-            parts = r.json()["candidates"][0]["content"].get("parts", [])
+            data = r.json()
+            acc = USAGE.get()
+            if acc is not None:
+                u = data.get("usageMetadata") or {}
+                acc["calls"] += 1
+                acc["llm_s"] = round(acc["llm_s"] + (time.monotonic() - t0), 2)
+                acc["in_tok"] += u.get("promptTokenCount", 0)
+                acc["out_tok"] += u.get("candidatesTokenCount", 0)
+                acc["models"].append(m)
+            parts = data["candidates"][0]["content"].get("parts", [])
             return "".join(p.get("text", "") for p in parts if not p.get("thought"))
     raise LLMError(f"LLM unavailable after fallback ({last})")
 
