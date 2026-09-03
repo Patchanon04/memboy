@@ -5,6 +5,10 @@ import os
 from pathlib import Path
 
 import httpx
+import logging
+import time
+
+log = logging.getLogger("pbook")
 
 KEY = os.environ["GEMINI_API_KEY"]
 MODEL = os.environ.get("GEMMA_MODEL", "gemma-4-26b-a4b-it")
@@ -25,10 +29,13 @@ async def generate(contents: list[dict], temperature: float = 0.0, model: str | 
     last = "unknown"
     async with httpx.AsyncClient(timeout=TIMEOUT_S) as c:
         for attempt, m in enumerate(models):
+            t0 = time.monotonic()
             try:
                 r = await c.post(URL.format(m), params={"key": KEY}, json=body)
+                log.info("llm %s %s %.1fs (%d parts)", m, r.status_code, time.monotonic() - t0, sum(len(x["parts"]) for x in contents))
             except httpx.TransportError as e:  # timeout, connect error, DNS blip
                 last = f"{m}: {type(e).__name__}"
+                log.warning("llm %s %s after %.1fs: %r", m, type(e).__name__, time.monotonic() - t0, e)
                 continue
             if r.status_code in (429, 500, 502, 503, 504):
                 last = f"{m}: http {r.status_code}"

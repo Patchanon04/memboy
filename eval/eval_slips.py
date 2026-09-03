@@ -23,10 +23,17 @@ async def main():
         for lab in LABELS:
             dst = Path("/data/uploads") / f"evalS-{uuid.uuid4().hex[:8]}.png"
             shutil.copy(DIR / lab["file"], dst)
-            try:
-                r = await tools.analyze_receipt(u, s, image_id=dst.stem)
-            except tools.ToolError as e:
-                r = {"error": str(e)}
+            r = {"error": "?"}
+            for attempt in range(3):  # network from containers can blip; the eval itself retries
+                try:
+                    r = await tools.analyze_receipt(u, s, image_id=dst.stem)
+                    break
+                except tools.ToolError as e:
+                    r = {"error": str(e)}
+                    break
+                except Exception as e:  # LLMError etc.
+                    r = {"error": f"{type(e).__name__}: {e}"}
+                    await asyncio.sleep(5)
             ok = {"doc_type": r.get("doc_type") == "transfer_slip",
                   "total": r.get("total") is not None and abs(r["total"] - lab["total"]) < 0.01,
                   "ref": (r.get("transfer_ref") or "") == lab["transfer_ref"],

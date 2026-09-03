@@ -6,6 +6,7 @@ Images: /img <path> [ข้อความแนบ]  (paths inside the containe
 """
 import argparse
 import asyncio
+import logging
 import shutil
 import sys
 import uuid
@@ -40,6 +41,7 @@ async def main():
     ap.add_argument("--img", help="image path to attach")
     args = ap.parse_args()
     init_db()
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 
     if args.once is not None or args.img:
         img = stage_image(args.img) if args.img else None
