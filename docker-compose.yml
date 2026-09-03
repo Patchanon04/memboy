@@ -58,4 +58,4 @@ volumes:
 networks:
   default:
     driver_opts:
-      com.docker.network.driver.mtu: 1400   # Docker Desktop + VPN/WARP: large POST bodies stall at default MTU
+      com.docker.network.driver.mtu: 1280   # Docker Desktop + VPN/WARP: large POST bodies stall at default MTU

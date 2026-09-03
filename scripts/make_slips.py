@@ -18,7 +18,7 @@ for i in range(30):
     payer, payee = rng.sample(NAMES, 2); mismatch = (i % 6 == 5)
     qr_payload = f"{ref if not mismatch else 'X'+ref[1:]}|{amt:.2f}"
     qr = qrcode.make(qr_payload).resize((150, 150))
-    W, H = (420, 640) if layout != 3 else (480, 560)
+    W, H = (420, 640) if layout != 3 else (480, 680)  # layout 3 was cropping the QR off the bottom
     im = Image.new("RGB", (W, H), "white"); dr = ImageDraw.Draw(im)
     dr.rectangle([0, 0, W, 90], fill=col); dr.text((20, 28), bank, font=F("tahomabd.ttf", 24), fill="white")
     y = 120; f = F("tahoma.ttf", 16); fb = F("tahomabd.ttf", 18)

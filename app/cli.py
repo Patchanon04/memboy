@@ -22,9 +22,14 @@ def stage_image(src: str) -> str:
     p = Path(src)
     if not p.exists():
         sys.exit(f"no such image: {src}")
-    dest = UPLOADS / f"cli-{uuid.uuid4().hex[:8]}{p.suffix}"
     UPLOADS.mkdir(parents=True, exist_ok=True)
-    shutil.copy(p, dest)
+    if p.suffix.lower() == ".pdf":
+        dest = UPLOADS / f"cli-{uuid.uuid4().hex[:8]}.pdf"
+        shutil.copy(p, dest)
+    else:  # same shrink as the LINE path, so payloads match production
+        from app.events import shrink
+        dest = UPLOADS / f"cli-{uuid.uuid4().hex[:8]}.jpg"
+        dest.write_bytes(shrink(p.read_bytes()))
     return str(dest)
 
 
