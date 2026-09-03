@@ -21,10 +21,11 @@ async def generate(contents: list[dict], temperature: float = 0.0, model: str | 
         for attempt in range(4):
             try:
                 r = await c.post(URL.format(model or MODEL), params={"key": KEY}, json=body)
-            except httpx.TimeoutException:
+            except httpx.TransportError as e:  # timeout, connect error, DNS blip
                 if attempt < 3:
+                    await asyncio.sleep(2 * (attempt + 1))
                     continue
-                raise LLMError("LLM timeout")
+                raise LLMError(f"LLM network: {e}")
             if r.status_code in (429, 500, 502, 503, 504) and attempt < 3:
                 await asyncio.sleep(3 * (attempt + 1))
                 continue

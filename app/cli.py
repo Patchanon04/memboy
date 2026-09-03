@@ -27,6 +27,12 @@ def stage_image(src: str) -> str:
     return str(dest)
 
 
+def show(out: dict) -> str:
+    extra = "".join(f"\n  📎 {p}" for p in out["images"] + out["files"])
+    tag = "  [รอยืนยัน]" if out["draft"] else ""
+    return out["reply"] + extra + tag
+
+
 async def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--user", default="cli:default")
@@ -37,7 +43,7 @@ async def main():
 
     if args.once is not None or args.img:
         img = stage_image(args.img) if args.img else None
-        print(await run_turn(args.user, text=args.once, image_path=img))
+        print(show(await run_turn(args.user, text=args.once, image_path=img)))
         return
 
     print("PBook CLI — พิมพ์คุยได้เลย | /img <path> [ข้อความ] | Ctrl-C ออก")
@@ -54,7 +60,7 @@ async def main():
             parts = rest.split(" ", 1)
             img = stage_image(parts[0])
             line = parts[1] if len(parts) > 1 else None
-        print("บอท>", await run_turn(args.user, text=line, image_path=img))
+        print("บอท>", show(await run_turn(args.user, text=line, image_path=img)))
 
 
 if __name__ == "__main__":

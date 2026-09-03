@@ -4,10 +4,10 @@ import collections
 import logging
 import os
 
-from arq import Retry
+from arq import Retry, cron
 from arq.connections import RedisSettings
 
-from app import events
+from app import cron as jobs, events
 from app.db import init_db
 
 logging.basicConfig(level=logging.INFO)
@@ -39,6 +39,8 @@ async def startup(ctx):
 
 class WorkerSettings:
     functions = [process_event]
+    cron_jobs = [cron(jobs.weekly_summary, weekday=6, hour=18, minute=0),        # Sunday 18:00 (container TZ=Asia/Bangkok)
+                 cron(jobs.monthly_report, day=25, hour=9, minute=0)]
     on_startup = startup
     redis_settings = RedisSettings.from_dsn(os.environ.get("REDIS_URL", "redis://localhost:6379"))
     max_tries = MAX_TRIES

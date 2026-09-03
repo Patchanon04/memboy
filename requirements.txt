@@ -7,3 +7,7 @@ weasyprint
 jinja2
 python-dotenv
 arq
+matplotlib
+pyzbar
+qrcode
+pillow

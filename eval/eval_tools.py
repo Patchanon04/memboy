@@ -1,0 +1,133 @@
+"""Eval A + D: tool-selection benchmark. Each case = seeded DB state + prior context + one message.
+Scores the FIRST tool the agent calls (+ arg subset), forbidden tools, and reply constraints.
+Run inside the container:  GEMMA_MODEL=gemma-4-26b-a4b-it python -m eval.eval_tools [cases.json]
+"""
+import asyncio
+import json
+import os
+import shutil
+import sys
+import uuid
+from pathlib import Path
+
+from sqlalchemy import select
+
+from app import agent, tools
+from app.db import Invoice, Note, Profile, User, init_db, session
+
+CASES = Path(sys.argv[1] if len(sys.argv) > 1 else Path(__file__).with_name("cases_tool_selection.json"))
+LOG = Path("/data/logs/turns.jsonl")
+
+
+def seed(ext: str, spec: dict) -> dict:
+    """Create user + rows; returns {"ids": [invoice ids in seed order]}."""
+    uid = agent.get_user(ext)
+    ids = []
+    with session() as s:
+        u = s.get(User, uid)
+        for name in spec.get("profiles", []):
+            s.add(Profile(user_id=u.id, name=name))
+        s.commit()
+        for kind in ("confirmed", "drafts"):
+            for d in spec.get(kind, []):
+                iv = Invoice(profile_id=tools._active_profile(u, s).id, status="confirmed" if kind == "confirmed" else "draft",
+                             vendor=d.get("vendor"), invoice_date=d.get("date", "2026-08-20"), total=d.get("total"),
+                             subtotal=d.get("subtotal", d.get("total")), vat=d.get("vat", 0.0), category=d.get("category", "อาหาร"),
+                             currency=d.get("currency", "THB"), total_thb=d.get("total_thb", d.get("total")) if d.get("currency", "THB") == "THB" else d.get("total_thb"),
+                             items=d.get("items"))
+                if d.get("reimbursed"):
+                    import datetime
+                    iv.reimbursed_at = datetime.datetime.utcnow()
+                s.add(iv)
+                s.commit()
+                ids.append(iv.id)
+        for t in spec.get("notes", []):
+            s.add(Note(user_id=u.id, text=t))
+        s.commit()
+    return {"uid": uid, "ids": ids}
+
+
+def inject_context(uid: int, lines: list[str], ids: list[int]):
+    with session() as s:
+        for line in lines:
+            role, _, text = line.partition(":")
+            for i, v in enumerate(ids):
+                text = text.replace(f"$ID{i}", str(v))
+            agent._store(s, uid, role, {"text": text})
+
+
+def subset(expected, actual) -> bool:
+    if isinstance(expected, dict):
+        return isinstance(actual, dict) and all(subset(v, actual.get(k)) for k, v in expected.items())
+    if isinstance(expected, bool) or actual is None:
+        return str(expected).lower() == str(actual).lower()
+    return str(expected).strip().lower() == str(actual).strip().lower()
+
+
+def score(case: dict, steps: list[dict], reply: str) -> tuple[bool, str]:
+    exp = case["expect"]
+    calls = [s for s in steps if "tool" in s]
+    first = calls[0]["tool"] if calls else None
+    names = [c["tool"] for c in calls]
+    if "tool" in exp and exp["tool"] != first:
+        return False, f"first tool {first!r} != {exp['tool']!r}"
+    if "tool_any" in exp and first not in exp["tool_any"]:
+        return False, f"first tool {first!r} not in {exp['tool_any']}"
+    if "args_contains" in exp and calls and not subset(exp["args_contains"], calls[0].get("args", {})):
+        return False, f"args {calls[0].get('args')} missing {exp['args_contains']}"
+    if "args_has_keys" in exp and calls and not all(k in calls[0].get("args", {}) for k in exp["args_has_keys"]):
+        return False, f"args {calls[0].get('args')} lacks keys {exp['args_has_keys']}"
+    if "args_any" in exp and calls and not any(subset(a, calls[0].get("args", {})) for a in exp["args_any"]):
+        return False, f"args {calls[0].get('args')} matches none of {exp['args_any']}"
+    for f in exp.get("forbid", []):
+        if f in names:
+            return False, f"forbidden tool {f} called"
+    for k, n in exp.get("max_calls", {}).items():
+        if names.count(k) > n:
+            return False, f"{k} called {names.count(k)}x > {n}"
+    for bad in exp.get("reply_not_contains", []):
+        if bad in reply:
+            return False, f"reply contains {bad!r}"
+    return True, "ok"
+
+
+async def run_case(case: dict) -> dict:
+    ext = f"evalA:{case['id']}:{uuid.uuid4().hex[:6]}"
+    st = seed(ext, case.get("seed", {}))
+    inject_context(st["uid"], case.get("context", []), st["ids"])
+    img = None
+    if case.get("image"):
+        src = Path(case["image"])
+        dst = Path("/data/uploads") / f"evalA-{uuid.uuid4().hex[:8]}{src.suffix}"
+        shutil.copy(src, dst)
+        img = str(dst)
+    out = await agent.run_turn(ext, text=case.get("message"), image_path=img)
+    last = json.loads(LOG.read_text(encoding="utf-8").splitlines()[-1])
+    ok, why = score(case, last["steps"], out["reply"])
+    return {"id": case["id"], "group": case["group"], "ok": ok, "why": why,
+            "tools": [s["tool"] for s in last["steps"] if "tool" in s], "reply": out["reply"][:120]}
+
+
+async def main():
+    init_db()
+    cases = json.loads(CASES.read_text(encoding="utf-8"))
+    results = []
+    for c in cases:
+        r = await run_case(c)
+        results.append(r)
+        print(f"{'✓' if r['ok'] else '✗'} #{r['id']:<3} {r['group']:<16} {r['tools']}  {'' if r['ok'] else '← ' + r['why']}", flush=True)
+    groups = {}
+    for r in results:
+        g = groups.setdefault(r["group"].split("-")[0], [0, 0])
+        g[0] += r["ok"]
+        g[1] += 1
+    print("\nMODEL:", os.environ.get("GEMMA_MODEL", "gemma-4-26b-a4b-it"))
+    for g, (a, b) in groups.items():
+        print(f"  {g}: {a}/{b} = {a / b:.0%}")
+    print(f"  ALL: {sum(r['ok'] for r in results)}/{len(results)} = {sum(r['ok'] for r in results) / len(results):.0%}")
+    out = Path("/data/logs") / f"evalA_{os.environ.get('GEMMA_MODEL', 'gemma-4-26b-a4b-it')}.json"
+    out.write_text(json.dumps(results, ensure_ascii=False, indent=1), encoding="utf-8")
+
+
+if __name__ == "__main__":
+    asyncio.run(main())

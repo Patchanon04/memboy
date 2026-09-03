@@ -91,7 +91,7 @@ def test_loop_happy_and_parse_retry():
         json.dumps({"tool": "save_invoice", "args": {"draft_id": iv_id}}),
         json.dumps({"reply": "บันทึกบิลครัวลุงหนวด 250 บาทแล้วครับ"}),
     ])
-    out = asyncio.run(agent.run_turn(ext, text="บันทึกเลย"))
+    out = asyncio.run(agent.run_turn(ext, text="บันทึกเลย"))["reply"]
     assert "ครัวลุงหนวด" in out, out
     with session() as s:
         assert s.get(Invoice, iv_id).status == "confirmed"
@@ -104,7 +104,7 @@ def test_loop_tool_error_feedback():
         json.dumps({"tool": "save_invoice", "args": {"draft_id": 999999}}),   # bad id -> ToolError fed back
         json.dumps({"reply": "ไม่พบบิลที่ว่าครับ"}),
     ])
-    out = asyncio.run(agent.run_turn(ext, text="เซฟ 999999"))
+    out = asyncio.run(agent.run_turn(ext, text="เซฟ 999999"))["reply"]
     assert "ไม่พบ" in out
     print("test_loop_tool_error_feedback OK")
 
@@ -112,7 +112,7 @@ def test_loop_tool_error_feedback():
 def test_loop_cap():
     ext, uid = fresh_user("cap")
     stub_llm([json.dumps({"tool": "check_duplicate", "args": {"vendor": "x", "date": "2026-01-01", "total": 1}})])
-    out = asyncio.run(agent.run_turn(ext, text="วนไปเรื่อยๆ"))
+    out = asyncio.run(agent.run_turn(ext, text="วนไปเรื่อยๆ"))["reply"]
     assert "ขั้นตอนเยอะเกินไป" in out, out
     print("test_loop_cap OK")
 
@@ -123,7 +123,7 @@ def test_unknown_tool_then_recover():
         json.dumps({"tool": "transfer_money", "args": {}}),   # not a real tool -> parse error path
         json.dumps({"reply": "ผมโอนเงินไม่ได้ครับ ทำได้แค่จัดการบิล"}),
     ])
-    out = asyncio.run(agent.run_turn(ext, text="โอนเงินให้แม่ค้าหน่อย"))
+    out = asyncio.run(agent.run_turn(ext, text="โอนเงินให้แม่ค้าหน่อย"))["reply"]
     assert "โอนเงินไม่ได้" in out
     print("test_unknown_tool_then_recover OK")
 
