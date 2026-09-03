@@ -73,7 +73,17 @@ Failures:
 - ✅ ติ๊กเบิกแล้ว + รายงานเฉพาะยังไม่เบิก 
 - ✅ รูปไม่ใช่บิล 
 
+## Slip extraction + QR consistency (30 synthetic slips, 6 layouts, 5 deliberate mismatches)
+
+| field | accuracy |
+|---|---|
+| doc_type | 100% |
+| total | 100% |
+| ref | 100% |
+| qr_status | 100% |
+| **all 4** | **30/30** |
+
 ## Eval C — loop metrics (all live turns)
 
-- turns: 161 · LLM calls: 298 · JSON first-try: **98.3%** · tool calls: 132 (avg 0.82/turn) · tool errors: 14 · loop-cap hits: 0
-- per tool: analyze_receipt 30, save_invoice 22, update_invoice 14, summarize_expenses 10, find_invoices 10, manage_profile 8, remember_note 6, delete_invoice 5, mark_reimbursed 5, generate_report 4, analyze_trends 4, export_csv 3, restore_invoice 3, get_invoice_image 2, manage_category 2, split_bill 2, convert_currency 2
+- turns: 195 · LLM calls: 345 · JSON first-try: **98.3%** · tool calls: 147 (avg 0.75/turn) · tool errors: 16 · loop-cap hits: 0
+- per tool: analyze_receipt 39, save_invoice 25, update_invoice 14, summarize_expenses 10, find_invoices 10, manage_profile 8, remember_note 7, delete_invoice 5, mark_reimbursed 5, generate_report 4, analyze_trends 4, convert_currency 4, export_csv 3, restore_invoice 3, get_invoice_image 2, manage_category 2, split_bill 2
