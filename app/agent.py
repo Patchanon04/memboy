@@ -17,7 +17,7 @@ log = logging.getLogger("pbook")
 TZ = zoneinfo.ZoneInfo("Asia/Bangkok")
 HISTORY_LIMIT = 30
 LOOP_CAP = 6          # guardrail #2
-TURN_BUDGET_S = 150   # wall-clock cap per turn — never leave a LINE user hanging for minutes
+TURN_BUDGET_S = 200   # wall-clock cap per turn — never leave a LINE user hanging for minutes
 PARSE_RETRIES = 2
 LOG_DIR = Path("/data/logs")
 LOG_DIR.mkdir(parents=True, exist_ok=True)

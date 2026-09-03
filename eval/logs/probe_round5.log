@@ -1,0 +1,30 @@
+== PDF input
+   📂 หมวดหมู่: ที่พัก
+   
+   รายการ:
+   - Standard room / night (3 รายการ)
+   - Dorm bed / night (1 รายการ)
+   - Deluxe room / night (3 รายการ)
+   - Breakfast (3 รายการ)
+   
+   💰 ยอดรวม: 10,350.00 บาท
+   (ยอดก่อน VAT: 9,672.90 บาท | VAT: 677.10 บาท)
+   
+   ข้อมูลถูกต้องไหมครับ? ถ้าถูกต้องพิมพ์ "ยืนยัน" เพื่อบันทึกได้เลยครับ  [รอยืนยัน]
+== multi-receipt
+   WARNING llm gemma-4-26b-a4b-it ReadTimeout after 70.2s: ReadTimeout('')
+   WARNING llm gemma-4-31b-it ConnectError after 22.7s: ConnectError('All connection attempts failed')
+   ขอโทษค่ะ ตอนนี้ระบบ AI ขัดข้องชั่วคราว ลองใหม่อีกสักครู่นะคะ
+== confirm all
+   WARNING llm gemma-4-26b-a4b-it ConnectError after 22.7s: ConnectError('All connection attempts failed')
+   WARNING llm gemma-4-31b-it ConnectError after 22.8s: ConnectError('All connection attempts failed')
+   ขอโทษค่ะ ตอนนี้ระบบ AI ขัดข้องชั่วคราว ลองใหม่อีกสักครู่นะคะ
+
+== slip eval 30
+llm gemma-4-31b-it ReadTimeout after 70.1s: ReadTimeout('')
+✓ slip_30_L5_MISMATCH.png      {'doc_type': True, 'total': True, 'ref': True, 'qr_status': True}
+
+SLIPS ACCURACY: doc_type=77%  total=77%  ref=77%  qr_status=67%  all=20/30
+per layout: {0: '4/5', 1: '5/5', 2: '4/5', 3: '0/5', 4: '4/5', 5: '3/5'}
+QR mismatch detection: 3/5
+exit 0

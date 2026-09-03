@@ -9,11 +9,12 @@ import logging
 import time
 
 log = logging.getLogger("pbook")
+logging.getLogger("httpx").setLevel(logging.WARNING)  # httpx INFO logs the full URL incl. ?key= — never
 
 KEY = os.environ["GEMINI_API_KEY"]
 MODEL = os.environ.get("GEMMA_MODEL", "gemma-4-26b-a4b-it")
 FALLBACK = os.environ.get("GEMMA_FALLBACK", "gemma-4-31b-it" if "26b" in MODEL else "gemma-4-26b-a4b-it")
-TIMEOUT_S = int(os.environ.get("LLM_TIMEOUT_S", "70"))
+TIMEOUT_S = int(os.environ.get("LLM_TIMEOUT_S", "100"))  # hard images (multi-receipt) can take 26b >70s
 URL = "https://generativelanguage.googleapis.com/v1beta/models/{}:generateContent"
 
 

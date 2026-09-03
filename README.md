@@ -30,3 +30,4 @@ Rich menu: `python scripts/make_rich_menu.py` แล้ว `await line_io.setup_
 | Eval A/D tool-selection 48 เคส | gemma-4-26b-a4b-it 48/48 · gemma-4-31b-it 47/48 |
 | Eval B end-to-end 10 scenario (assert DB) | 9/10 → 10/10 หลังเพิ่ม month_total hint |
 | Eval C loop metrics (298 LLM calls) | JSON first-try 98.3%, loop-cap 0 |
+| สลิปโอน 30 ใบ (6 layout, 5 QR mismatch) | doc_type/total/ref/qr_status 100%, mismatch detection 5/5 |
