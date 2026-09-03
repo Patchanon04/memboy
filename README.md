@@ -7,6 +7,21 @@ Agentic AI Application (KMITL NLP Final Project) — agent loop + JSON tool call
 - เช็ค: `curl localhost:8080/health` · PDF ไทย: `localhost:8080/files/test.pdf`
 - eval assets + dataset 220 ใบ: `eval/`
 
+## ทดสอบผ่านหน้าเว็บ (ไม่ต้องใช้ LINE)
+
+หน้าเว็บใช้ **agent ตัวเดียวกับ LINE** ทุกอย่าง (tools/DB/PDF/quick reply) ต่างแค่ transport
+
+```bash
+docker compose up -d                                   # เปิดระบบ
+# เปิด http://localhost:8080 -> login (ชื่อผู้ใช้อะไรก็ได้ + WEB_PASSWORD ใน .env)
+
+python scripts/dns_pin.py && docker compose up -d       # ถ้า LLM error เรื่อง DNS (WARP)
+cloudflared tunnel --url http://localhost:8080          # ให้เพื่อนเข้าทดสอบจากที่อื่น
+# เอา URL ที่ได้ไปใส่ PUBLIC_BASE_URL ใน .env แล้ว docker compose up -d ซ้ำ (ลิงก์ PDF ในข้อความจะได้ถูก)
+```
+
+ข้อมูลแยกตามชื่อผู้ใช้ที่ล็อกอิน (`web:<username>`) — เพื่อนหลายคนเทสพร้อมกันได้โดยบิลไม่ปนกัน
+
 ## คำสั่งที่ใช้บ่อย
 
 ```bash

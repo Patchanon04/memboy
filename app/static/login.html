@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PBook — เข้าสู่ระบบ</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100dvh; display: grid; place-items: center; background: #f7f8fa;
+         font-family: ui-sans-serif, system-ui, "Segoe UI", sans-serif; color: #111; }
+  form { width: min(360px, 90vw); background: #fff; border: 1px solid #e6e6e6; border-radius: 18px; padding: 30px 26px;
+         box-shadow: 0 8px 28px rgba(0,0,0,.06); display: flex; flex-direction: column; gap: 12px; }
+  h1 { margin: 0; font-size: 21px; } p.s { margin: 0 0 6px; color: #777; font-size: 14px; }
+  input { font: inherit; font-size: 16px; padding: 11px 13px; border: 1px solid #ddd; border-radius: 11px; outline: 0; }
+  input:focus { border-color: #1f3a5f; }
+  button { font: inherit; font-size: 16px; padding: 11px; border: 0; border-radius: 11px; background: #1f3a5f; color: #fff; cursor: pointer; }
+  #err { color: #c0392b; font-size: 14px; min-height: 1.2em; margin: 0; }
+</style>
+</head>
+<body>
+<form id="f">
+  <h1>PBook</h1>
+  <p class="s">ใส่ชื่อผู้ใช้ (ข้อมูลบิลจะแยกตามชื่อนี้) และรหัสผ่านของทีม</p>
+  <input id="un" placeholder="ชื่อผู้ใช้ เช่น boat" autofocus autocomplete="username">
+  <input id="pw" type="password" placeholder="รหัสผ่าน" autocomplete="current-password">
+  <button>เข้าสู่ระบบ</button>
+  <p id="err"></p>
+</form>
+<script>
+f.onsubmit = async e => {
+  e.preventDefault(); err.textContent = '';
+  const r = await fetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ username: un.value, password: pw.value }) });
+  if (r.ok) location.href = '/'; else { err.textContent = 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง'; pw.select(); }
+};
+</script>
+</body>
+</html>

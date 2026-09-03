@@ -13,7 +13,7 @@ from fastapi.staticfiles import StaticFiles
 
 import httpx
 
-from app import line_io, report, tools
+from app import line_io, report, web, tools
 from app.db import User, init_db, session
 
 log = logging.getLogger("pbook")
@@ -23,6 +23,7 @@ Path("/data/uploads").mkdir(parents=True, exist_ok=True)
 app = FastAPI()
 app.mount("/files", StaticFiles(directory="/data/reports"), name="files")
 app.mount("/uploads", StaticFiles(directory="/data/uploads"), name="uploads")
+app.include_router(web.router)  # browser chat UI: same agent as LINE
 
 
 @app.on_event("startup")
