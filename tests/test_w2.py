@@ -6,7 +6,9 @@ import json
 import uuid
 
 from app import agent, llm, tools
-from app.db import Invoice, init_db, session
+from sqlalchemy import select
+
+from app.db import Conversation, Invoice, init_db, session
 
 
 def fresh_user(tag):
@@ -148,6 +150,37 @@ def test_llm_down_and_turn_budget():
     print("test_llm_down_and_turn_budget OK")
 
 
+SECRET = "SELECT password FROM users WHERE id=42 -- internal-detail"
+
+
+def test_tool_crash_does_not_leak():
+    """guardrail #6: a tool blowing up must reach the user as a polite line, and the crash text
+    must not even reach the model (it lands in the log only)."""
+    ext, uid = fresh_user("leak")
+
+    def boom(user, s, **kw):
+        raise RuntimeError(f"psycopg.errors.UndefinedColumn: {SECRET}")
+    orig = agent.TOOLS["check_duplicate"]
+    agent.TOOLS["check_duplicate"] = (boom, orig[1], orig[2])
+    try:
+        stub_llm([
+            json.dumps({"tool": "check_duplicate", "args": {"vendor": "x", "date": "2026-01-01", "total": 1}}),
+            json.dumps({"reply": "ขออภัยครับ ระบบมีปัญหาชั่วคราว"}),
+        ])
+        out = asyncio.run(agent.run_turn(ext, text="เช็คบิลซ้ำให้หน่อย"))["reply"]
+    finally:
+        agent.TOOLS["check_duplicate"] = orig
+    assert SECRET not in out and "Traceback" not in out and "psycopg" not in out, out
+    assert out.strip(), "user must still get a reply"
+    # what was fed back to the model must be the generic message, not the exception text
+    with session() as s:
+        fed = " ".join(c.content.get("text", "") for c in
+                       s.scalars(select(Conversation).where(Conversation.user_id == uid)))
+    assert SECRET not in fed and "psycopg" not in fed, fed[-300:]
+    assert "เครื่องมือขัดข้องภายใน" in fed
+    print("test_tool_crash_does_not_leak OK")
+
+
 if __name__ == "__main__":
     init_db()
     test_tools()
@@ -156,4 +189,5 @@ if __name__ == "__main__":
     test_loop_cap()
     test_unknown_tool_then_recover()
     test_llm_down_and_turn_budget()
+    test_tool_crash_does_not_leak()
     print("ALL W2 STUB TESTS PASSED")

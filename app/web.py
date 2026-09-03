@@ -12,7 +12,7 @@ from fastapi import APIRouter, Request
 from fastapi.responses import FileResponse, JSONResponse, RedirectResponse, Response
 
 from app import agent
-from app.events import CONFIRM_QUICK, shrink
+from app.events import CONFIRM_QUICK, rate_limited, shrink
 
 PASSWORD = os.environ.get("WEB_PASSWORD", "")  # empty = open (local dev only)
 WEB = Path(__file__).parent / "static"
@@ -72,6 +72,9 @@ async def chat(request: Request):
     user = current_user(request)
     if not user:
         return Response(status_code=401)
+    if rate_limited(f"web:{user}"):  # guardrail #7 — the tunnel URL is public, don't let one tab burn the quota
+        return JSONResponse({"reply": "ส่งเร็วเกินไปนิดนึงค่ะ 🙏 รอสักครู่แล้วลองใหม่นะคะ", "quick": [], "images": [], "files": []},
+                            status_code=429)
     body = await request.json()
     text = (body.get("text") or "").strip() or None
     image_path = None
