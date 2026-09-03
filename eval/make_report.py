@@ -57,7 +57,7 @@ if fs.exists():
 tl = LOGS / "turns.jsonl"
 if tl.exists():
     rows = [json.loads(l) for l in tl.read_text(encoding="utf-8").splitlines() if l.strip()]
-    rows = [r for r in rows if not r["user"].startswith(("test", "stub"))]
+    rows = [r for r in rows if not r["user"].startswith(("test", "stub", "harness", "usage:"))]
     calls = sum(len(r["steps"]) for r in rows)
     perr = sum(1 for r in rows for s in r["steps"] if "parse_error" in s)
     tools_ = [s for r in rows for s in r["steps"] if "tool" in s]

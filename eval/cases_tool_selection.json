@@ -305,12 +305,27 @@
   "group": "A-report",
   "message": "ทำรายงานเบิกเฉพาะที่ยังไม่ได้เบิกให้หน่อย",
   "expect": {
-   "tool_any": [
-    "generate_report",
-    null
+   "tools_contains": [
+    "generate_report"
    ],
    "forbid": [
     "save_invoice"
+   ]
+  },
+  "seed": {
+   "confirmed": [
+    {
+     "vendor": "โรงแรมริมน้ำ",
+     "total": 2400,
+     "date": "2026-08-11",
+     "category": "ที่พัก"
+    },
+    {
+     "vendor": "แท็กซี่มิเตอร์",
+     "total": 180,
+     "date": "2026-08-12",
+     "category": "เดินทาง"
+    }
    ]
   }
  },
@@ -342,14 +357,18 @@
     "บริษัท A"
    ]
   },
-  "message": "สลับไปโปรไฟล์บริษัท A",
+  "message": "สลับกลับไปโปรไฟล์บริษัท A",
   "expect": {
    "tool": "manage_profile",
    "args_contains": {
     "action": "switch",
     "name": "บริษัท A"
    }
-  }
+  },
+  "context": [
+   "model:{\"tool\": \"manage_profile\", \"args\": {\"action\": \"create\", \"name\": \"ทริปเชียงใหม่\"}}",
+   "user:TOOL_RESULT manage_profile: {\"created\": \"ทริปเชียงใหม่\", \"active\": true}"
+  ]
  },
  {
   "id": 23,
