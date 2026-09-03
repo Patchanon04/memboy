@@ -54,3 +54,8 @@ services:
 volumes:
   pgdata:
   redisdata:
+
+networks:
+  default:
+    driver_opts:
+      com.docker.network.driver.mtu: 1400   # Docker Desktop + VPN/WARP: large POST bodies stall at default MTU

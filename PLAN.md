@@ -212,6 +212,7 @@ categories    (id, user_id FK, name UNIQUE per user)              -- หมว�
 | วันที่ปี 2 หลัก | ปิดแล้ว — กติกา v3 พิสูจน์บน 200 ใบ (date 96%, พลาดที่เหลือคือภาพเบลอซึ่ง confirm flow ดักไว้) |
 | agent บันทึกซ้ำ/มั่ว | บังคับที่ tool (draft state ใน DB) ไม่พึ่ง prompt |
 | free tier rate limit / โมเดลล่มตอน demo | สลับ 26b↔31b ได้ทันที (ทั้งคู่คือ Gemma 4, prompt เดียวกัน); เติม billing ขั้นต่ำกันเหนียว; และมี video demo สำรองอยู่แล้ว |
+| Docker Desktop + VPN/WARP: POST ใหญ่ (รูป base64) ค้าง/timeout จาก container ทั้งที่ host ปกติ | ตั้ง MTU 1400 ที่ compose network (แก้แล้ว — เจอจริงตอน probe, อาการคือ ReadTimeout เฉพาะ call ที่มีรูป) |
 | frankfurter.app ล่ม/ไม่มีสกุลนั้น | cache rate ที่เคยดึงลง DB; ไม่ได้จริงๆ เก็บบิลเป็นสกุลเดิม + ติด flag ให้ user ใส่ rate เอง |
 | บิลหลายใบ → confirm กำกวม | draft มี id สั้น (#1 #2 #3) ให้ user อ้างถึงรายใบ; "บันทึกทั้งหมด" ต้องผ่าน check_duplicate รายใบ |
 | สโคปบวม (stretch W3.5×8 + W3.6×6) | W1–W3 core ห้ามเลื่อน; ตัด stretch จากท้ายได้ทุกเมื่อ ไม่กระทบ proposal ที่สัญญาไว้ |
