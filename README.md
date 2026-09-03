@@ -37,6 +37,14 @@ docker compose run -T --rm app python -m eval.metrics          # Eval C จา�
 Dashboard (dev): `http://localhost:8080/dashboard?uid=<user>` · LIFF: ตั้ง `LIFF_ID` + `LINE_LOGIN_CHANNEL_ID` ใน .env
 Rich menu: `python scripts/make_rich_menu.py` แล้ว `await line_io.setup_rich_menu("eval/assets/rich_menu.png")` เมื่อมี token
 
+## ทดสอบ harness (guardrails/determinism) รายข้อ
+
+```bash
+docker compose run --rm app python -m tests.test_harness   # ตาราง 18 ข้อ + eval/logs/HARNESS_REPORT.md
+```
+
+ทุกข้อพิมพ์ "ค่าที่วัดได้จริง" ไม่ใช่แค่ pass/fail — ใช้แปะสไลด์ได้ตรงๆ
+
 ## ผล eval ล่าสุด (ดู `eval/logs/EVAL_REPORT.md`)
 
 | ชุด | ผล |

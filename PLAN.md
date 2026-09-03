@@ -176,6 +176,8 @@ categories    (id, user_id FK, name UNIQUE per user)              -- หมว�
 
 ## Harness: guardrails + determinism
 
+> พิสูจน์รายข้อด้วย `tests/test_harness.py` → ตารางใน `eval/logs/HARNESS_REPORT.md` (16/16 ข้อที่วัดในเครื่องผ่าน, 2 ข้อรอ LINE credentials)
+
 หลักการ: อะไรที่ผิดแล้วเจ็บ (เงิน, ข้อมูลคนอื่น, ลบของ) ต้องถูกบังคับด้วย**โค้ด** ไม่ใช่ prompt — prompt เป็นแค่คำขอ โค้ดคือกติกา
 
 **Guardrails (บังคับใน W2 พร้อม loop)**
