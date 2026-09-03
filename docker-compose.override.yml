@@ -1,0 +1,13 @@
+services:
+  app:
+    extra_hosts:
+      - "generativelanguage.googleapis.com:172.217.119.4"
+      - "api.frankfurter.dev:104.26.15.64"
+      - "api.line.me:23.193.226.115"
+      - "api-data.line.me:147.92.191.80"
+  worker:
+    extra_hosts:
+      - "generativelanguage.googleapis.com:172.217.119.4"
+      - "api.frankfurter.dev:104.26.15.64"
+      - "api.line.me:23.193.226.115"
+      - "api-data.line.me:147.92.191.80"

@@ -1,6 +1,7 @@
 services:
   app:
     build: .
+    dns: [1.1.1.1, 8.8.8.8]
     ports: ["8080:8080"]
     env_file: .env
     environment:
@@ -20,6 +21,7 @@ services:
 
   worker:
     build: .
+    dns: [1.1.1.1, 8.8.8.8]
     env_file: .env
     environment:
       DATABASE_URL: postgresql+psycopg://pbook:pbook@db:5432/pbook

@@ -104,7 +104,17 @@ def _history_contents(s, user_id: int) -> list[dict]:
 
 
 def _parse(text: str) -> dict:
-    m = re.search(r"\{.*\}", text.strip(), re.S)
+    t = text.strip()
+    m = re.search(r"\[.*\]", t, re.S) if t.lstrip().startswith("[") else None
+    if m:  # model planned several actions at once: take the first, the loop will elicit the rest
+        arr = json.loads(m.group(0))
+        if isinstance(arr, list) and arr and isinstance(arr[0], dict):
+            out = arr[0]
+            if ("reply" in out) ^ ("tool" in out):
+                if "tool" in out and out["tool"] not in TOOLS:
+                    raise ValueError(f'unknown tool {out["tool"]!r}; valid: {list(TOOLS)}')
+                return out
+    m = re.search(r"\{.*\}", t, re.S)
     if not m:
         raise ValueError("no JSON object found")
     out = json.loads(m.group(0))
@@ -156,7 +166,7 @@ async def run_turn(external_id: str, text: str | None = None, image_path: str | 
                     out["reply"] = raw.strip() or "ขอโทษค่ะ ระบบขัดข้อง ลองใหม่อีกครั้งนะคะ"
                     break
                 _store(s, user_id, "model", {"text": raw})
-                _store(s, user_id, "user", {"text": f"SYSTEM: ตอบไม่ตรง format ({e}) — ตอบใหม่เป็น JSON ตามกติกาเท่านั้น"})
+                _store(s, user_id, "user", {"text": f"SYSTEM: ตอบไม่ตรง format ({e}) — ตอบใหม่เป็น JSON ก้อนเดียว ทำ action แรกที่ค้างอยู่ก่อน แล้วรอบถัดไปค่อยทำที่เหลือ ห้ามหยุดงาน"})
                 continue
 
             _store(s, user_id, "model", {"text": json.dumps(act, ensure_ascii=False)})

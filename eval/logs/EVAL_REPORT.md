@@ -85,5 +85,11 @@ Failures:
 
 ## Eval C — loop metrics (all live turns)
 
-- turns: 195 · LLM calls: 345 · JSON first-try: **98.3%** · tool calls: 147 (avg 0.75/turn) · tool errors: 16 · loop-cap hits: 0
-- per tool: analyze_receipt 39, save_invoice 25, update_invoice 14, summarize_expenses 10, find_invoices 10, manage_profile 8, remember_note 7, delete_invoice 5, mark_reimbursed 5, generate_report 4, analyze_trends 4, convert_currency 4, export_csv 3, restore_invoice 3, get_invoice_image 2, manage_category 2, split_bill 2
+- turns: 208 · LLM calls: 375 · JSON first-try: **96.5%** · tool calls: 157 (avg 0.75/turn) · tool errors: 18 · loop-cap hits: 0
+- per tool: analyze_receipt 39, save_invoice 26, update_invoice 15, summarize_expenses 12, find_invoices 10, manage_profile 9, remember_note 8, mark_reimbursed 6, delete_invoice 5, generate_report 5, analyze_trends 4, convert_currency 4, export_csv 3, restore_invoice 3, get_invoice_image 3, split_bill 3, manage_category 2
+
+### Agency depth
+
+- tool-chain length distribution: {0: 59, 1: 141, 2: 8} — turns with ≥2 tool calls: **8** (4%)
+- ask-back turns (no tool, clarifying question): 9 (4%)
+- self-recovery after a tool error (agent tried another call): 0/18
