@@ -516,9 +516,9 @@ async def convert_currency(user, s, draft_id=None, amount=None, currency=None, d
     date = _date(date or (iv.invoice_date if iv else None)) or datetime.date.today().isoformat()
     if not currency or currency == "THB":
         raise ToolError("ต้องระบุสกุลเงินที่ไม่ใช่ THB")
-    async with httpx.AsyncClient(timeout=15) as c:
+    async with httpx.AsyncClient(timeout=15, follow_redirects=True) as c:  # frankfurter.app 301s to frankfurter.dev
         try:
-            r = await c.get(f"https://api.frankfurter.app/{date}", params={"from": currency, "to": "THB"})
+            r = await c.get(f"https://api.frankfurter.dev/v1/{date}", params={"base": currency, "symbols": "THB"})
             rate = r.json()["rates"]["THB"]
         except Exception:
             raise ToolError(f"ดึงอัตราแลกเปลี่ยน {currency} ณ {date} ไม่ได้ — ให้ user ระบุ rate เอง แล้วเรียก update_invoice(total) เป็นบาท")

@@ -177,6 +177,10 @@ async def run_turn(external_id: str, text: str | None = None, image_path: str | 
             except tools.ToolError as e:
                 turn_log["steps"].append({"tool": act["tool"], "args": args, "tool_error": str(e)})
                 payload = json.dumps({"error": str(e)}, ensure_ascii=False)
+            except llm.LLMError as e:  # vision call inside a tool failed: LLM is down, don't loop further
+                turn_log["steps"].append({"tool": act["tool"], "args": args, "llm_error": str(e)})
+                out["reply"] = "ขอโทษค่ะ ตอนนี้ระบบ AI ขัดข้องชั่วคราว ลองส่งรูปใหม่อีกสักครู่นะคะ"
+                break
             except Exception:
                 log.exception("tool %s crashed", act["tool"])  # guardrail #6: log full, tell model little
                 turn_log["steps"].append({"tool": act["tool"], "args": args, "tool_error": "internal"})
