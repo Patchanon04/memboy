@@ -123,6 +123,9 @@ async def run_case(case: dict) -> dict:
 async def main():
     init_db()
     cases = json.loads(CASES.read_text(encoding="utf-8"))
+    if os.environ.get("CASE_IDS"):  # rerun a subset, e.g. CASE_IDS=4,12,27
+        want = {int(x) for x in os.environ["CASE_IDS"].split(",")}
+        cases = [c for c in cases if c["id"] in want]
     results = []
     for c in cases:
         r = await run_case(c)
@@ -137,7 +140,7 @@ async def main():
     for g, (a, b) in groups.items():
         print(f"  {g}: {a}/{b} = {a / b:.0%}")
     print(f"  ALL: {sum(r['ok'] for r in results)}/{len(results)} = {sum(r['ok'] for r in results) / len(results):.0%}")
-    out = Path("/data/logs") / f"evalA_{os.environ.get('GEMMA_MODEL', 'gemma-4-26b-a4b-it')}.json"
+    out = Path("/data/logs") / f"evalA_{os.environ.get('GEMMA_MODEL', 'gemma-4-26b-a4b-it')}{'_subset' if os.environ.get('CASE_IDS') else ''}.json"
     out.write_text(json.dumps(results, ensure_ascii=False, indent=1), encoding="utf-8")
 
 

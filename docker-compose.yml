@@ -10,7 +10,7 @@ services:
     volumes:
       - ./data:/data
       - ./app:/srv/app          # dev hot-reload; remove for prod image
-      - ./eval:/srv/eval:ro     # sample receipts for chat_cli testing
+      - ./eval:/srv/eval        # sample receipts + eval logs/report output
       - ./tests:/srv/tests
       - ./scripts:/srv/scripts
     depends_on:
