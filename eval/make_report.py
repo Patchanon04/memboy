@@ -39,6 +39,24 @@ if fb.exists():
     for r in res:
         md.append(f"- {'✅' if r['ok'] else '❌'} {r['name']} {('— ' + '; '.join(r['fails'])) if r['fails'] else ''}")
 
+# ---- slips ----
+fs = LOGS / "eval_slips.json"
+if fs.exists():
+    res = json.loads(fs.read_text(encoding="utf-8"))
+    fields = ["doc_type", "total", "ref", "qr_status"]
+    md.append(f"
+## Slip extraction + QR consistency (30 synthetic slips, 6 layouts, 5 deliberate mismatches)
+")
+    md.append("| field | accuracy |
+|---|---|")
+    for f in fields:
+        md.append(f"| {f} | {sum(r['ok'][f] for r in res) / len(res):.0%} |")
+    md.append(f"| **all 4** | **{sum(all(r['ok'].values()) for r in res)}/{len(res)}** |")
+    bad = [r for r in res if not all(r["ok"].values())]
+    if bad:
+        md.append("
+Misses: " + "; ".join(f"{r['file']} {[k for k, v in r['ok'].items() if not v]}" for r in bad))
+
 # ---- C metrics from turn log ----
 tl = LOGS / "turns.jsonl"
 if tl.exists():
