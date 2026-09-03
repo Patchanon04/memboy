@@ -756,5 +756,133 @@
     "user id 1"
    ]
   }
+ },
+ {
+  "id": 49,
+  "group": "E-compound",
+  "seed": {
+   "drafts": [
+    {
+     "vendor": "ครัวป้าแดง",
+     "total": 120
+    }
+   ]
+  },
+  "context": [
+   "model:{\"reply\": \"สรุปบิลครัวป้าแดง 120 บาท ถูกต้องไหมครับ?\"}"
+  ],
+  "message": "ถูกต้อง บันทึกเลย แล้วขอรีพอร์ท PDF เดือนนี้มาด้วยเลย",
+  "expect": {
+   "tools_contains": [
+    "save_invoice",
+    "generate_report"
+   ],
+   "min_tools": 2
+  }
+ },
+ {
+  "id": 50,
+  "group": "E-compound",
+  "seed": {
+   "confirmed": [
+    {
+     "vendor": "กาแฟบ้านสวน",
+     "total": 65
+    },
+    {
+     "vendor": "แท็กซี่มิเตอร์",
+     "total": 180,
+     "category": "เดินทาง"
+    }
+   ]
+  },
+  "message": "ติ๊กว่าเบิกบิลแท็กซี่แล้ว แล้วบอกด้วยว่าเดือนนี้เหลือที่ยังไม่เบิกกี่บาท",
+  "expect": {
+   "tools_contains": [
+    "mark_reimbursed"
+   ],
+   "tool_any_after": [
+    "find_invoices",
+    "summarize_expenses"
+   ],
+   "min_tools": 2
+  }
+ },
+ {
+  "id": 51,
+  "group": "E-compound",
+  "message": "สร้างโปรไฟล์ทริปภูเก็ตแล้วสลับไปใช้ พร้อมจำไว้ด้วยว่างบทริปนี้ 15000",
+  "expect": {
+   "tools_contains": [
+    "manage_profile",
+    "remember_note"
+   ],
+   "min_tools": 2
+  }
+ },
+ {
+  "id": 52,
+  "group": "E-compound",
+  "seed": {
+   "confirmed": [
+    {
+     "vendor": "หมูกระทะลุงเบิ้ม",
+     "total": 1200,
+     "items": [
+      {
+       "name": "บุฟเฟ่ต์",
+       "qty": 4,
+       "price": 259
+      },
+      {
+       "name": "เบียร์",
+       "qty": 2,
+       "price": 79
+      }
+     ]
+    }
+   ]
+  },
+  "context": [
+   "model:{\"reply\": \"บันทึกบิลหมูกระทะ 1200 บาทแล้วครับ\"}"
+  ],
+  "message": "หาร 4 คน โบ๊ท นัท มิ้นท์ เจ แล้วส่งรูปบิลมาให้ด้วยจะได้แชร์ต่อ",
+  "expect": {
+   "tools_contains": [
+    "split_bill",
+    "get_invoice_image"
+   ],
+   "min_tools": 2
+  }
+ },
+ {
+  "id": 53,
+  "group": "E-learned",
+  "seed": {
+   "confirmed": [
+    {
+     "vendor": "ปั๊มบางจาก สาขาร่มเกล้า",
+     "total": 800,
+     "category": "เดินทาง"
+    }
+   ]
+  },
+  "context": [
+   "model:{\"reply\": \"บันทึกบิลปั๊มบางจาก 800 บาท หมวดเดินทางแล้วครับ\"}"
+  ],
+  "message": "ปั๊มนี้จริงๆ ต้องเป็นหมวดอุปกรณ์นะ (ซื้อน้ำมันเครื่อง)",
+  "expect": {
+   "tool": "update_invoice",
+   "args_contains": {
+    "fields": {
+     "category": "อุปกรณ์"
+    }
+   },
+   "reply_contains_any": [
+    "จำ",
+    "ครั้งหน้า",
+    "อัตโนมัติ"
+   ]
+  }
  }
 ]

@@ -65,6 +65,15 @@ if tl.exists():
     md.append("\n## Eval C — loop metrics (all live turns)\n")
     md.append(f"- turns: {len(rows)} · LLM calls: {calls} · JSON first-try: **{100 * (1 - perr / max(1, calls)):.1f}%** · tool calls: {len(tools_)} (avg {len(tools_) / max(1, len(rows)):.2f}/turn) · tool errors: {terr} · loop-cap hits: {sum(1 for r in rows if 'ขั้นตอนเยอะเกินไป' in r['out'])}")
     md.append("- per tool: " + ", ".join(f"{k} {v}" for k, v in Counter(s["tool"] for s in tools_).most_common()))
+    chain = Counter(len([s for s in r["steps"] if "tool" in s]) for r in rows)
+    multi = sum(v for k, v in chain.items() if k >= 2)
+    ask = sum(1 for r in rows if not any("tool" in s for s in r["steps"]) and ("?" in r["out"] or "ไหม" in r["out"]))
+    errored = [r for r in rows if any("tool_error" in s for s in r["steps"])]
+    recovered = sum(1 for r in errored if any("tool" in s and "tool_error" not in s for s in r["steps"][[i for i, s in enumerate(r["steps"]) if "tool_error" in s][0] + 1:]))
+    md.append("\n### Agency depth\n")
+    md.append(f"- tool-chain length distribution: {dict(sorted(chain.items()))} — turns with ≥2 tool calls: **{multi}** ({100 * multi / max(1, len(rows)):.0f}%)")
+    md.append(f"- ask-back turns (no tool, clarifying question): {ask} ({100 * ask / max(1, len(rows)):.0f}%)")
+    md.append(f"- self-recovery after a tool error (agent tried another call): {recovered}/{len(errored)}")
 
 OUT.parent.mkdir(parents=True, exist_ok=True)
 OUT.write_text("\n".join(md) + "\n", encoding="utf-8")

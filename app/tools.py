@@ -12,7 +12,7 @@ from pathlib import Path
 from sqlalchemy import func, select
 
 from app import llm, report
-from app.db import Category, Invoice, Note, Profile, User
+from app.db import Category, Invoice, Note, Profile, User, VendorPref
 
 CATS_DEFAULT = ["อาหาร", "เดินทาง", "ที่พัก", "อุปกรณ์", "สุขภาพ", "ของใช้"]
 MAX_CUSTOM_CATS = 20
@@ -121,6 +121,34 @@ def valid_thai_tax_id(tid: str | None) -> bool | None:
     return (11 - total % 11) % 10 == int(d[12])
 
 
+def _vendor_key(v: str | None) -> str:
+    return re.sub(r"[\s\-_.,()/'\"]+", "", (v or "").lower())[:120]
+
+
+def learn_pref(user, s, vendor, category=None, profile_id=None) -> dict | None:
+    """Called when the user corrects a saved/draft invoice — remember for next time."""
+    key = _vendor_key(vendor)
+    if not key or (category is None and profile_id is None):
+        return None
+    pref = s.scalars(select(VendorPref).where(VendorPref.user_id == user.id, VendorPref.vendor_key == key)).first()
+    if not pref:
+        pref = VendorPref(user_id=user.id, vendor_key=key)
+        s.add(pref)
+    if category is not None:
+        pref.category = category
+    if profile_id is not None:
+        pref.profile_id = profile_id
+    pref.updated_at = datetime.datetime.utcnow()
+    s.commit()
+    return {"vendor": vendor, "category": pref.category,
+            "profile": s.get(Profile, pref.profile_id).name if pref.profile_id else None}
+
+
+def get_pref(user, s, vendor) -> VendorPref | None:
+    key = _vendor_key(vendor)
+    return s.scalars(select(VendorPref).where(VendorPref.user_id == user.id, VendorPref.vendor_key == key)).first() if key else None
+
+
 def user_categories(user, s) -> list[str]:
     return CATS_DEFAULT + list(s.scalars(select(Category.name).where(Category.user_id == user.id)))
 
@@ -223,19 +251,29 @@ def _make_draft(user, s, d: dict, path: Path, qr_text: str | None) -> dict:
         date = _date(d.get("date"))
     except ToolError:
         warnings.append(f"วันที่อ่านไม่ออก: {d.get('date')!r}")
-    iv = Invoice(profile_id=_active_profile(user, s).id, status="draft", doc_type=doc_type, image_path=str(path),
+    learned = None
+    pref = get_pref(user, s, d.get("vendor"))
+    profile_id = _active_profile(user, s).id
+    category = d.get("category") if d.get("category") in user_categories(user, s) else None
+    if pref:  # agentic memory: the user corrected this vendor before — apply without being asked
+        if pref.category and pref.category in user_categories(user, s):
+            category = pref.category
+        if pref.profile_id and s.get(Profile, pref.profile_id):
+            profile_id = pref.profile_id
+        learned = {"category": category, "profile": s.get(Profile, profile_id).name,
+                   "note": "ใช้ค่าที่ user เคยแก้ไว้สำหรับร้านนี้ — บอก user ด้วยว่าจำไว้จากครั้งก่อน"}
+    iv = Invoice(profile_id=profile_id, status="draft", doc_type=doc_type, image_path=str(path),
                  vendor=d.get("vendor"), invoice_date=date, subtotal=subtotal, vat=vat, total=total,
                  currency=currency, total_thb=total if currency == "THB" else None,
                  transfer_ref=ref, payee=d.get("vendor") if doc_type == "transfer_slip" else None, qr_status=qr_status,
-                 category=d.get("category") if d.get("category") in user_categories(user, s) else None,
-                 items=d.get("items"), raw_llm=d)
+                 category=category, items=d.get("items"), raw_llm=d)
     s.add(iv)
     s.commit()
     if currency != "THB":
         warnings.append(f"บิลสกุล {currency} — เรียก convert_currency(draft_id={iv.id}) เพื่อแปลงเป็นบาทก่อนบันทึก")
     return {"draft_id": iv.id, "doc_type": doc_type, "vendor": iv.vendor, "date": iv.invoice_date, "subtotal": subtotal,
             "vat": vat, "total": total, "currency": currency, "category": iv.category, "items": d.get("items"),
-            "transfer_ref": ref, "qr_status": qr_status, "warnings": warnings}
+            "transfer_ref": ref, "qr_status": qr_status, "warnings": warnings, "learned_from_past_corrections": learned}
 
 
 # ---------- 2,3,7. save / update / delete / duplicate ----------
@@ -280,7 +318,12 @@ def update_invoice(user, s, invoice_id=None, fields=None, **_):
     if iv.currency == "THB" and iv.total is not None:
         iv.total_thb = iv.total
     s.commit()
-    return {"updated": iv.id, **_inv_dict(iv)}
+    out = {"updated": iv.id, **_inv_dict(iv)}
+    if "category" in fields or "profile" in fields:  # a correction -> learn it for this vendor
+        learned = learn_pref(user, s, iv.vendor, category=fields.get("category"), profile_id=iv.profile_id if "profile" in fields else None)
+        if learned:
+            out["learned"] = {**learned, "note": "ครั้งหน้าร้านนี้จะใช้ค่านี้อัตโนมัติ — แจ้ง user สั้นๆ"}
+    return out
 
 
 def delete_invoice(user, s, invoice_id=None, **_):

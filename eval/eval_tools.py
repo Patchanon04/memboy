@@ -100,6 +100,15 @@ def score(case: dict, steps: list[dict], reply: str) -> tuple[bool, str]:
     for bad in exp.get("reply_not_contains", []):
         if bad in reply:
             return False, f"reply contains {bad!r}"
+    if "reply_contains_any" in exp and not any(w in reply for w in exp["reply_contains_any"]):
+        return False, f"reply lacks any of {exp['reply_contains_any']}"
+    for t in exp.get("tools_contains", []):
+        if t not in names:
+            return False, f"tool chain {names} lacks {t}"
+    if "tool_any_after" in exp and not any(t in names[1:] for t in exp["tool_any_after"]):
+        return False, f"chain {names} has none of {exp['tool_any_after']} after the first call"
+    if "min_tools" in exp and len(names) < exp["min_tools"]:
+        return False, f"chain length {len(names)} < {exp['min_tools']}"
     return True, "ok"
 
 

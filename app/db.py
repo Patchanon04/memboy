@@ -75,6 +75,17 @@ class Category(Base):
     name: Mapped[str] = mapped_column(String(60))
 
 
+class VendorPref(Base):
+    """Learned from user corrections: next time this vendor shows up, apply the same category/profile."""
+    __tablename__ = "vendor_prefs"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    vendor_key: Mapped[str] = mapped_column(String(120))
+    category: Mapped[str | None] = mapped_column(String(60), nullable=True)
+    profile_id: Mapped[int | None] = mapped_column(ForeignKey("profiles.id"), nullable=True)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+
 class ProcessedEvent(Base):
     __tablename__ = "processed_events"  # webhook idempotency (LINE redelivers on retry)
     message_id: Mapped[str] = mapped_column(String(64), primary_key=True)

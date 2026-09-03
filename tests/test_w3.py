@@ -98,6 +98,20 @@ def main():
         assert tools.find_invoices(u, s, profile="all")["count"] == 4
         assert tools.valid_thai_tax_id("0105558123456") in (True, False) and tools.valid_thai_tax_id("1234567890120") is False
         assert tools.valid_thai_tax_id(None) is None
+    # learned preferences: correcting a vendor's category/profile is remembered and applied to the next draft
+    with session() as s:
+        u = s.get(User, uid)
+        x = add(u, s, vendor="ปั๊ม บางจาก สาขาร่มเกล้า", total=800.0, category="เดินทาง")
+        r = tools.update_invoice(u, s, invoice_id=x, fields={"category": "อุปกรณ์"})
+        assert r["learned"]["category"] == "อุปกรณ์", r
+        pref = tools.get_pref(u, s, "ปั๊มบางจาก สาขาร่มเกล้า")  # spacing differences normalize to the same key
+        assert pref and pref.category == "อุปกรณ์"
+        tools.manage_profile(u, s, action="create", name="รถบริษัท")
+        tools.update_invoice(u, s, invoice_id=x, fields={"profile": "รถบริษัท"})
+        pref = tools.get_pref(u, s, "ปั๊มบางจาก สาขาร่มเกล้า")
+        assert pref.profile_id == tools._profile_ids(u, s, "รถบริษัท")[0]
+        d = tools._make_draft(u, s, {"vendor": "ปั๊มบางจาก สาขาร่มเกล้า", "date": "2026-09-01", "total": 500, "vat": 0, "subtotal": 500, "category": "เดินทาง"}, Path("/tmp/none.png"), None)
+        assert d["category"] == "อุปกรณ์" and d["learned_from_past_corrections"]["profile"] == "รถบริษัท", d
     print("ALL W3 TOOL TESTS PASSED")
 
 

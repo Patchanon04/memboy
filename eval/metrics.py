@@ -20,3 +20,12 @@ print(f"json_first_try={100 * (1 - parse_err / max(1, llm_calls)):.1f}%  (parse 
 print(f"tool_calls={len(tool_calls)} avg/turn={len(tool_calls) / max(1, turns):.2f} tool_errors={tool_err} ({100 * tool_err / max(1, len(tool_calls)):.1f}%)")
 print(f"loop_cap_hits={cap_hits}")
 print("per_tool:", dict(per_tool.most_common()))
+
+# ---- agency depth ----
+from collections import Counter as _C
+chain = _C(len([s for s in r["steps"] if "tool" in s]) for r in rows)
+ask_back = sum(1 for r in rows if not any("tool" in s for s in r["steps"]) and ("?" in r["out"] or "ไหม" in r["out"] or "ใบไหน" in r["out"]))
+recovered = sum(1 for r in rows if any("tool_error" in s for s in r["steps"]) and any("tool" in s and "tool_error" not in s for s in r["steps"][[i for i, s in enumerate(r["steps"]) if "tool_error" in s][0] + 1:]))
+errored = sum(1 for r in rows if any("tool_error" in s for s in r["steps"]))
+print(f"chain_length_distribution={dict(sorted(chain.items()))}  turns_with_chain>=2={sum(v for k, v in chain.items() if k >= 2)} ({100 * sum(v for k, v in chain.items() if k >= 2) / max(1, turns):.0f}%)")
+print(f"ask_back_turns={ask_back} ({100 * ask_back / max(1, turns):.0f}%)  self_recovery_after_tool_error={recovered}/{errored}")
