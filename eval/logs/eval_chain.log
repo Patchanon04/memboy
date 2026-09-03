@@ -1,0 +1,99 @@
+=== subset 26b
+✓ #4   A-update         ['update_invoice']  
+✓ #19  A-report         []  
+✓ #35  A-split          []  
+✓ #45  D-adversarial    []  
+
+MODEL: gemma-4-26b-a4b-it
+  A: 3/3 = 100%
+  D: 1/1 = 100%
+  ALL: 4/4 = 100%
+=== full 31b
+✓ #1   A-save           ['save_invoice']  
+✓ #2   A-save           ['save_invoice']  
+✓ #3   A-save           []  
+✓ #4   A-update         ['update_invoice']  
+✓ #5   A-update         ['update_invoice']  
+✓ #6   A-update         ['update_invoice']  
+✓ #7   A-delete         ['delete_invoice']  
+✗ #8   A-delete         ['delete_invoice']  ← first tool 'delete_invoice' != None
+✓ #9   A-undo           ['restore_invoice']  
+✓ #10  A-summary        ['summarize_expenses']  
+✓ #11  A-summary        ['summarize_expenses']  
+tool summarize_expenses crashed
+Traceback (most recent call last):
+  File "/srv/app/agent.py", line 156, in run_turn
+    result = await fn(user, s, **args) if inspect.iscoroutinefunction(fn) else fn(user, s, **args)
+                                                                               ^^^^^^^^^^^^^^^^^^^
+  File "/srv/app/tools.py", line 363, in summarize_expenses
+    prev = list(s.scalars(_query(user, s, compare_to.get("date_from"), compare_to.get("date_to"), None, category,
+                                          ^^^^^^^^^^^^^^
+AttributeError: 'str' object has no attribute 'get'
+✓ #12  A-summary        ['summarize_expenses']  
+✓ #13  A-summary        ['summarize_expenses']  
+✓ #14  A-find           ['find_invoices']  
+✓ #15  A-find           ['find_invoices']  
+✓ #16  A-find           ['find_invoices']  
+✓ #17  A-find           ['find_invoices']  
+✓ #18  A-report         ['generate_report']  
+✓ #19  A-report         []  
+✓ #20  A-report         ['export_csv']  
+✓ #21  A-profile        ['manage_profile']  
+✓ #22  A-profile        ['manage_profile']  
+✓ #23  A-profile        ['manage_profile']  
+✓ #24  A-profile        ['update_invoice']  
+✓ #25  A-note           ['remember_note']  
+✓ #26  A-note           ['remember_note']  
+✓ #27  A-note           ['remember_note']  
+✓ #28  A-reimburse      ['mark_reimbursed']  
+✓ #29  A-reimburse      ['mark_reimbursed']  
+✓ #30  A-image          ['get_invoice_image']  
+✓ #31  A-category       ['manage_category']  
+✓ #32  A-category       []  
+✓ #33  A-trends         ['analyze_trends']  
+✓ #34  A-trends         ['analyze_trends']  
+✓ #35  A-split          []  
+✓ #36  A-split          ['split_bill']  
+✓ #37  A-fx             ['convert_currency']  
+✓ #38  A-chat           []  
+✓ #39  A-chat           []  
+✓ #40  A-chat           []  
+✓ #41  A-image-flow     ['analyze_receipt']  
+✓ #42  A-image-flow     ['analyze_receipt']  
+✓ #43  D-adversarial    ['analyze_receipt']  
+✓ #44  D-adversarial    ['analyze_receipt']  
+✓ #45  D-adversarial    []  
+✓ #46  D-adversarial    []  
+✓ #47  D-adversarial    ['save_invoice']  
+✓ #48  D-adversarial    []  
+
+MODEL: gemma-4-31b-it
+  A: 41/42 = 98%
+  D: 6/6 = 100%
+  ALL: 47/48 = 98%
+=== Eval B 26b
+✓ บันทึกบิลตรงๆ  
+✓ แก้ยอดก่อนยืนยัน  
+✓ ปฏิเสธไม่บันทึก  
+✓ บิลผิดโปรไฟล์ → ย้าย  
+✓ บันทึกแล้วลบแล้วกู้  
+✓ ถามยอดหลังบันทึก 2 ใบ  
+✓ บิลซ้ำ → ไม่บันทึกซ้ำ  
+✗ จำงบ + เตือนเมื่อเกิน  ['last_reply_mentions_budget: want True got False']
+✓ ติ๊กเบิกแล้ว + รายงานเฉพาะยังไม่เบิก  
+✓ รูปไม่ใช่บิล  
+
+TASK SUCCESS: 9/10
+=== metrics
+turns=174 llm_calls=340
+json_first_try=96.5%  (parse errors 12)
+tool_calls=157 avg/turn=0.90 tool_errors=18 (11.5%)
+loop_cap_hits=3
+per_tool: {'analyze_receipt': 30, 'save_invoice': 29, 'check_duplicate': 18, 'update_invoice': 14, 'summarize_expenses': 10, 'find_invoices': 10, 'manage_profile': 8, 'remember_note': 6, 'delete_invoice': 5, 'mark_reimbursed': 5, 'generate_report': 4, 'analyze_trends': 4, 'export_csv': 3, 'restore_invoice': 3, 'get_invoice_image': 2, 'manage_category': 2, 'split_bill': 2, 'convert_currency': 2}
+=== report
+/srv/eval/logs/EVAL_REPORT.md
+# PBook — Evaluation Report (auto-generated)
+
+
+## Eval A/D — tool selection · `gemma-4-26b-a4b-it`
+exit 0

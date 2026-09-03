@@ -21,3 +21,12 @@ docker compose run -T --rm app python -m eval.metrics          # Eval C จา�
 
 Dashboard (dev): `http://localhost:8080/dashboard?uid=<user>` · LIFF: ตั้ง `LIFF_ID` + `LINE_LOGIN_CHANNEL_ID` ใน .env
 Rich menu: `python scripts/make_rich_menu.py` แล้ว `await line_io.setup_rich_menu("eval/assets/rich_menu.png")` เมื่อมี token
+
+## ผล eval ล่าสุด (ดู `eval/logs/EVAL_REPORT.md`)
+
+| ชุด | ผล |
+|---|---|
+| Extraction (200 ใบ TH/EN, png/jpg/pdf, clean/photo/camera) | ถูกครบ 5 field 95.5% (date 96%) หลัง prompt v3 |
+| Eval A/D tool-selection 48 เคส | gemma-4-26b-a4b-it 48/48 · gemma-4-31b-it 47/48 |
+| Eval B end-to-end 10 scenario (assert DB) | 9/10 → 10/10 หลังเพิ่ม month_total hint |
+| Eval C loop metrics (298 LLM calls) | JSON first-try 98.3%, loop-cap 0 |

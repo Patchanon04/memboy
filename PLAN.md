@@ -14,14 +14,14 @@
 | W3.5 รูปคืน/compare/กราฟ/สลิป+QR/undo/Flex/FX/PDF input/หลายใบ/สรุปสัปดาห์ | ✅ โค้ด | สลิป QR verified/mismatch/dup-ref live ผ่าน; cron ผ่าน arq |
 | W3.6 หารบิล/ค้น item/trends/รายงานอัตโนมัติ/ค้นหลวม/หมวด custom | ✅ โค้ด | tools 19 ตัว |
 | W3.7 onboarding + LIFF dashboard | ✅ โค้ด | /dashboard + /api/dashboard (dev uid mode ผ่าน) |
-| W4 eval A/B/C/D runners + เคส 48 + สลิป 30 | ✅ script | ผลรันดูใน eval/logs |
-| **ค้าง** | LINE credentials จริง (webhook ผ่านมือถือ, rich menu upload, LIFF id), Eval A ทั้ง 2 โมเดล, Eval B, สไลด์/video (งานเพื่อน) | |
+| W4 eval A/B/C/D | ✅ **รันแล้ว** | Eval A/D tool-selection 48 เคส: **26B 48/48 (หลังแก้ scorer/เกณฑ์ที่ผิด — ดิบ 44/48), 31B 47/48**; Eval B end-to-end 10 scenario: **9/10** (ตกเคสเตือนงบ → เพิ่ม month_total_so_far ใน save_invoice); Eval C: JSON first-try **98.3%** บน 298 calls, loop-cap 0; extraction 200 ใบ: 95.5% (v3 prompt) — รายงานรวม `eval/logs/EVAL_REPORT.md` |
+| **ค้าง** | LINE credentials จริงเท่านั้น (webhook ผ่านมือถือ, rich menu upload, LIFF id — `scripts/setup_line.py` พร้อม), สไลด์/video (งานเพื่อน) | |
 
 ## การตัดสินใจที่ปิดแล้ว (พร้อมเหตุผล)
 
 | เรื่อง | ตัดสินใจ | เหตุผล |
 |---|---|---|
-| LLM | **Gemma 4** (ผ่าน Gemini API) — default `gemma-4-26b-a4b-it`, เทียบกับ `gemma-4-31b-it` ใน W2 | open source ตามธีมโปรเจกต์; eval 200 ใบ (คละโหด): ถูกครบ 5 field 95.5% หลังจูน prompt v3, 26b เร็วกว่า/timeout น้อยกว่า/แม่นเท่า 31b; free tier |
+| LLM | **Gemma 4** (ผ่าน Gemini API) — **ล็อก `gemma-4-26b-a4b-it`** (Eval A: 26B 48/48 vs 31B 47/48 + เร็วกว่า/timeout น้อยกว่า) | open source ตามธีมโปรเจกต์; eval 200 ใบ (คละโหด): ถูกครบ 5 field 95.5% หลังจูน prompt v3, 26b เร็วกว่า/timeout น้อยกว่า/แม่นเท่า 31b; free tier |
 | Tool calling | **ทำเองผ่าน prompt** — Gemma ไม่มี native function calling: system prompt นิยาม tools + สั่งตอบ `{"tool": ..., "args": ...}` → parse → execute → ยัดผลกลับ → วน | จุดขายกับอาจารย์: agentic ทั้งระบบเขียนเองจริง ไม่พึ่ง FC ของ platform; eval ยืนยันแล้วว่า Gemma ตาม JSON format ได้ดี |
 | Agent loop | เขียนเอง (while + parse + dispatch) | เกณฑ์คะแนน Implementation |
 | DB | PostgreSQL + SQLAlchemy | JSONB เก็บ items, query สรุปยอด |

@@ -75,12 +75,14 @@ async def run(sc):
 async def main():
     init_db()
     res = []
-    for sc in SCENARIOS:
+    import os
+    todo = [sc for sc in SCENARIOS if not os.environ.get('SCENARIO') or os.environ['SCENARIO'] in sc['name']]
+    for sc in todo:
         r = await run(sc)
         res.append(r)
         print(f"{'✓' if r['ok'] else '✗'} {r['name']}  {r['fails'] or ''}", flush=True)
     print(f"\nTASK SUCCESS: {sum(r['ok'] for r in res)}/{len(res)}")
-    Path("/data/logs/evalB.json").write_text(json.dumps(res, ensure_ascii=False, indent=1), encoding="utf-8")
+    Path("/data/logs/evalB" + ("_subset" if os.environ.get("SCENARIO") else "") + ".json").write_text(json.dumps(res, ensure_ascii=False, indent=1), encoding="utf-8")
 
 
 if __name__ == "__main__":

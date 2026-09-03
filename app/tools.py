@@ -247,7 +247,11 @@ def save_invoice(user, s, draft_id=None, **_):
         raise ToolError(f"บิล {iv.id} เป็นสกุล {iv.currency} ยังไม่ได้แปลงเป็นบาท — เรียก convert_currency ก่อน")
     iv.status = "confirmed"
     s.commit()
-    return {"saved": iv.id, "vendor": iv.vendor, "total": iv.total_thb, "qr_status": iv.qr_status}
+    # month-to-date total for this profile so the model can compare against a budget note without doing math
+    m0 = (iv.invoice_date or datetime.date.today().isoformat())[:7] + "-01"
+    mtd = _totals(list(s.scalars(_query(user, s, m0, None, None, None, None, None))))["total"]
+    return {"saved": iv.id, "vendor": iv.vendor, "total": iv.total_thb, "qr_status": iv.qr_status,
+            "month_total_so_far": mtd, "hint": "ถ้า user มีงบ (ดู notes) ให้เทียบ month_total_so_far กับงบแล้วเตือนถ้าใกล้/เกิน"}
 
 
 def update_invoice(user, s, invoice_id=None, fields=None, **_):
@@ -360,6 +364,13 @@ def summarize_expenses(user, s, date_from=None, date_to=None, category=None, rei
     out = _totals(rows)
     out["period"] = {"from": date_from, "to": date_to}
     if compare_to:
+        if isinstance(compare_to, str):
+            try:
+                compare_to = json.loads(compare_to)
+            except ValueError:
+                raise ToolError('compare_to ต้องเป็น object {"date_from": "YYYY-MM-DD", "date_to": "YYYY-MM-DD"}')
+        if not isinstance(compare_to, dict):
+            raise ToolError('compare_to ต้องเป็น object {"date_from": ..., "date_to": ...}')
         prev = list(s.scalars(_query(user, s, compare_to.get("date_from"), compare_to.get("date_to"), None, category,
                                      reimbursed, profile)))
         pt = _totals(prev)
