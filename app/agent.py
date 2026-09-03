@@ -17,6 +17,7 @@ log = logging.getLogger("pbook")
 TZ = zoneinfo.ZoneInfo("Asia/Bangkok")
 HISTORY_LIMIT = 30
 LOOP_CAP = 6          # guardrail #2
+TURN_BUDGET_S = 90    # wall-clock cap per turn — never leave a LINE user hanging for minutes
 PARSE_RETRIES = 2
 LOG_DIR = Path("/data/logs")
 LOG_DIR.mkdir(parents=True, exist_ok=True)
@@ -130,8 +131,19 @@ async def run_turn(external_id: str, text: str | None = None, image_path: str | 
         sys_turn = [{"role": "user", "parts": [{"text": system_prompt(user, s)}]},
                     {"role": "model", "parts": [{"text": '{"reply": "รับทราบกติกา"}'}]}]  # Gemma has no system role
         parse_fails = 0
+        import time
+        t0 = time.monotonic()
         for _ in range(LOOP_CAP):
-            raw = await llm.generate(sys_turn + _history_contents(s, user_id))
+            if time.monotonic() - t0 > TURN_BUDGET_S:
+                out["reply"] = "ขอโทษค่ะ ระบบตอบช้าผิดปกติ ลองส่งใหม่อีกครั้งนะคะ"
+                turn_log["steps"].append({"timeout": True})
+                break
+            try:
+                raw = await llm.generate(sys_turn + _history_contents(s, user_id))
+            except llm.LLMError as e:
+                turn_log["steps"].append({"llm_error": str(e)})
+                out["reply"] = "ขอโทษค่ะ ตอนนี้ระบบ AI ขัดข้องชั่วคราว ลองใหม่อีกสักครู่นะคะ"
+                break
             try:
                 act = _parse(raw)
             except (ValueError, json.JSONDecodeError) as e:

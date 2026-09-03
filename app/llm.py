@@ -17,12 +17,12 @@ class LLMError(Exception):
 
 async def generate(contents: list[dict], temperature: float = 0.0, model: str | None = None) -> str:
     body = {"contents": contents, "generationConfig": {"temperature": temperature}}
-    async with httpx.AsyncClient(timeout=120) as c:
-        for attempt in range(4):
+    async with httpx.AsyncClient(timeout=45) as c:
+        for attempt in range(3):
             try:
                 r = await c.post(URL.format(model or MODEL), params={"key": KEY}, json=body)
             except httpx.TransportError as e:  # timeout, connect error, DNS blip
-                if attempt < 3:
+                if attempt < 2:
                     await asyncio.sleep(2 * (attempt + 1))
                     continue
                 raise LLMError(f"LLM network: {e}")

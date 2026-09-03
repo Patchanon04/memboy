@@ -128,6 +128,26 @@ def test_unknown_tool_then_recover():
     print("test_unknown_tool_then_recover OK")
 
 
+def test_llm_down_and_turn_budget():
+    ext, uid = fresh_user("down")
+
+    async def boom(contents, temperature=0.0, model=None):
+        raise llm.LLMError("LLM http 503")
+    llm.generate = boom
+    out = asyncio.run(agent.run_turn(ext, text="สวัสดี"))["reply"]
+    assert "ขัดข้อง" in out, out
+
+    async def slow(contents, temperature=0.0, model=None):
+        await asyncio.sleep(0.3)
+        return json.dumps({"tool": "check_duplicate", "args": {"vendor": "x", "date": "2026-01-01", "total": 1}})
+    llm.generate = slow
+    agent.TURN_BUDGET_S = 0.2
+    out = asyncio.run(agent.run_turn(ext, text="วนไป"))["reply"]
+    agent.TURN_BUDGET_S = 90
+    assert "ตอบช้าผิดปกติ" in out, out
+    print("test_llm_down_and_turn_budget OK")
+
+
 if __name__ == "__main__":
     init_db()
     test_tools()
@@ -135,4 +155,5 @@ if __name__ == "__main__":
     test_loop_tool_error_feedback()
     test_loop_cap()
     test_unknown_tool_then_recover()
+    test_llm_down_and_turn_budget()
     print("ALL W2 STUB TESTS PASSED")
