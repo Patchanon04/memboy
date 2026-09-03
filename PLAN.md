@@ -185,7 +185,7 @@ categories    (id, user_id FK, name UNIQUE per user)              -- หมว�
 4. **ลบ = soft delete** — `deleted_at` ไม่ลบจริง; ทำผิดกู้ได้, demo พังยาก
 5. **Prompt injection ผ่านรูปบิล** — บิลอาจมีข้อความสั่งโมเดล ("ignore instructions...") → `analyze_receipt` บังคับ output เป็น JSON schema เท่านั้น ข้อความในบิล = data ไม่ใช่คำสั่ง (จุดนี้เล่าในพรีเซนต์ได้ อาจารย์ NLP ชอบ)
 6. **Error ไม่รั่วถึง user** — exception ใน tool → log เต็ม + ตอบ user สั้นๆ สุภาพ ไม่โชว์ stack trace/SQL
-7. **Rate limit ต่อ user** ✅ — เกิน 10 เทิร์น/นาที → ตอบ "รอสักครู่" โดยไม่เรียก LLM (events.rate_limited)
+7. **Rate limit ต่อ user** ✅ — เกิน 10 เทิร์น/นาที → ตอบ "รอสักครู่" โดยไม่เรียก LLM (events.rate_limited) — บังคับทั้งทาง LINE และหน้าเว็บ (probe จริง: 10 ผ่าน / 11-12 ได้ 429)
 8. **Resize รูปก่อนส่ง LLM** ✅ — ย่อ ≤1280px JPEG ตอนรับจาก LINE (events.shrink)
 9. **เพดานเวลาต่อเทิร์น + fallback โมเดล** ✅ — LLM timeout 70s แล้วลองอีกโมเดล (26b↔31b); ทั้งเทิร์นไม่เกิน 150s; LLM ล่ม/หมดเวลา → user ได้ข้อความบอกตรงๆ; job ตายหลัง retry 3 → push แจ้ง user ให้ส่งใหม่
 
