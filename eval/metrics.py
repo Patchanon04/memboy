@@ -7,7 +7,8 @@ from pathlib import Path
 path = Path(sys.argv[1] if len(sys.argv) > 1 else "/data/logs/turns.jsonl")
 prefix = sys.argv[2] if len(sys.argv) > 2 else ""
 rows = [json.loads(l) for l in path.read_text(encoding="utf-8").splitlines() if l.strip()]
-rows = [r for r in rows if r["user"].startswith(prefix)]
+EXCLUDE = ("test", "stub", "harness", "usage:")  # deliberate stub turns (e.g. loop-cap test) are not live behaviour
+rows = [r for r in rows if r["user"].startswith(prefix) and not r["user"].startswith(EXCLUDE)]
 turns = len(rows)
 llm_calls = sum(len(r["steps"]) for r in rows)
 parse_err = sum(1 for r in rows for s in r["steps"] if "parse_error" in s)

@@ -1,0 +1,89 @@
+=== full Eval A/D 54 cases · 26b (after prompt fix)
+✓ #1   A-save           ['save_invoice']  
+✓ #2   A-save           ['save_invoice']  
+✓ #3   A-save           []  
+✓ #4   A-update         ['update_invoice']  
+✓ #5   A-update         ['update_invoice']  
+✓ #6   A-update         ['update_invoice']  
+✓ #7   A-delete         ['delete_invoice']  
+✓ #8   A-delete         []  
+✓ #9   A-undo           ['restore_invoice']  
+✓ #10  A-summary        ['summarize_expenses']  
+✓ #11  A-summary        ['summarize_expenses']  
+✓ #12  A-summary        ['summarize_expenses']  
+✓ #13  A-summary        ['summarize_expenses']  
+✓ #14  A-find           ['find_invoices']  
+✓ #15  A-find           ['find_invoices']  
+✓ #16  A-find           ['find_invoices']  
+✓ #17  A-find           ['find_invoices']  
+✓ #18  A-report         ['generate_report']  
+✓ #19  A-report         ['generate_report']  
+✓ #20  A-report         ['export_csv']  
+✓ #21  A-profile        ['manage_profile']  
+✓ #22  A-profile        ['manage_profile']  
+✓ #23  A-profile        ['manage_profile']  
+✓ #24  A-profile        ['update_invoice']  
+✓ #25  A-note           ['remember_note']  
+✓ #26  A-note           ['remember_note']  
+✓ #27  A-note           []  
+✗ #28  A-reimburse      ['find_invoices', 'mark_reimbursed']  ← first tool 'find_invoices' != 'mark_reimbursed'
+✓ #29  A-reimburse      ['mark_reimbursed']  
+✓ #30  A-image          ['get_invoice_image']  
+✓ #31  A-category       ['manage_category']  
+✓ #32  A-category       []  
+✓ #33  A-trends         ['analyze_trends']  
+✓ #34  A-trends         ['analyze_trends']  
+✓ #35  A-split          []  
+✓ #36  A-split          ['split_bill']  
+✓ #37  A-fx             ['convert_currency']  
+✓ #38  A-chat           []  
+✓ #39  A-chat           []  
+✓ #40  A-chat           []  
+✓ #41  A-image-flow     ['analyze_receipt']  
+✓ #42  A-image-flow     ['analyze_receipt']  
+✓ #43  D-adversarial    ['analyze_receipt']  
+✓ #44  D-adversarial    ['analyze_receipt']  
+✓ #45  D-adversarial    []  
+✓ #46  D-adversarial    []  
+✓ #47  D-adversarial    ['save_invoice']  
+✓ #48  D-adversarial    ['find_invoices']  
+✓ #49  E-compound       ['save_invoice', 'generate_report']  
+✓ #50  E-compound       ['mark_reimbursed', 'summarize_expenses']  
+✓ #51  E-compound       ['manage_profile', 'remember_note']  
+✓ #52  E-compound       ['split_bill', 'get_invoice_image']  
+✓ #53  E-learned        ['update_invoice']  
+✓ #54  A-trends         ['analyze_trends']  
+
+MODEL: gemma-4-26b-a4b-it
+  A: 42/43 = 98%
+  D: 6/6 = 100%
+  E: 5/5 = 100%
+  ALL: 53/54 = 98%
+=== Eval B 10
+✓ บันทึกบิลตรงๆ  
+✓ แก้ยอดก่อนยืนยัน  
+✓ ปฏิเสธไม่บันทึก  
+✓ บิลผิดโปรไฟล์ → ย้าย  
+✓ บันทึกแล้วลบแล้วกู้  
+✓ ถามยอดหลังบันทึก 2 ใบ  
+✓ บิลซ้ำ → ไม่บันทึกซ้ำ  
+✓ จำงบ + เตือนเมื่อเกิน  
+llm gemma-4-26b-a4b-it ReadTimeout after 100.2s: ReadTimeout('')
+✓ ติ๊กเบิกแล้ว + รายงานเฉพาะยังไม่เบิก  
+✓ รูปไม่ใช่บิล  
+
+TASK SUCCESS: 10/10
+=== metrics
+turns=486 llm_calls=947
+json_first_try=95.1%  (parse errors 46)
+tool_calls=430 avg/turn=0.88 tool_errors=46 (10.7%)
+loop_cap_hits=12
+per_tool: {'check_duplicate': 80, 'save_invoice': 75, 'analyze_receipt': 73, 'update_invoice': 29, 'summarize_expenses': 25, 'find_invoices': 25, 'manage_profile': 22, 'remember_note': 16, 'generate_report': 15, 'mark_reimbursed': 15, 'delete_invoice': 10, 'analyze_trends': 9, 'restore_invoice': 7, 'get_invoice_image': 7, 'split_bill': 7, 'convert_currency': 6, 'export_csv': 5, 'manage_category': 4}
+chain_length_distribution={0: 138, 1: 314, 2: 22, 6: 12}  turns_with_chain>=2=34 (7%)
+ask_back_turns=29 (6%)  self_recovery_after_tool_error=1/46
+latency_turns=133 p50=15.61s p90=72.09s max=131.69s  llm_share=97%
+tokens/turn: in=4571 out=155  total_in=607904 total_out=20587
+=== report
+- ask-back turns (no tool, clarifying question): 28 (7%)
+- self-recovery after a tool error (agent tried another call): 1/32
+exit 0

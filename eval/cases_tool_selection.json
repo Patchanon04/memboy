@@ -462,7 +462,9 @@
   ],
   "message": "บิลโรงแรมเบิกแล้วนะ",
   "expect": {
-   "tool": "mark_reimbursed"
+   "tools_contains": [
+    "mark_reimbursed"
+   ]
   }
  },
  {

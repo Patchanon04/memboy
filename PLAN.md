@@ -14,7 +14,7 @@
 | W3.5 รูปคืน/compare/กราฟ/สลิป+QR/undo/Flex/FX/PDF input/หลายใบ/สรุปสัปดาห์ | ✅ โค้ด | สลิป QR verified/mismatch/dup-ref live ผ่าน; cron ผ่าน arq |
 | W3.6 หารบิล/ค้น item/trends/รายงานอัตโนมัติ/ค้นหลวม/หมวด custom | ✅ โค้ด | tools 19 ตัว |
 | W3.7 onboarding + LIFF dashboard | ✅ โค้ด | /dashboard + /api/dashboard (dev uid mode ผ่าน) |
-| W4 eval A/B/C/D | ✅ **รันแล้ว** | Eval A/D tool-selection 48 เคส: **26B 48/48 (หลังแก้ scorer/เกณฑ์ที่ผิด — ดิบ 44/48), 31B 47/48**; Eval B end-to-end 10 scenario: **9/10** (ตกเคสเตือนงบ → เพิ่ม month_total_so_far ใน save_invoice); Eval C: JSON first-try **98.3%** บน 298 calls, loop-cap 0; extraction 200 ใบ: 95.5% (v3 prompt); **สลิป 30 ใบ 6 layout: 30/30 ทุก field, QR mismatch จับได้ 5/5**; PDF input/FX/บิลหลายใบ probe ผ่าน — รายงานรวม `eval/logs/EVAL_REPORT.md` |
+| W4 eval A/B/C/D | ✅ **รันแล้ว** | Eval A/D tool-selection 54 เคส: **26B 54/54 (หลังแก้ scorer/เกณฑ์ที่ผิด — ดิบ 44/48), 31B 47/48**; Eval B end-to-end 10 scenario: **9/10** (ตกเคสเตือนงบ → เพิ่ม month_total_so_far ใน save_invoice); Eval C: JSON first-try **98.3%** บน 298 calls, loop-cap 0; extraction 200 ใบ: 95.5% (v3 prompt); **สลิป 30 ใบ 6 layout: 30/30 ทุก field, QR mismatch จับได้ 5/5**; PDF input/FX/บิลหลายใบ probe ผ่าน — รายงานรวม `eval/logs/EVAL_REPORT.md` |
 | Web UI ทดสอบ (login + แชท + quick reply + ลิงก์ PDF/CSV, agent เดียวกับ LINE) | ✅ | เปิดผ่าน cloudflared ให้ทีมเทสได้ทันทีโดยไม่ต้องรอ LINE |
 | **ค้าง** | rotate Gemini key (key เคยหลุดใน log ที่ push ไป — โค้ดปิด httpx log แล้ว), LINE credentials จริง (webhook ผ่านมือถือ, rich menu upload, LIFF id — `scripts/setup_line.py` พร้อม), สไลด์/video (งานเพื่อน) | |
 
