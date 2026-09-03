@@ -41,6 +41,15 @@ def seed(ext: str, spec: dict) -> dict:
                 s.add(iv)
                 s.commit()
                 ids.append(iv.id)
+                # realistic history: every seeded invoice came through analyze (+ save) with its id visible in TOOL_RESULT
+                agent._store(s, u.id, "user", {"text": f"[image id=seed{iv.id}]"})
+                agent._store(s, u.id, "model", {"text": json.dumps({"tool": "analyze_receipt", "args": {"image_id": f"seed{iv.id}"}}, ensure_ascii=False)})
+                agent._store(s, u.id, "user", {"text": "TOOL_RESULT analyze_receipt: " + json.dumps({"draft_id": iv.id, "vendor": iv.vendor, "date": iv.invoice_date, "total": iv.total, "vat": iv.vat, "currency": iv.currency, "category": iv.category, "items": iv.items, "warnings": [] if iv.currency == "THB" else [f"บิลสกุล {iv.currency} — เรียก convert_currency(draft_id={iv.id})"]}, ensure_ascii=False)})
+                if kind == "confirmed":
+                    agent._store(s, u.id, "model", {"text": json.dumps({"reply": f"สรุปบิล {iv.vendor} {iv.total} บาท ถูกต้องไหมครับ?"}, ensure_ascii=False)})
+                    agent._store(s, u.id, "user", {"text": "ยืนยัน"})
+                    agent._store(s, u.id, "model", {"text": json.dumps({"tool": "save_invoice", "args": {"draft_id": iv.id}}, ensure_ascii=False)})
+                    agent._store(s, u.id, "user", {"text": "TOOL_RESULT save_invoice: " + json.dumps({"saved": iv.id, "vendor": iv.vendor, "total": iv.total}, ensure_ascii=False)})
         for t in spec.get("notes", []):
             s.add(Note(user_id=u.id, text=t))
         s.commit()

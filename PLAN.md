@@ -3,6 +3,20 @@
 > ผู้ช่วยจัดการใบเสร็จและรายงานค่าใช้จ่ายผ่าน LINE — Agentic AI Application
 > อัปเดต: 2026-08-25
 
+
+## สถานะ (อัปเดต 2026-09-03)
+
+| ส่วน | สถานะ | หลักฐาน |
+|---|---|---|
+| W1 โครง (docker 4 services, PDF ไทย, webhook+queue, DB, git) | ✅ | probe 11 เคส + queue durability test ผ่าน |
+| W2 agent loop + tools สายบันทึก + CLI | ✅ live | 11 เทิร์นจริง 0 parse error; stub tests 5 ชุด |
+| W3 tools ถามตอบ/โปรไฟล์/รายงาน/CSV/notes/เบิก + LINE wiring | ✅ โค้ด + live บางส่วน | PDF มีกราฟ, CSV, quick reply, flex card, onboarding, rich menu image |
+| W3.5 รูปคืน/compare/กราฟ/สลิป+QR/undo/Flex/FX/PDF input/หลายใบ/สรุปสัปดาห์ | ✅ โค้ด | สลิป QR verified/mismatch/dup-ref live ผ่าน; cron ผ่าน arq |
+| W3.6 หารบิล/ค้น item/trends/รายงานอัตโนมัติ/ค้นหลวม/หมวด custom | ✅ โค้ด | tools 19 ตัว |
+| W3.7 onboarding + LIFF dashboard | ✅ โค้ด | /dashboard + /api/dashboard (dev uid mode ผ่าน) |
+| W4 eval A/B/C/D runners + เคส 48 + สลิป 30 | ✅ script | ผลรันดูใน eval/logs |
+| **ค้าง** | LINE credentials จริง (webhook ผ่านมือถือ, rich menu upload, LIFF id), Eval A ทั้ง 2 โมเดล, Eval B, สไลด์/video (งานเพื่อน) | |
+
 ## การตัดสินใจที่ปิดแล้ว (พร้อมเหตุผล)
 
 | เรื่อง | ตัดสินใจ | เหตุผล |
