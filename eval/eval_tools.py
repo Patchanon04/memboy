@@ -70,7 +70,10 @@ def subset(expected, actual) -> bool:
         return isinstance(actual, dict) and all(subset(v, actual.get(k)) for k, v in expected.items())
     if isinstance(expected, bool) or actual is None:
         return str(expected).lower() == str(actual).lower()
-    return str(expected).strip().lower() == str(actual).strip().lower()
+    try:  # 95 == 95.0 == "95.00"
+        return abs(float(str(expected).replace(",", "")) - float(str(actual).replace(",", ""))) < 0.01
+    except ValueError:
+        return str(expected).strip().lower() == str(actual).strip().lower()
 
 
 def score(case: dict, steps: list[dict], reply: str) -> tuple[bool, str]:

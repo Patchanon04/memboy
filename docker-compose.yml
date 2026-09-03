@@ -12,6 +12,7 @@ services:
       - ./app:/srv/app          # dev hot-reload; remove for prod image
       - ./eval:/srv/eval:ro     # sample receipts for chat_cli testing
       - ./tests:/srv/tests
+      - ./scripts:/srv/scripts
     depends_on:
       db: { condition: service_healthy }
       redis: { condition: service_started }
