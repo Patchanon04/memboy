@@ -8,6 +8,8 @@ import httpx
 
 KEY = os.environ["GEMINI_API_KEY"]
 MODEL = os.environ.get("GEMMA_MODEL", "gemma-4-26b-a4b-it")
+FALLBACK = os.environ.get("GEMMA_FALLBACK", "gemma-4-31b-it" if "26b" in MODEL else "gemma-4-26b-a4b-it")
+TIMEOUT_S = int(os.environ.get("LLM_TIMEOUT_S", "70"))
 URL = "https://generativelanguage.googleapis.com/v1beta/models/{}:generateContent"
 
 
@@ -16,24 +18,27 @@ class LLMError(Exception):
 
 
 async def generate(contents: list[dict], temperature: float = 0.0, model: str | None = None) -> str:
+    """One call with one retry; the retry switches to the fallback model (same prompt) —
+    slow/hung generations tend to be per-model, so swapping beats waiting."""
     body = {"contents": contents, "generationConfig": {"temperature": temperature}}
-    async with httpx.AsyncClient(timeout=45) as c:
-        for attempt in range(3):
+    models = [model or MODEL, FALLBACK]
+    last = "unknown"
+    async with httpx.AsyncClient(timeout=TIMEOUT_S) as c:
+        for attempt, m in enumerate(models):
             try:
-                r = await c.post(URL.format(model or MODEL), params={"key": KEY}, json=body)
+                r = await c.post(URL.format(m), params={"key": KEY}, json=body)
             except httpx.TransportError as e:  # timeout, connect error, DNS blip
-                if attempt < 2:
-                    await asyncio.sleep(2 * (attempt + 1))
-                    continue
-                raise LLMError(f"LLM network: {e}")
-            if r.status_code in (429, 500, 502, 503, 504) and attempt < 3:
-                await asyncio.sleep(3 * (attempt + 1))
+                last = f"{m}: {type(e).__name__}"
+                continue
+            if r.status_code in (429, 500, 502, 503, 504):
+                last = f"{m}: http {r.status_code}"
+                await asyncio.sleep(2)
                 continue
             if r.status_code != 200:
                 raise LLMError(f"LLM http {r.status_code}: {r.text[:200]}")
             parts = r.json()["candidates"][0]["content"].get("parts", [])
             return "".join(p.get("text", "") for p in parts if not p.get("thought"))
-    raise LLMError("LLM gave up")
+    raise LLMError(f"LLM unavailable after fallback ({last})")
 
 
 def image_part(path: str | Path) -> dict:
