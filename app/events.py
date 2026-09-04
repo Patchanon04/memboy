@@ -93,13 +93,8 @@ async def handle_event(ev: dict):
         return
     text, image_path = None, None
     if kind in ("image", "file"):
-        # Reading a bill takes ~30-90s (vision + agent loop). Ack instantly with the reply token,
-        # then deliver the result as a push — the plan's "ตอบรับทันที + push ผลตามหลัง".
-        try:
-            await line_io.reply(token, [line_io.text("📷 ได้รับแล้วครับ กำลังอ่านบิลให้สักครู่นะครับ…")])
-            token = None
-        except Exception:
-            log.info("ack failed; will reply with the result instead")
+        if ev.get("_acked"):
+            token = None  # the webhook already used the reply token to ack; result goes out as a push
         data = await line_io.get_content(mid)
         is_pdf = kind == "file" and msg.get("fileName", "").lower().endswith(".pdf")
         image_path = str(UPLOADS / f"{mid}{'.pdf' if is_pdf else '.jpg'}")
