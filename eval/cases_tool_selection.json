@@ -938,5 +938,36 @@
   "expect": {
    "tool": "analyze_trends"
   }
+ },
+ {
+  "id": 55,
+  "group": "A-save",
+  "seed": {
+   "drafts": [
+    {
+     "vendor": "ร้านเอไก่ทอด",
+     "total": 10
+    },
+    {
+     "vendor": "ร้านฝนผักสด",
+     "total": 24
+    }
+   ]
+  },
+  "message": "ยืนยัน บันทึกเลย",
+  "expect": {
+   "tool_any": [
+    "save_invoice",
+    null
+   ],
+   "reply_contains_any": [
+    "ใบไหน",
+    "ทั้ง",
+    "2 ใบ",
+    "สองใบ",
+    "รอยืนยัน",
+    "ค้าง"
+   ]
+  }
  }
 ]

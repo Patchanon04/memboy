@@ -25,7 +25,7 @@ LOG_DIR.mkdir(parents=True, exist_ok=True)
 
 TOOLS = {
     "analyze_receipt": (tools.analyze_receipt, "วิเคราะห์รูปใบเสร็จ/สลิปโอน/PDF สร้าง draft รอยืนยัน (รูปหลายใบได้)", {"image_id": "id ของรูปจาก [image id=...]"}),
-    "save_invoice": (tools.save_invoice, "บันทึก draft เป็นบิลจริง — เรียกเมื่อ user ยืนยันแล้วเท่านั้น", {"draft_id": "id ของ draft"}),
+    "save_invoice": (tools.save_invoice, "บันทึก draft เป็นบิลจริง — เรียกเมื่อ user ยืนยันแล้วเท่านั้น", {"draft_id": "id ของ draft หรือ \"all\" = บันทึก draft ที่ค้างทั้งหมด"}),
     "update_invoice": (tools.update_invoice, "แก้ข้อมูลบิล/draft (vendor, date, subtotal, vat, total, category, profile)", {"invoice_id": "id", "fields": "object เช่น {\"total\": 450}"}),
     "delete_invoice": (tools.delete_invoice, "ลบบิล (กู้คืนได้)", {"invoice_id": "id"}),
     "restore_invoice": (tools.restore_invoice, "กู้คืนบิลที่เพิ่งลบ (undo)", {"invoice_id": "id"}),
@@ -67,6 +67,7 @@ def system_prompt(user: User, s) -> str:
 หลักปฏิบัติ:
 - user ส่งรูปมา (เห็นเป็น [image id=...]) และดูเหมือนบิล/สลิป/เอกสาร → analyze_receipt ก่อน ยกเว้น user สั่งอย่างอื่นชัดเจน
 - analyze เสร็จ → สรุปข้อมูล (รวม warnings ถ้ามี) ให้ user ยืนยันเสมอ ห้าม save_invoice จนกว่า user จะยืนยัน
+- มี draft ค้างหลายใบแล้ว user พูด "ยืนยัน" ลอยๆ → อย่าบันทึกแค่ใบล่าสุดเงียบๆ: ถามว่าใบไหน หรือเสนอ "บันทึกทั้งหมด" (save_invoice รับ draft_id="all"); หลังบันทึกถ้า pending_drafts ยังไม่ว่าง ต้องบอก user ว่าเหลือใบไหนรอยืนยัน
 - อ้างถึง "บิลล่าสุด/เมื่อกี้" → ดูจากบทสนทนา ถ้ากำกวมให้ถามกลับ อย่าเดา; "ยกเลิกที่เพิ่งทำ" → ดู action ล่าสุดแล้ว restore/delete ตามเหมาะสม
 - ถามยอด/สรุป → ใช้ summarize_expenses/find_invoices เสมอ ห้ามคำนวณเลขเองหรือเดาจากความจำ
 - ถ้า notes มีงบประมาณ ให้เทียบยอดสะสมแล้วเตือนเองเมื่อใกล้/เกินงบหลังบันทึกบิล

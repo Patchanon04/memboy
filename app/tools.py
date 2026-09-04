@@ -212,6 +212,10 @@ async def analyze_receipt(user, s, image_id=None, **_):
     out = drafts[0] if len(drafts) == 1 else {"multiple": True, "count": len(drafts), "drafts": drafts,
                                                 "note": "หลายใบในรูปเดียว — ยืนยันทีละใบ (draft_id) หรือ 'บันทึกทั้งหมด'"}
     out["note"] = out.get("note", "") + " | เป็น draft — ต้องให้ user ยืนยันก่อนเรียก save_invoice"
+    others = _pending_drafts(user, s, exclude={d["draft_id"] for d in drafts})
+    if others:
+        out["other_pending_drafts"] = others
+        out["note"] += " | มี draft ใบอื่นค้างอยู่ด้วย — ถ้า user ยืนยันลอยๆ ให้ถามว่าใบไหน หรือเสนอ 'บันทึกทั้งหมด'"
     return out
 
 
@@ -277,7 +281,20 @@ def _make_draft(user, s, d: dict, path: Path, qr_text: str | None) -> dict:
 
 
 # ---------- 2,3,7. save / update / delete / duplicate ----------
+def _pending_drafts(user, s, exclude=()):
+    q = select(Invoice).join(Profile).where(Profile.user_id == user.id, Invoice.deleted_at.is_(None),
+                                            Invoice.status == "draft")
+    return [{"draft_id": d.id, "vendor": d.vendor, "total": d.total_thb if d.total_thb is not None else d.total}
+            for d in s.scalars(q) if d.id not in exclude]
+
+
 def save_invoice(user, s, draft_id=None, **_):
+    if str(draft_id).lower() == "all":  # user said "บันทึกทั้งหมด"
+        pend = _pending_drafts(user, s)
+        if not pend:
+            raise ToolError("ไม่มี draft ค้างอยู่")
+        saved = [save_invoice(user, s, draft_id=d["draft_id"]) for d in pend]
+        return {"saved_all": [x["saved"] for x in saved], "details": saved, "pending_drafts": []}
     iv = _own_invoice(user, s, draft_id)
     if iv.status != "draft":
         raise ToolError(f"บิล {iv.id} ไม่ใช่ draft (status={iv.status}) — บันทึกไปแล้ว")
@@ -288,8 +305,11 @@ def save_invoice(user, s, draft_id=None, **_):
     # month-to-date total for this profile so the model can compare against a budget note without doing math
     m0 = (iv.invoice_date or datetime.date.today().isoformat())[:7] + "-01"
     mtd = _totals(list(s.scalars(_query(user, s, m0, None, None, None, None, None))))["total"]
+    pend = _pending_drafts(user, s)
     return {"saved": iv.id, "vendor": iv.vendor, "total": iv.total_thb, "qr_status": iv.qr_status,
-            "month_total_so_far": mtd, "hint": "ถ้า user มีงบ (ดู notes) ให้เทียบ month_total_so_far กับงบแล้วเตือนถ้าใกล้/เกิน"}
+            "month_total_so_far": mtd, "pending_drafts": pend,
+            "hint": "ถ้า user มีงบ (ดู notes) ให้เทียบ month_total_so_far กับงบแล้วเตือนถ้าใกล้/เกิน" +
+                    (" | ยังมี draft ค้างอยู่ ต้องบอก user ว่ามีใบไหนรอยืนยันบ้าง" if pend else "")}
 
 
 def update_invoice(user, s, invoice_id=None, fields=None, **_):
