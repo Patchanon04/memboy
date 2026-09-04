@@ -312,7 +312,7 @@ def d8():
     t0 = time.time()
     asyncio.run(run([evs(f"U-diff{i}-{uuid.uuid4().hex[:4]}")[0] for i in range(3)]))
     par_s = time.time() - t0
-    assert par_s < 0.7 < serial_s
+    assert par_s < serial_s * 0.6, (par_s, serial_s)  # relative, not a fixed wall-clock (cold machines are slow)
     return f"user เดียวกัน 3 ข้อความ = {serial_s:.1f}s (เรียงกัน) · คนละ user = {par_s:.1f}s (ขนาน)"
 
 
