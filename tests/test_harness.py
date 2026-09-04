@@ -15,7 +15,7 @@ from pathlib import Path
 import httpx
 from sqlalchemy import select
 
-from app import agent, events, llm, tools, worker
+from app import agent, events, line_io, llm, tools, worker
 from app.db import Conversation, Invoice, ProcessedEvent, User, init_db, session
 
 RESULTS = []
@@ -329,6 +329,11 @@ def x2():
 
 def main():
     init_db()
+
+    async def _no_line(path, body):  # never touch the real LINE API from tests (credentials may be present)
+        pass
+    line_io._post = _no_line
+
     rows = []
     for c in RESULTS:
         try:

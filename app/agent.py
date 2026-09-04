@@ -91,18 +91,23 @@ def get_user(external_id: str) -> int:
 
 def _history_contents(s, user_id: int) -> list[dict]:
     rows = s.scalars(select(Conversation).where(Conversation.user_id == user_id)
-                     .order_by(Conversation.id.desc()).limit(HISTORY_LIMIT)).all()[::-1]
-    contents, images_left = [], 3  # only the 3 newest images travel to the model
-    for r in reversed(rows):
-        c = r.content
+                     .order_by(Conversation.id.desc()).limit(HISTORY_LIMIT)).all()[::-1]  # chronological
+    # An image costs ~2k tokens per call. Once analyze_receipt has read it, its JSON result is in the
+    # history — re-uploading the pixels on every later loop iteration just makes the turn slower.
+    analyzed_after = [any("TOOL_RESULT analyze_receipt" in (later.content.get("text") or "") for later in rows[i + 1:])
+                      for i in range(len(rows))]
+    contents, images_left = [], 1
+    for i in range(len(rows) - 1, -1, -1):   # newest first: keep the newest still-unread image
+        c = rows[i].content
         parts = []
-        if c.get("image") and images_left > 0 and Path(c["image"]).exists() and not c["image"].endswith(".pdf"):
+        if (c.get("image") and images_left > 0 and not analyzed_after[i]
+                and not c["image"].endswith(".pdf") and Path(c["image"]).exists()):
             parts.append(llm.image_part(c["image"]))
             images_left -= 1
         if c.get("text"):
             parts.append({"text": c["text"]})
         if parts:
-            contents.append({"role": "user" if r.role == "user" else "model", "parts": parts})
+            contents.append({"role": "user" if rows[i].role == "user" else "model", "parts": parts})
     return contents[::-1]
 
 
