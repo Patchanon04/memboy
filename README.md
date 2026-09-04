@@ -51,7 +51,7 @@ docker compose run --rm app python -m tests.test_harness   # ตาราง 18 
 |---|---|
 | Extraction (200 ใบ TH/EN, png/jpg/pdf, clean/photo/camera) | ถูกครบ 5 field 95.5% (date 96%) หลัง prompt v3 |
 | Eval A/D tool-selection 54 เคส | gemma-4-26b-a4b-it **54/54** · gemma-4-31b-it 47/48 (ชุด 48 เคส) |
-| Eval B end-to-end 10 scenario (assert DB) | **10/10** |
-| Eval C loop metrics (788 LLM calls) | JSON first-try 96.6%, loop-cap 0, chain ≥2 = 5%, ask-back 6% |
-| Latency / token ต่อเทิร์น | p50 16.3s · p90 72s (97% เป็นเวลา LLM) · token เข้า ~4.6k ออก ~155 |
+| Eval B end-to-end 11 scenario (assert DB) | **11/11** |
+| Eval C loop metrics (1,086 LLM calls) | JSON first-try 96.5%, loop-cap 0, chain ≥2 = 5%, ask-back 5% |
+| Latency / token ต่อเทิร์น | p50 17.5s · p90 76s (96% เป็นเวลา LLM) · token เข้า ~4.7k ออก ~154 |
 | สลิปโอน 30 ใบ (6 layout, 5 QR mismatch) | doc_type/total/ref/qr_status 100%, mismatch detection 5/5 |

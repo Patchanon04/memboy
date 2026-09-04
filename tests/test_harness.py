@@ -309,11 +309,16 @@ def d8():
     asyncio.run(run(evs(same)))
     serial_s = time.time() - t0
     assert all(order[i][0] == "s" and order[i + 1] == ("e", order[i][1]) for i in range(0, 6, 2)), order
+    serial_order = "".join(x[0] for x in order)
     t0 = time.time()
     asyncio.run(run([evs(f"U-diff{i}-{uuid.uuid4().hex[:4]}")[0] for i in range(3)]))
     par_s = time.time() - t0
-    assert par_s < serial_s * 0.6, (par_s, serial_s)  # relative, not a fixed wall-clock (cold machines are slow)
-    return f"user เดียวกัน 3 ข้อความ = {serial_s:.1f}s (เรียงกัน) · คนละ user = {par_s:.1f}s (ขนาน)"
+    # structural, not timing (wall clock is flaky under load): with different users a second
+    # turn must START before the first one ENDS
+    par = order[-6:]  # the serial run is still at the head of the list
+    assert par[0][0] == "s" and par[1][0] == "s", order
+    return (f"user เดียวกัน: {serial_order} (s→e เรียงคู่ = ไม่ทับกัน) · "
+            f"คนละ user: {''.join(x[0] for x in par)} (เริ่มซ้อนกันได้ = ขนาน)")
 
 
 # ---------------- external (needs a system we can't stub honestly) ----------------

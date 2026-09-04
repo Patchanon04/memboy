@@ -1,0 +1,66 @@
+===== 1) HARNESS (guardrails+determinism)
+✅ G1  User scoping ที่ระดับ tool                 [unit    ] user B ถูกปฏิเสธ 4/4 tools ด้วยข้อความเดียวกับ 'บิลไม่มีจริง'
+✅ G2  Loop cap ต่อเทิร์น                         [stub    ] โมเดลเรียก tool ไม่หยุด → ตัดที่ 6 ครั้ง แล้วตอบ user
+✅ G3  Validate args ที่ปาก tool                  [unit    ] ปฏิเสธทั้งหมด: total=-5, total=abc, status=confirmed, category=ไม่มีหมวดนี้
+✅ G4  ลบ = soft delete (กู้คืนได้)               [unit    ] หลังลบ: แถวยังอยู่ใน DB, ไม่โผล่ใน query, restore กลับมาได้
+✅ G5  Prompt injection ในรูปบิล                  [external] Eval D adversarial 6/6 ผ่าน (รวมบิลที่ฝังคำสั่ง SYSTEM OVERRIDE) + live probe บันทึกใน eval/logs/
+✅ G6  Error ไม่รั่วถึง user และไม่ถึงโมเดล       [stub    ] ข้อความ exception ไม่ปรากฏทั้งในคำตอบ user และใน context ที่ป้อนกลับโมเดล
+✅ G7  Rate limit ต่อ user (LINE + เว็บ)          [unit    ] 10 ครั้งแรกผ่าน / ครั้งที่ 11-12 บล็อก; ใช้ทั้ง events.py และ web.py
+✅ G8  ย่อรูปก่อนส่ง LLM                          [unit    ] 4000x3000 184KB → 1280x960 19KB
+✅ D1  temperature = 0 ทุก call                   [unit    ] payload ที่ส่งจริงมี generationConfig.temperature = 0.0
+✅ D2  เลขเงินมาจาก SQL + เช็ค subtotal+vat≈total [unit    ] ยอดรวมจาก SQL = 441.5 (ตรงกับผลบวกจริง); บิลที่ 100+7≠500 ถูกติด warning อัตโนมัติ
+✅ D3  Webhook idempotency                        [stub    ] event h-c1ca30c9 ส่งซ้ำ → ไม่เข้า agent loop รอบสอง (ถูก dedupe จากตาราง processed_events)
+✅ D4  State machine ของบิล (draft → confirmed)   [unit    ] บันทึกซ้ำถูกปฏิเสธที่ tool: บิล 393 ไม่ใช่ draft (status=confirmed) — บันทึกไปแล้ว
+✅ D5  Turn log ครบทุกเทิร์น (JSONL)              [stub    ] เทิร์นล่าสุดถูกบันทึกครบ: user/in/steps/out (1 step)
+✅ D6  Pin รุ่นโมเดล (ไม่ใช้ alias ลอยๆ)          [unit    ] MODEL=gemma-4-26b-a4b-it · FALLBACK=gemma-4-31b-it (ระบุรุ่นเต็ม ไม่ใช่ alias)
+✅ D7  Inject วันที่ปัจจุบัน (Asia/Bangkok)       [unit    ] system prompt มีวันที่ 2026-09-04 (เวลาไทย) → 'เดือนนี้/เมื่อวาน' คำนวณจากโค้ด ไม่ใช่ความจำโมเดล
+❌ D8  Serialize ต่อ user (ขนานข้าม user)         [stub    ] AssertionError: (2.564699172973633, 0.9802663326263428)
+⏳ X1  LINE transport (reply/push/quick reply/Flex/rich menu) [external] ยังไม่ได้วัด — ต้องมี LINE channel credentials (โค้ดพร้อม: scripts/setup_line.py)
+⏳ X2  LIFF dashboard บนแอป LINE                  [external] ยังไม่ได้วัด — ต้องมี LIFF ID จาก LINE Login channel
+15 PASS · 1 FAIL · 2 TODO
+
+===== 2) UNIT/CONTRACT SUITES
+ALL W2 STUB TESTS PASSED
+ALL W3 TOOL TESTS PASSED
+
+
+===== 3) EVAL A/D — tool selection, 54 cases
+MODEL: gemma-4-26b-a4b-it
+  A: 43/43 = 100%
+  D: 6/6 = 100%
+  E: 5/5 = 100%
+  ALL: 54/54 = 100%
+
+===== 4) EVAL B — end-to-end scenarios (DB asserts)
+✓ บันทึกบิลตรงๆ  
+✓ แก้ยอดก่อนยืนยัน  
+✓ ปฏิเสธไม่บันทึก  
+✓ บิลผิดโปรไฟล์ → ย้าย  
+✓ บันทึกแล้วลบแล้วกู้  
+✓ ถามยอดหลังบันทึก 2 ใบ  
+✓ บิลซ้ำ → ไม่บันทึกซ้ำ  
+✗ จำงบ + เตือนเมื่อเกิน  ['last_reply_mentions_budget: want True got False']
+✓ ติ๊กเบิกแล้ว + รายงานเฉพาะยังไม่เบิก  
+✓ สองใบ ยืนยันครั้งเดียว → ต้องไม่มีใบค้าง  
+✓ รูปไม่ใช่บิล  
+TASK SUCCESS: 10/11
+
+===== 5) SLIPS + QR, 30 files
+SLIPS ACCURACY: doc_type=100%  total=100%  ref=100%  qr_status=100%  all=30/30
+per layout: {0: '5/5', 1: '5/5', 2: '5/5', 3: '5/5', 4: '5/5', 5: '5/5'}
+QR mismatch detection: 5/5
+
+===== 6) METRICS
+turns=590 llm_calls=1059
+json_first_try=96.4%  (parse errors 38)
+tool_calls=435 avg/turn=0.74 tool_errors=40 (9.2%)
+loop_cap_hits=0
+per_tool: {'analyze_receipt': 97, 'save_invoice': 76, 'update_invoice': 36, 'summarize_expenses': 33, 'find_invoices': 33, 'manage_profile': 28, 'remember_note': 21, 'mark_reimbursed': 21, 'generate_report': 19, 'delete_invoice': 13, 'analyze_trends': 12, 'restore_invoice': 9, 'get_invoice_image': 9, 'split_bill': 9, 'export_csv': 7, 'convert_currency': 7, 'manage_category': 5}
+chain_length_distribution={0: 186, 1: 375, 2: 27, 3: 2}  turns_with_chain>=2=29 (5%)
+ask_back_turns=34 (6%)  self_recovery_after_tool_error=3/39
+latency_turns=243 p50=17.03s p90=75.65s max=131.69s  llm_share=96%
+tokens/turn: in=4727 out=153  total_in=1148679 total_out=37251
+
+===== 7) REPORT
+- self-recovery after a tool error (agent tried another call): 3/39
+exit 0

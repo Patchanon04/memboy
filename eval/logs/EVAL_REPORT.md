@@ -55,7 +55,7 @@ Failures:
 
 - #8 A-delete: first tool 'delete_invoice' != None — tools=['delete_invoice'] — reply: ลบบิล ครัวป้าแดง เรียบร้อยแล้วครับ
 
-## Eval B — end-to-end task success: 10/10
+## Eval B — end-to-end task success: 11/11
 
 - ✅ บันทึกบิลตรงๆ 
 - ✅ แก้ยอดก่อนยืนยัน 
@@ -66,6 +66,7 @@ Failures:
 - ✅ บิลซ้ำ → ไม่บันทึกซ้ำ 
 - ✅ จำงบ + เตือนเมื่อเกิน 
 - ✅ ติ๊กเบิกแล้ว + รายงานเฉพาะยังไม่เบิก 
+- ✅ สองใบ ยืนยันครั้งเดียว → ต้องไม่มีใบค้าง 
 - ✅ รูปไม่ใช่บิล 
 
 ## Slip extraction + QR consistency (30 synthetic slips, 6 layouts, 5 deliberate mismatches)
@@ -80,16 +81,16 @@ Failures:
 
 ## Eval C — loop metrics (all live turns)
 
-- turns: 431 · LLM calls: 788 · JSON first-try: **96.6%** · tool calls: 333 (avg 0.77/turn) · tool errors: 32 · loop-cap hits: 0
-- per tool: analyze_receipt 73, save_invoice 56, update_invoice 29, find_invoices 26, summarize_expenses 25, manage_profile 22, remember_note 16, mark_reimbursed 16, generate_report 15, delete_invoice 10, analyze_trends 9, restore_invoice 7, get_invoice_image 7, split_bill 7, convert_currency 6, export_csv 5, manage_category 4
+- turns: 614 · LLM calls: 1086 · JSON first-try: **96.5%** · tool calls: 438 (avg 0.71/turn) · tool errors: 40 · loop-cap hits: 0
+- per tool: analyze_receipt 98, save_invoice 77, update_invoice 36, summarize_expenses 33, find_invoices 33, manage_profile 28, remember_note 22, mark_reimbursed 21, generate_report 19, delete_invoice 13, analyze_trends 12, restore_invoice 9, get_invoice_image 9, split_bill 9, export_csv 7, convert_currency 7, manage_category 5
 
 ### Latency & tokens (เทิร์นที่วัดหลังติดตั้ง instrumentation)
 
-- เวลาต่อเทิร์น: p50 **16.34s** · p90 **72.09s** · สูงสุด 131.69s (n=133) — 97% ของเวลาอยู่ที่การเรียก LLM
-- token เฉลี่ยต่อเทิร์น: เข้า 4607 · ออก 155 (รวมทั้งชุด 612,705 / 20,568)
+- เวลาต่อเทิร์น: p50 **17.48s** · p90 **76.46s** · สูงสุด 131.69s (n=246) — 96% ของเวลาอยู่ที่การเรียก LLM
+- token เฉลี่ยต่อเทิร์น: เข้า 4723 · ออก 154 (รวมทั้งชุด 1,161,955 / 37,788)
 
 ### Agency depth
 
-- tool-chain length distribution: {0: 121, 1: 287, 2: 23} — turns with ≥2 tool calls: **23** (5%)
-- ask-back turns (no tool, clarifying question): 28 (6%)
-- self-recovery after a tool error (agent tried another call): 1/32
+- tool-chain length distribution: {0: 207, 1: 378, 2: 27, 3: 2} — turns with ≥2 tool calls: **29** (5%)
+- ask-back turns (no tool, clarifying question): 33 (5%)
+- self-recovery after a tool error (agent tried another call): 3/39
