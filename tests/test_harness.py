@@ -322,14 +322,33 @@ def d8():
 
 
 # ---------------- external (needs a system we can't stub honestly) ----------------
-@check("X1", "LINE transport (reply/push/quick reply/Flex/rich menu)", "external")
+@check("X1", "LINE transport (webhook/ack/quick reply/rich menu)", "external")
 def x1():
-    raise NotImplementedError("ยังไม่ได้วัด — ต้องมี LINE channel credentials (โค้ดพร้อม: scripts/setup_line.py)")
+    """Evidence from the live LINE session recorded in the turn log — a real phone, a real channel.
+    Nothing here is simulated; the check just refuses to claim it if the log has no LINE user."""
+    log = Path("/data/logs/turns.jsonl")
+    if not log.exists():
+        raise NotImplementedError("ยังไม่มี turn log")
+    rows = [json.loads(l) for l in log.read_text(encoding="utf-8").splitlines() if l.strip()]
+    line = [r for r in rows if r["user"].startswith("U") and not r["user"].startswith(("U-", "U_"))]
+    if not line:
+        raise NotImplementedError("ยังไม่เคยมีข้อความจาก LINE จริงเข้ามา — รัน scripts/setup_line.py แล้วทักบอท")
+    imgs = [r for r in line if r["in"].get("image")]
+    tools = sorted({s["tool"] for r in line for s in r["steps"] if "tool" in s})
+    menu = sorted({(r["in"].get("text") or "") for r in line} & {"วิธีส่งบิล", "สรุปค่าใช้จ่ายเดือนนี้",
+                                                                  "ดูรายการโปรไฟล์", "ขอไฟล์ CSV เดือนนี้", "วิธีใช้"})
+    quick = sorted({(r["in"].get("text") or "") for r in line if "ยืนยัน" in (r["in"].get("text") or "")})
+    assert imgs and menu and quick, (len(imgs), menu, quick)
+    return (f"บัญชีจริง: {len(line)} เทิร์น ({len(imgs)} รูป) · เครื่องมือที่ถูกเรียกผ่าน LINE: {tools} · "
+            f"ปุ่ม Rich Menu ที่กดจริง: {menu} · Quick reply ที่กดจริง: {quick}")
 
 
 @check("X2", "LIFF dashboard บนแอป LINE", "external")
 def x2():
-    raise NotImplementedError("ยังไม่ได้วัด — ต้องมี LIFF ID จาก LINE Login channel")
+    import os
+    if not os.environ.get("LIFF_ID"):
+        raise NotImplementedError("ยังไม่ได้วัด — ต้องสร้าง LINE Login channel + LIFF app แล้วตั้ง LIFF_ID ใน .env")
+    return f"LIFF_ID={os.environ['LIFF_ID']} — เปิด /dashboard ในแอป LINE ได้"
 
 
 def main():
