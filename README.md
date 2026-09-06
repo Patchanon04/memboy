@@ -55,3 +55,12 @@ docker compose run --rm app python -m tests.test_harness   # ตาราง 18 
 | Eval C loop metrics (1,086 LLM calls) | JSON first-try 96.5%, loop-cap 0, chain ≥2 = 5%, ask-back 5% |
 | Latency / token ต่อเทิร์น | p50 17.5s · p90 76s (96% เป็นเวลา LLM) · token เข้า ~4.7k ออก ~154 |
 | สลิปโอน 30 ใบ (6 layout, 5 QR mismatch) | doc_type/total/ref/qr_status 100%, mismatch detection 5/5 |
+
+## Troubleshooting (dev machine)
+
+- **Docker Desktop dies right after start / "backend crashed … initializing Inference manager … dockerInference"** —
+  a stale unix socket from Docker AI. Fix: rename `%LOCALAPPDATA%\Docker\run` away (the file itself refuses `del`),
+  set `"EnableDockerAI": false` in `%APPDATA%\Docker\settings-store.json`, start Docker Desktop once (single instance).
+- **LINE stops replying** — check `data/logs/watch.out`. The tunnel watchdog (`scripts/tunnel_watch.py`) needs
+  3 consecutive failed `/health` (body `"ok":true`, not just HTTP 200) before it swaps hostnames; it writes the new
+  URL to `data/public_base_url`, which the containers read per request, so no container restart is needed.

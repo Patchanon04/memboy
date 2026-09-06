@@ -17,6 +17,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 ENV = ROOT / ".env"
 LOG = ROOT / "data" / "logs" / "tunnel.log"
+BASE_FILE = ROOT / "data" / "public_base_url"   # containers read this instead of their env
 CLOUDFLARED = r"C:\Program Files (x86)\cloudflared\cloudflared.exe"
 ORIGIN = "http://127.0.0.1:8080"   # not "localhost": cloudflared resolves that to ::1, docker publishes on IPv4
 CHECK_EVERY = 20
@@ -38,8 +39,9 @@ def curl(*args) -> str:
     return subprocess.run(["curl", "-s", *args], capture_output=True, text=True, timeout=60).stdout
 
 
-def http_code(url: str) -> str:
-    return curl("-o", "NUL", "-w", "%{http_code}", "-m", "15", url) or "000"
+def alive(base: str) -> bool:
+    """Ours or not: api.trycloudflare.com also answers /health with 200, so check the body."""
+    return '"ok":true' in curl("-m", "15", base + "/health").replace(" ", "")
 
 
 def start_tunnel() -> str | None:
@@ -52,14 +54,18 @@ def start_tunnel() -> str | None:
     url = None
     for _ in range(30):
         time.sleep(2)
-        m = re.search(r"https://[a-z0-9-]+\.trycloudflare\.com", LOG.read_text(encoding="utf-8", errors="ignore"))
-        if m:
-            url = m.group(0)
+        # cloudflared's own control endpoint (api.trycloudflare.com) also appears in this log —
+        # the assigned hostname is always multi-word, so skip anything else.
+        for m in re.finditer(r"https://[a-z0-9-]+\.trycloudflare\.com", LOG.read_text(encoding="utf-8", errors="ignore")):
+            if m.group(0) != "https://api.trycloudflare.com":
+                url = m.group(0)
+                break
+        if url:
             break
     if not url:
         return None
     for _ in range(30):  # a fresh quick-tunnel hostname needs a moment before it resolves
-        if http_code(url + "/health") == "200":
+        if alive(url):
             return url
         time.sleep(3)
     print(f"  {url} never became reachable (docker down?)", flush=True)
@@ -82,9 +88,15 @@ def point_line(url: str) -> bool:
 
 def main():
     current = env("PUBLIC_BASE_URL")
+    misses = 0
     while True:
-        healthy = current.startswith("https://") and http_code(current + "/health") == "200"
-        if not healthy:
+        if current.startswith("https://") and alive(current):
+            misses = 0
+        else:
+            misses += 1
+        # one miss is usually just an app restart; a new tunnel means a new hostname, so be sure first
+        if misses >= 3:
+            misses = 0
             print(f"{time.strftime('%H:%M:%S')} tunnel down ({current or 'none'}) — restarting", flush=True)
             url = start_tunnel()
             if not url:
@@ -94,6 +106,7 @@ def main():
             print(f"  up: {url}", flush=True)
             current = url
             set_env("PUBLIC_BASE_URL", url)
+            BASE_FILE.write_text(url, encoding="utf-8")
             point_line(url)
         time.sleep(CHECK_EVERY)
 

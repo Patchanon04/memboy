@@ -7,14 +7,25 @@ import logging
 import os
 
 import httpx
+from pathlib import Path
 
 log = logging.getLogger("pbook")
 SECRET = os.environ.get("LINE_CHANNEL_SECRET", "")
 TOKEN = os.environ.get("LINE_CHANNEL_ACCESS_TOKEN", "")
 API = "https://api.line.me/v2/bot"
 CONTENT_API = "https://api-data.line.me/v2/bot"
-PUBLIC_BASE_URL = os.environ.get("PUBLIC_BASE_URL", "http://localhost:8080").rstrip("/")
+_BASE_FILE = Path("/data/public_base_url")
 _auth = {"Authorization": f"Bearer {TOKEN}"}
+
+
+def base_url() -> str:
+    """A quick tunnel hands out a new hostname on every restart; the watchdog writes it to
+    /data/public_base_url so links stay right without recreating the containers."""
+    if _BASE_FILE.exists():
+        u = _BASE_FILE.read_text(encoding="utf-8").strip().rstrip("/")
+        if u:
+            return u
+    return os.environ.get("PUBLIC_BASE_URL", "http://localhost:8080").rstrip("/")
 
 
 def verify_signature(body: bytes, signature: str) -> bool:

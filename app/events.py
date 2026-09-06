@@ -64,10 +64,10 @@ def mark_processed(mid: str | None):
 def _messages(out: dict) -> list[dict]:
     msgs = [line_io.text(out["reply"], quick=CONFIRM_QUICK if out["draft"] else None)]
     for p in out["images"]:
-        msgs.append(line_io.image(f"{line_io.PUBLIC_BASE_URL}/uploads/{Path(p).name}"))
+        msgs.append(line_io.image(f"{line_io.base_url()}/uploads/{Path(p).name}"))
     for p in out["files"]:
         kind = "PDF" if p.endswith(".pdf") else "CSV"
-        msgs.append(line_io.file_link(f"📄 รายงาน {kind} พร้อมแล้ว", f"{line_io.PUBLIC_BASE_URL}/files/{Path(p).name}"))
+        msgs.append(line_io.file_link(f"📄 รายงาน {kind} พร้อมแล้ว", f"{line_io.base_url()}/files/{Path(p).name}"))
     return msgs
 
 
