@@ -64,3 +64,19 @@ docker compose run --rm app python -m tests.test_harness   # ตาราง 18 
 - **LINE stops replying** — check `data/logs/watch.out`. The tunnel watchdog (`scripts/tunnel_watch.py`) needs
   3 consecutive failed `/health` (body `"ok":true`, not just HTTP 200) before it swaps hostnames; it writes the new
   URL to `data/public_base_url`, which the containers read per request, so no container restart is needed.
+
+## Ablation: OCR before the LLM? (eval/eval_ocr_ablation.py → eval/logs/OCR_ABLATION.md)
+
+Question: would running Tesseract (tha+eng) first make extraction faster or more accurate than sending the photo straight to Gemma 4?
+60 synthetic receipts, same prompt/scoring as the main extraction eval, the three conditions run back-to-back per file. API failures ("gave up" after 4 tries) excluded.
+
+| condition | all-5 correct | LLM p50 | prompt tokens |
+|---|---|---|---|
+| image only (production) | **56/58 = 97%** | 25.6 s | 463 |
+| image + OCR text | 55/57 = 96% | 25.4 s (+0.3 s OCR) | 579 |
+| OCR text only | 30/55 = 55% (date 53%) | 29.7 s | 323 |
+
+Verdict: no. A receipt photo costs Gemma only ~460 tokens, so OCR text is not a smaller input; text-only loses layout
+(date 53%, total 72%) and the model dawdles on noisy OCR; image+OCR just adds tokens. Latency is dominated by the API round trip,
+not input size — so the speed work went into the loop instead: photos skip the "decide" call (`ROUTE_IMAGE`) and a plain-text
+answer after a tool result is accepted as the reply. Live photo turn: 72 s → ~42 s (p50).
