@@ -1,10 +1,11 @@
-"""PBook as an MCP server (stdio): the same 18 tool functions the LINE agent uses, exposed to any MCP client
-(Claude Desktop, Claude Code, ...). Nothing is re-implemented — tools come straight from agent.TOOLS, so the
+"""PBook as an MCP server: the same 18 tool functions the LINE agent uses, exposed to any MCP client
+(Claude Desktop, Claude Code, other agents). Nothing is re-implemented — tools come straight from agent.TOOLS, so the
 user-scoping / validation / soft-delete guardrails apply unchanged.
 
-    docker compose exec -T -e PBOOK_MCP_USER=web:alice app python -m app.mcp_server
-
-PBOOK_MCP_USER picks whose data the client sees (same external ids as LINE/web); default "mcp:local".
+Two transports, one server object:
+  stdio  (local, one process per client)   docker compose exec -T -e PBOOK_MCP_USER=web:alice app python -m app.mcp_server
+  HTTP   (remote, many clients at once)    POST {PUBLIC_BASE_URL}/mcp  — mounted by app.main, bearer MCP_TOKEN,
+                                           header X-PBook-User picks the user (default "mcp:remote")
 ponytail: low-level Server (mcp 2.x) + permissive schemas generated from the TOOLS hints — the tools validate their own args.
 """
 import asyncio
@@ -18,6 +19,7 @@ from pathlib import Path
 
 from mcp.server import Server
 from mcp.server.stdio import stdio_server
+from mcp.server.transport_security import TransportSecuritySettings
 from mcp.types import CallToolResult, ImageContent, ListToolsResult, TextContent, Tool, ToolAnnotations
 
 from app import agent, tools
@@ -56,6 +58,14 @@ async def list_tools(ctx, params) -> ListToolsResult:
     return ListToolsResult(tools=out)
 
 
+def _user_ext(ctx) -> str:
+    """Over HTTP each client says who it is (X-PBook-User); over stdio the env decides. Same id space as LINE/web."""
+    req = getattr(ctx, "request", None)
+    if req is not None and hasattr(req, "headers"):
+        return (req.headers.get("x-pbook-user") or "mcp:remote").strip()[:80]
+    return USER_EXT
+
+
 def _upload(args: dict) -> dict:
     ext = Path(args.get("filename") or "x.jpg").suffix.lower() or ".jpg"
     if ext not in (".jpg", ".jpeg", ".png", ".pdf"):
@@ -85,7 +95,7 @@ async def call_tool(ctx, params) -> CallToolResult:
         elif key in agent.TOOLS:
             fn = agent.TOOLS[key][0]
             with session() as s:
-                user = s.get(User, agent.get_user(USER_EXT))
+                user = s.get(User, agent.get_user(_user_ext(ctx)))
                 result = await fn(user, s, **args) if inspect.iscoroutinefunction(fn) else fn(user, s, **args)
         else:
             return _error(f"ไม่มี tool {params.name}; ใช้ tools/list ดูรายชื่อ")
@@ -109,6 +119,13 @@ async def call_tool(ctx, params) -> CallToolResult:
 
 
 server = Server("pbook", on_list_tools=list_tools, on_call_tool=call_tool)
+
+
+def http_app():
+    """Starlette app for app.main to mount at /mcp. Stateless JSON: no session bookkeeping, any number of clients.
+    DNS-rebinding guard off because requests arrive through the tunnel with a public Host; auth is the bearer token in main."""
+    return server.streamable_http_app(streamable_http_path="/", json_response=True, stateless_http=True,
+                                      transport_security=TransportSecuritySettings(enable_dns_rebinding_protection=False))
 
 
 async def main():

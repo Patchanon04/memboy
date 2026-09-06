@@ -25,10 +25,35 @@ app.mount("/files", StaticFiles(directory="/data/reports"), name="files")
 app.mount("/uploads", StaticFiles(directory="/data/uploads"), name="uploads")
 app.include_router(web.router)  # browser chat UI: same agent as LINE
 
+# Remote MCP: the agent's tools for any number of external clients. Fail closed — no MCP_TOKEN, no /mcp.
+from app import mcp_server  # noqa: E402
+from starlette.responses import JSONResponse  # noqa: E402
+MCP_TOKEN = os.environ.get("MCP_TOKEN", "")
+mcp_http = mcp_server.http_app()
+# exact path, not a Mount: a Mount 307s /mcp -> /mcp/ and behind the tunnel that redirect comes back as http://
+from starlette.routing import Route  # noqa: E402
+app.router.routes.append(Route("/mcp", endpoint=mcp_http.routes[0].endpoint, methods=["GET", "POST", "DELETE"]))
+
+
+@app.middleware("http")
+async def mcp_auth(request, call_next):
+    if request.url.path.startswith("/mcp"):
+        if not MCP_TOKEN:
+            return JSONResponse({"error": "MCP disabled: set MCP_TOKEN"}, status_code=503)
+        if request.headers.get("authorization") != f"Bearer {MCP_TOKEN}":
+            return JSONResponse({"error": "unauthorized"}, status_code=401, headers={"WWW-Authenticate": "Bearer"})
+    return await call_next(request)
+
+
+_mcp_lifespan = None
+
 
 @app.on_event("startup")
 async def startup():
+    global _mcp_lifespan
     init_db()
+    _mcp_lifespan = mcp_http.router.lifespan_context(mcp_http)  # mounted sub-apps don't get their lifespan run for them
+    await _mcp_lifespan.__aenter__()
     app.state.queue = await create_pool(RedisSettings.from_dsn(os.environ.get("REDIS_URL", "redis://localhost:6379")))
     # W1 acceptance: Thai PDF must render from day one
     report.render_report({
@@ -113,3 +138,9 @@ async def api_dashboard(id_token: str | None = None, uid: str | None = None, mon
     return {"from": first.isoformat(), "to": today.isoformat(), "profiles": names, "total": t["total"], "vat": t["vat"],
             "count": t["count"], "by_category": t["by_category"], "months": tr["months"],
             "pending": [{"date": p["date"], "vendor": p["vendor"], "total": p["total"]} for p in pend]}
+
+
+@app.on_event("shutdown")
+async def shutdown():
+    if _mcp_lifespan is not None:
+        await _mcp_lifespan.__aexit__(None, None, None)

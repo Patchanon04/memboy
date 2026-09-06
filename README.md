@@ -83,18 +83,23 @@ answer after a tool result is accepted as the reply. Live photo turn: 72 s → ~
 
 ## MCP server (app/mcp_server.py)
 
-The 18 tool functions the LINE agent calls are also served over MCP (stdio), so any MCP client — Claude Desktop,
-Claude Code, another agent — can work on the same data with the same guardrails (user scoping, arg validation,
-draft→confirm, soft delete). Nothing is duplicated: tools are read from `agent.TOOLS`; one extra tool
-`pbook_upload_receipt` takes a base64 image and hands back an `image_id` for `pbook_analyze_receipt`.
+The 18 tool functions the LINE agent calls are also served over MCP, so any MCP client — Claude Desktop, Claude Code,
+another agent — can work on the same data with the same guardrails (user scoping, arg validation, draft→confirm, soft
+delete). Nothing is duplicated: tools are read from `agent.TOOLS`; one extra tool `pbook_upload_receipt` takes a base64
+image and hands back an `image_id` for `pbook_analyze_receipt`. One server object, two transports:
 
-- Claude Code: the repo ships `.mcp.json` — open the project, approve the `pbook` server when asked.
-- Claude Desktop: add to `%APPDATA%\Claude\claude_desktop_config.json` (use the absolute path to this folder):
+| transport | for | how |
+|---|---|---|
+| **HTTP** (`POST {PUBLIC_BASE_URL}/mcp`) | many remote clients at once | stateless Streamable HTTP · `Authorization: Bearer <MCP_TOKEN>` (401 without, 503 if unset) · `X-PBook-User: <id>` picks the user (default `mcp:remote`) |
+| **stdio** | one local client | `docker compose exec -T -e PBOOK_MCP_USER=web:alice app python -m app.mcp_server` — the repo's `.mcp.json` does this for Claude Code |
 
-  ```json
-  {"mcpServers": {"pbook": {"command": "docker", "args": ["compose", "-f", "C:/path/to/pbook/docker-compose.yml",
-     "exec", "-T", "-e", "PBOOK_MCP_USER=mcp:local", "app", "python", "-m", "app.mcp_server"]}}}
-  ```
+Connect a remote client (Claude Code example; Claude Desktop/claude.ai connectors take the same URL + header):
 
-- `PBOOK_MCP_USER` = which PBook user the client acts as (`web:<name>`, a LINE userId, or any new id).
-- Test without an LLM: `docker compose exec -T app python -m tests.test_mcp` (real stdio client: list, scoping, errors, upload).
+```bash
+claude mcp add --transport http pbook https://<public-url>/mcp -H "Authorization: Bearer <MCP_TOKEN>" -H "X-PBook-User: mcp:demo"
+```
+
+Test without an LLM: `docker compose exec -T app python -m tests.test_mcp` — real stdio and HTTP clients: tool list,
+per-user scoping through both transports, actionable errors, upload, 401 without token.
+Caveat: on the free quick tunnel the hostname changes whenever the tunnel restarts, so remote clients must be re-pointed;
+a permanent URL (Railway/own domain) removes that.
