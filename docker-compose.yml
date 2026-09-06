@@ -1,5 +1,6 @@
 services:
   app:
+    restart: unless-stopped   # come back on their own after Docker Desktop restarts/updates
     build: .
     dns: [1.1.1.1, 8.8.8.8]
     ports: ["8080:8080"]
@@ -20,6 +21,7 @@ services:
     command: uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload --app-dir /srv
 
   worker:
+    restart: unless-stopped   # come back on their own after Docker Desktop restarts/updates
     build: .
     dns: [1.1.1.1, 8.8.8.8]
     env_file: .env
@@ -36,11 +38,13 @@ services:
     command: arq app.worker.WorkerSettings
 
   redis:
+    restart: unless-stopped   # come back on their own after Docker Desktop restarts/updates
     image: redis:7-alpine
     command: redis-server --appendonly yes   # AOF: queued jobs survive redis restart
     volumes: ["redisdata:/data"]
 
   db:
+    restart: unless-stopped   # come back on their own after Docker Desktop restarts/updates
     image: postgres:16-alpine
     environment:
       POSTGRES_USER: pbook
