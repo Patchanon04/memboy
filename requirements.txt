@@ -11,3 +11,4 @@ matplotlib
 pyzbar
 qrcode
 pillow
+mcp

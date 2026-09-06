@@ -80,3 +80,21 @@ Verdict: no. A receipt photo costs Gemma only ~460 tokens, so OCR text is not a 
 (date 53%, total 72%) and the model dawdles on noisy OCR; image+OCR just adds tokens. Latency is dominated by the API round trip,
 not input size — so the speed work went into the loop instead: photos skip the "decide" call (`ROUTE_IMAGE`) and a plain-text
 answer after a tool result is accepted as the reply. Live photo turn: 72 s → ~42 s (p50).
+
+## MCP server (app/mcp_server.py)
+
+The 18 tool functions the LINE agent calls are also served over MCP (stdio), so any MCP client — Claude Desktop,
+Claude Code, another agent — can work on the same data with the same guardrails (user scoping, arg validation,
+draft→confirm, soft delete). Nothing is duplicated: tools are read from `agent.TOOLS`; one extra tool
+`pbook_upload_receipt` takes a base64 image and hands back an `image_id` for `pbook_analyze_receipt`.
+
+- Claude Code: the repo ships `.mcp.json` — open the project, approve the `pbook` server when asked.
+- Claude Desktop: add to `%APPDATA%\Claude\claude_desktop_config.json` (use the absolute path to this folder):
+
+  ```json
+  {"mcpServers": {"pbook": {"command": "docker", "args": ["compose", "-f", "C:/path/to/pbook/docker-compose.yml",
+     "exec", "-T", "-e", "PBOOK_MCP_USER=mcp:local", "app", "python", "-m", "app.mcp_server"]}}}
+  ```
+
+- `PBOOK_MCP_USER` = which PBook user the client acts as (`web:<name>`, a LINE userId, or any new id).
+- Test without an LLM: `docker compose exec -T app python -m tests.test_mcp` (real stdio client: list, scoping, errors, upload).
