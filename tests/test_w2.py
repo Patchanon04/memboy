@@ -188,7 +188,7 @@ def test_image_routed_then_prose_reply():
     png_path = f"/data/uploads/route{uuid.uuid4().hex[:8]}.png"
     Image.new("RGB", (8, 8), "white").save(png_path)
     calls = stub_llm([
-        json.dumps({"vendor": "ร้านเส้นทาง", "date": "2026-08-25", "total": 90, "vat": 0, "subtotal": 90, "category": "อาหาร", "items": []}),  # analyze_receipt's own call
+        json.dumps({"vendor": "ร้านเส้นทาง", "date": "2026-08-25", "total": 90, "vat": 0, "subtotal": 120, "discount": 30, "category": "อาหาร", "items": []}),  # analyze_receipt's own call
         "สรุปใบเสร็จร้านเส้นทาง 90 บาท ถูกต้องไหมครับ",                                                                    # agent answers in prose
     ])
     out = asyncio.run(agent.run_turn(ext, image_path=png_path))
@@ -198,6 +198,9 @@ def test_image_routed_then_prose_reply():
     steps = [json.loads(l) for l in open("/data/logs/turns.jsonl", encoding="utf-8")][-1]["steps"]
     assert steps[0].get("tool") == "analyze_receipt" and steps[0].get("routed") is True, steps[0]
     assert steps[-1].get("prose") is True, steps[-1]
+    assert not any("เลขไม่ลงตัว" in w for w in steps[0]["result"]["warnings"]), steps[0]["result"]["warnings"]  # 120 - 30 + 0 == 90
+    with session() as s:
+        assert s.get(Invoice, steps[0]["result"]["draft_id"]).discount == 30
     print("test_image_routed_then_prose_reply OK")
 
 

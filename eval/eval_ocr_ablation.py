@@ -55,7 +55,8 @@ async def call(client, body):
     for attempt in range(4):
         try:
             r = await client.post(URL, params={"key": KEY}, json=body)
-        except httpx.TimeoutException:
+        except httpx.HTTPError:  # timeouts AND "server disconnected" — the API drops connections under load
+            await asyncio.sleep(3 * (attempt + 1))
             continue
         if r.status_code in (429, 500, 502, 503, 504) and attempt < 3:
             await asyncio.sleep(3 * (attempt + 1))
@@ -73,6 +74,9 @@ async def call(client, body):
     return {"_raw": "gave up"}, time.perf_counter() - t, 0, 4
 
 
+PARTIAL = DIR / f"ocr_ablation_{MODEL}.partial.jsonl"
+
+
 async def one(client, sem, lab):
     async with sem:
         path = DIR / lab["file"]
@@ -84,6 +88,8 @@ async def one(client, sem, lab):
             row[c] = {"ok": score(pred, lab), "llm_s": round(s, 2), "prompt_tok": ptok, "attempts": att, "pred": pred}
         print(f"{lab['file']:22} ocr {ocr_s:4.1f}s/{len(text):4}ch  " +
               "  ".join(f"{c}: {sum(row[c]['ok'].values())}/5 {row[c]['llm_s']:5.1f}s {row[c]['prompt_tok']:5}tok" for c in COND), flush=True)
+        with open(PARTIAL, "a", encoding="utf-8") as f:
+            f.write(json.dumps(row, ensure_ascii=False) + "\n")
         return row
 
 
@@ -94,9 +100,18 @@ def pct(xs, q):
 
 async def main():
     labs = LABELS[:N]
+    done = {}
+    if PARTIAL.exists():
+        for l in PARTIAL.read_text(encoding="utf-8").splitlines():
+            if l.strip():
+                r = json.loads(l)
+                done[r["file"]] = r
+    todo = [l for l in labs if l["file"] not in done]
+    print(f"{len(done)} files already done, {len(todo)} to go", flush=True)
     sem = asyncio.Semaphore(3)
     async with httpx.AsyncClient(timeout=240) as client:
-        rows = await asyncio.gather(*(one(client, sem, l) for l in labs))
+        fresh = await asyncio.gather(*(one(client, sem, l) for l in todo))
+    rows = [done.get(l["file"]) or next(r for r in fresh if r["file"] == l["file"]) for l in labs]
     out = DIR / f"ocr_ablation_{MODEL}.json"
     out.write_text(json.dumps(rows, ensure_ascii=False, indent=1), encoding="utf-8")
 

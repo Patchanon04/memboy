@@ -88,6 +88,7 @@ def _own_invoice(user: User, s, invoice_id) -> Invoice:
 def _inv_dict(iv: Invoice) -> dict:
     return {"id": iv.id, "date": iv.invoice_date, "vendor": iv.vendor, "category": iv.category,
             "total": iv.total_thb if iv.total_thb is not None else iv.total, "vat": iv.vat, "status": iv.status,
+            **({"discount": iv.discount} if iv.discount else {}),
             "reimbursed": iv.reimbursed_at is not None, "currency": iv.currency,
             **({"doc_type": iv.doc_type} if iv.doc_type != "receipt" else {})}
 
@@ -159,7 +160,7 @@ def _extract_prompt(cats):
 {{"doc_type": "receipt" | "transfer_slip" | "other" (receipt=ใบเสร็จ/ใบกำกับภาษี/บิล, transfer_slip=สลิปโอนเงิน, other=ไม่ใช่ทั้งสอง),
 "vendor": "ชื่อร้าน/บริษัท (สลิปโอน: ชื่อผู้รับเงิน)", "tax_id": "เลขประจำตัวผู้เสียภาษี 13 หลักถ้ามี ไม่มีให้ null",
 "date": "YYYY-MM-DD — กติกา: วันที่ในบิลเรียง วัน/เดือน/ปี เสมอ ห้ามตีความเป็น ปี/เดือน/วัน; ปี 4 หลักที่มากกว่า 2400 คือ พ.ศ. ให้ลบ 543; ปี 2 หลัก: ถ้า 50-99 คือ พ.ศ. ย่อ (25YY แล้วลบ 543 เช่น 69→2569→2026) ถ้า 00-49 คือ ค.ศ. 20YY (เช่น 26→2026)",
-"subtotal": ยอดก่อน VAT เป็นตัวเลข (เท่ากับ total ถ้าไม่มี VAT), "vat": ภาษีมูลค่าเพิ่มเป็นตัวเลข (0 ถ้าไม่มี), "total": ยอดสุทธิที่จ่ายเป็นตัวเลข,
+"subtotal": ยอดรวมสินค้าก่อนหักส่วนลดและก่อน VAT เป็นตัวเลข (เท่ากับ total ถ้าไม่มีส่วนลด/VAT), "discount": ส่วนลดรวมเป็นตัวเลข (0 ถ้าไม่มี), "vat": ภาษีมูลค่าเพิ่มเป็นตัวเลข (0 ถ้าไม่มี), "total": ยอดสุทธิที่จ่ายจริงเป็นตัวเลข (subtotal - discount + vat),
 "currency": "THB หรือรหัสสกุลเงินอื่นถ้าบิลเป็นต่างประเทศ",
 "category": หนึ่งใน {cats} (ซูเปอร์มาร์เก็ต/ของกินของใช้ปนกัน = ของใช้),
 "transfer_ref": "เลขอ้างอิงธุรกรรม (สลิปโอนเท่านั้น) ไม่มีให้ null",
@@ -221,11 +222,12 @@ async def analyze_receipt(user, s, image_id=None, **_):
 
 def _make_draft(user, s, d: dict, path: Path, qr_text: str | None) -> dict:
     total, vat, subtotal = _num(d.get("total"), "total"), _num(d.get("vat")) or 0.0, _num(d.get("subtotal"))
+    discount = _num(d.get("discount")) or 0.0
     if total is None or total < 0:
         raise ToolError(f"ยอดรวมที่สกัดได้ไม่ใช่ตัวเลข: {d.get('total')!r}")
     warnings = []
-    if subtotal is not None and abs((subtotal + vat) - total) > 1.0:  # determinism #2: arithmetic must close
-        warnings.append(f"เลขไม่ลงตัว: subtotal {subtotal} + vat {vat} != total {total} — ให้ user ช่วยตรวจ")
+    if subtotal is not None and abs((subtotal - discount + vat) - total) > 1.0:  # determinism #2: arithmetic must close
+        warnings.append(f"เลขไม่ลงตัว: subtotal {subtotal} - discount {discount} + vat {vat} != total {total} — ให้ user ช่วยตรวจ (ตัวเลขที่เกินอาจเป็นส่วนลด)")
     tax_ok = valid_thai_tax_id(d.get("tax_id"))
     if tax_ok is False:
         warnings.append(f"เลขผู้เสียภาษี {d.get('tax_id')} checksum ไม่ผ่าน — อาจอ่านตัวเลขผิด")
@@ -267,7 +269,7 @@ def _make_draft(user, s, d: dict, path: Path, qr_text: str | None) -> dict:
         learned = {"category": category, "profile": s.get(Profile, profile_id).name,
                    "note": "ใช้ค่าที่ user เคยแก้ไว้สำหรับร้านนี้ — บอก user ด้วยว่าจำไว้จากครั้งก่อน"}
     iv = Invoice(profile_id=profile_id, status="draft", doc_type=doc_type, image_path=str(path),
-                 vendor=d.get("vendor"), invoice_date=date, subtotal=subtotal, vat=vat, total=total,
+                 vendor=d.get("vendor"), invoice_date=date, subtotal=subtotal, discount=discount or None, vat=vat, total=total,
                  currency=currency, total_thb=total if currency == "THB" else None,
                  transfer_ref=ref, payee=d.get("vendor") if doc_type == "transfer_slip" else None, qr_status=qr_status,
                  category=category, items=d.get("items"), raw_llm=d)
@@ -276,7 +278,7 @@ def _make_draft(user, s, d: dict, path: Path, qr_text: str | None) -> dict:
     if currency != "THB":
         warnings.append(f"บิลสกุล {currency} — เรียก convert_currency(draft_id={iv.id}) เพื่อแปลงเป็นบาทก่อนบันทึก")
     return {"draft_id": iv.id, "doc_type": doc_type, "vendor": iv.vendor, "date": iv.invoice_date, "subtotal": subtotal,
-            "vat": vat, "total": total, "currency": currency, "category": iv.category, "items": d.get("items"),
+            "discount": discount, "vat": vat, "total": total, "currency": currency, "category": iv.category, "items": d.get("items"),
             "transfer_ref": ref, "qr_status": qr_status, "warnings": warnings, "learned_from_past_corrections": learned}
 
 
@@ -314,13 +316,13 @@ def save_invoice(user, s, draft_id=None, **_):
 
 def update_invoice(user, s, invoice_id=None, fields=None, **_):
     iv = _own_invoice(user, s, invoice_id)
-    allowed = {"vendor", "invoice_date", "date", "subtotal", "vat", "total", "category", "profile"}
+    allowed = {"vendor", "invoice_date", "date", "subtotal", "discount", "vat", "total", "category", "profile"}
     fields = fields or {}
     bad = set(fields) - allowed
     if bad:
         raise ToolError(f"แก้ field เหล่านี้ไม่ได้: {sorted(bad)} (แก้ได้: {sorted(allowed)})")
     for k, v in fields.items():
-        if k in ("subtotal", "vat", "total"):
+        if k in ("subtotal", "discount", "vat", "total"):
             v = _num(v, k)
             if v < 0:
                 raise ToolError(f"{k} ติดลบไม่ได้")
@@ -520,9 +522,9 @@ def export_csv(user, s, date_from=None, date_to=None, profile=None, reimbursed=N
     path = REPORTS / f"{uuid.uuid4()}.csv"
     with open(path, "w", newline="", encoding="utf-8-sig") as f:  # BOM so Excel opens Thai correctly
         w = csv.writer(f)
-        w.writerow(["id", "date", "vendor", "category", "total_thb", "vat", "currency", "status_reimbursed", "doc_type", "qr_status"])
+        w.writerow(["id", "date", "vendor", "category", "total_thb", "discount", "vat", "currency", "status_reimbursed", "doc_type", "qr_status"])
         for iv in rows:
-            w.writerow([iv.id, iv.invoice_date, iv.vendor, iv.category, iv.total_thb, iv.vat, iv.currency,
+            w.writerow([iv.id, iv.invoice_date, iv.vendor, iv.category, iv.total_thb, iv.discount or 0, iv.vat, iv.currency,
                         "yes" if iv.reimbursed_at else "no", iv.doc_type, iv.qr_status or ""])
     return {"csv_url": f"{base_url()}/files/{path.name}", "_file": str(path), "count": len(rows)}
 

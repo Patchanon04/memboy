@@ -36,6 +36,7 @@ class Invoice(Base):
     invoice_date: Mapped[str | None] = mapped_column(String(10), nullable=True)  # YYYY-MM-DD
     subtotal: Mapped[float | None] = mapped_column(Float, nullable=True)
     vat: Mapped[float | None] = mapped_column(Float, nullable=True)
+    discount: Mapped[float | None] = mapped_column(Float, nullable=True)  # total = subtotal - discount + vat
     total: Mapped[float | None] = mapped_column(Float, nullable=True)
     category: Mapped[str | None] = mapped_column(String(60), nullable=True)
     currency: Mapped[str] = mapped_column(String(8), default="THB")
@@ -94,6 +95,13 @@ class ProcessedEvent(Base):
 
 def init_db():
     Base.metadata.create_all(ENGINE)
+    # ponytail: create_all never alters existing tables — one idempotent ALTER per late-added column beats Alembic here
+    from sqlalchemy import text
+    with ENGINE.begin() as c:
+        try:
+            c.execute(text(f"ALTER TABLE {Invoice.__tablename__} ADD COLUMN IF NOT EXISTS discount FLOAT"))
+        except Exception:  # sqlite dev db: no IF NOT EXISTS; column already there on the 2nd run
+            pass
 
 
 def session() -> Session:
