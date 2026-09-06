@@ -1,0 +1,188 @@
+[
+ {
+  "file": "001_th_clean.png",
+  "ocr_s": 0.5,
+  "ocr_chars": 584,
+  "image": {
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   },
+   "llm_s": 18.97,
+   "prompt_tok": 479,
+   "attempts": 1,
+   "pred": {
+    "vendor": "สปาเท้าผ่อนคลาย",
+    "date": "2026-05-04",
+    "total": 1580.0,
+    "vat": 0,
+    "category": "สุขภาพ"
+   }
+  },
+  "image+ocr": {
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   },
+   "llm_s": 23.02,
+   "prompt_tok": 654,
+   "attempts": 1,
+   "pred": {
+    "vendor": "สปาเท้าผ่อนคลาย",
+    "date": "2026-05-04",
+    "total": 1580.0,
+    "vat": 0,
+    "category": "สุขภาพ"
+   }
+  },
+  "ocr": {
+   "ok": {
+    "vendor": true,
+    "date": false,
+    "total": true,
+    "vat": true,
+    "category": true
+   },
+   "llm_s": 132.74,
+   "prompt_tok": 397,
+   "attempts": 1,
+   "pred": {
+    "vendor": "สปาเท้าผ่อนคลาย",
+    "date": null,
+    "total": 1580.0,
+    "vat": 0,
+    "category": "สุขภาพ"
+   }
+  }
+ },
+ {
+  "file": "002_th_photo.jpg",
+  "ocr_s": 0.5,
+  "ocr_chars": 635,
+  "image": {
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   },
+   "llm_s": 22.61,
+   "prompt_tok": 479,
+   "attempts": 1,
+   "pred": {
+    "vendor": "ห้างหุ้นส่วน อะไหล่รุ่งเจริญ",
+    "date": "2026-02-14",
+    "total": 407.0,
+    "vat": 26.63,
+    "category": "อุปกรณ์"
+   }
+  },
+  "image+ocr": {
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   },
+   "llm_s": 25.72,
+   "prompt_tok": 648,
+   "attempts": 1,
+   "pred": {
+    "vendor": "ห้างหุ้นส่วน อะไหล่รุ่งเจริญ",
+    "date": "2026-02-14",
+    "total": 407.0,
+    "vat": 26.63,
+    "category": "อุปกรณ์"
+   }
+  },
+  "ocr": {
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   },
+   "llm_s": 58.56,
+   "prompt_tok": 391,
+   "attempts": 1,
+   "pred": {
+    "vendor": "ห้างหุ้นส่วน อะไหล่รุ่งเจริญ",
+    "date": "2026-02-14",
+    "total": 407.0,
+    "vat": 26.63,
+    "category": "อุปกรณ์"
+   }
+  }
+ },
+ {
+  "file": "003_en_clean.jpg",
+  "ocr_s": 0.52,
+  "ocr_chars": 312,
+  "image": {
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   },
+   "llm_s": 15.81,
+   "prompt_tok": 479,
+   "attempts": 1,
+   "pred": {
+    "vendor": "Pizza Piazza",
+    "date": "2026-05-18",
+    "total": 1757.0,
+    "vat": 0,
+    "category": "อาหาร"
+   }
+  },
+  "image+ocr": {
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   },
+   "llm_s": 18.32,
+   "prompt_tok": 617,
+   "attempts": 1,
+   "pred": {
+    "vendor": "Pizza Piazza",
+    "date": "2026-05-18",
+    "total": 1757.0,
+    "vat": 0,
+    "category": "อาหาร"
+   }
+  },
+  "ocr": {
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   },
+   "llm_s": 17.3,
+   "prompt_tok": 360,
+   "attempts": 1,
+   "pred": {
+    "vendor": "Pizza Piazza",
+    "date": "2026-05-18",
+    "total": 1757,
+    "vat": 0,
+    "category": "อาหาร"
+   }
+  }
+ }
+]

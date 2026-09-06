@@ -19,6 +19,7 @@ TZ = zoneinfo.ZoneInfo("Asia/Bangkok")
 HISTORY_LIMIT = 30
 LOOP_CAP = 6          # guardrail #2
 TURN_BUDGET_S = 200   # wall-clock cap per turn — never leave a LINE user hanging for minutes
+ROUTE_IMAGE = True   # photo in -> analyze_receipt first, no LLM 'decide' call (see run_turn)
 PARSE_RETRIES = 2
 LOG_DIR = Path("/data/logs")
 LOG_DIR.mkdir(parents=True, exist_ok=True)
@@ -155,7 +156,44 @@ async def run_turn(external_id: str, text: str | None = None, image_path: str | 
         sys_turn = [{"role": "user", "parts": [{"text": system_prompt(user, s)}]},
                     {"role": "model", "parts": [{"text": '{"reply": "รับทราบกติกา"}'}]}]  # Gemma has no system role
         parse_fails = 0
-        for _ in range(LOOP_CAP):
+
+        async def dispatch(act) -> bool:
+            """Run one tool action and feed its result back into history. False = turn is over (reply set)."""
+            fn = TOOLS[act["tool"]][0]
+            args = act.get("args") or {}
+            step = {"tool": act["tool"], "args": args, **({"routed": True} if act.get("_routed") else {})}
+            try:
+                result = await fn(user, s, **args) if inspect.iscoroutinefunction(fn) else fn(user, s, **args)
+                turn_log["steps"].append({**step, "result": result})
+                if result.get("_image"):
+                    out["images"].append(result["_image"])
+                if result.get("_file"):
+                    out["files"].append(result["_file"])
+                if "draft_id" in result or result.get("multiple"):
+                    out["draft"] = True
+                payload = json.dumps({k: v for k, v in result.items() if not k.startswith("_")}, ensure_ascii=False, default=str)
+            except tools.ToolError as e:
+                turn_log["steps"].append({**step, "tool_error": str(e)})
+                payload = json.dumps({"error": str(e)}, ensure_ascii=False)
+            except llm.LLMError as e:  # vision call inside a tool failed: LLM is down, don't loop further
+                turn_log["steps"].append({**step, "llm_error": str(e)})
+                out["reply"] = "ขอโทษค่ะ ตอนนี้ระบบ AI ขัดข้องชั่วคราว ลองส่งรูปใหม่อีกสักครู่นะคะ"
+                return False
+            except Exception:
+                log.exception("tool %s crashed", act["tool"])  # guardrail #6: log full, tell model little
+                turn_log["steps"].append({**step, "tool_error": "internal"})
+                payload = json.dumps({"error": "เครื่องมือขัดข้องภายใน ลองวิธีอื่นหรือแจ้ง user"}, ensure_ascii=False)
+            _store(s, user_id, "user", {"text": f"TOOL_RESULT {act['tool']}: {payload}"})
+            return True
+
+        # ponytail: all 53 live photo turns opened with analyze_receipt (0 exceptions), so the first ~23 s
+        # "decide" call was pure latency — run perception deterministically, the agent reasons from the result.
+        alive = True
+        if image_path and ROUTE_IMAGE:
+            act = {"tool": "analyze_receipt", "args": {"image_id": Path(image_path).stem}}
+            _store(s, user_id, "model", {"text": json.dumps(act, ensure_ascii=False)})
+            alive = await dispatch({**act, "_routed": True})
+        for _ in range(LOOP_CAP if alive else 0):
             if time.monotonic() - t_turn > TURN_BUDGET_S:
                 out["reply"] = "ขอโทษค่ะ ระบบตอบช้าผิดปกติ ลองส่งใหม่อีกครั้งนะคะ"
                 turn_log["steps"].append({"timeout": True})
@@ -169,10 +207,15 @@ async def run_turn(external_id: str, text: str | None = None, image_path: str | 
             try:
                 act = _parse(raw)
             except (ValueError, json.JSONDecodeError) as e:
+                # ponytail: 11/53 live photo turns ended in a perfectly good plain-text summary instead of
+                # {"reply": ...}. After a tool result prose can only be the reply — accept it, skip the 23 s retry.
+                prose = "{" not in raw and bool(raw.strip()) and any("tool" in st for st in turn_log["steps"])
                 parse_fails += 1
                 turn_log["steps"].append({"parse_error": str(e), "raw": raw[:400]})
-                if parse_fails > PARSE_RETRIES:  # give up gracefully: treat raw text as the reply
+                if prose or parse_fails > PARSE_RETRIES:  # or give up gracefully: raw text becomes the reply
                     out["reply"] = raw.strip() or "ขอโทษค่ะ ระบบขัดข้อง ลองใหม่อีกครั้งนะคะ"
+                    _store(s, user_id, "model", {"text": json.dumps({"reply": out["reply"]}, ensure_ascii=False)})
+                    turn_log["steps"].append({"reply": out["reply"], "prose": True})
                     break
                 _store(s, user_id, "model", {"text": raw})
                 _store(s, user_id, "user", {"text": f"SYSTEM: ตอบไม่ตรง format ({e}) — ตอบใหม่เป็น JSON ก้อนเดียว ทำ action แรกที่ค้างอยู่ก่อน แล้วรอบถัดไปค่อยทำที่เหลือ ห้ามหยุดงาน"})
@@ -184,32 +227,11 @@ async def run_turn(external_id: str, text: str | None = None, image_path: str | 
                 turn_log["steps"].append({"reply": out["reply"]})
                 break
 
-            fn = TOOLS[act["tool"]][0]
-            args = act.get("args") or {}
-            try:
-                result = await fn(user, s, **args) if inspect.iscoroutinefunction(fn) else fn(user, s, **args)
-                turn_log["steps"].append({"tool": act["tool"], "args": args, "result": result})
-                if result.get("_image"):
-                    out["images"].append(result["_image"])
-                if result.get("_file"):
-                    out["files"].append(result["_file"])
-                if "draft_id" in result or result.get("multiple"):
-                    out["draft"] = True
-                payload = json.dumps({k: v for k, v in result.items() if not k.startswith("_")}, ensure_ascii=False, default=str)
-            except tools.ToolError as e:
-                turn_log["steps"].append({"tool": act["tool"], "args": args, "tool_error": str(e)})
-                payload = json.dumps({"error": str(e)}, ensure_ascii=False)
-            except llm.LLMError as e:  # vision call inside a tool failed: LLM is down, don't loop further
-                turn_log["steps"].append({"tool": act["tool"], "args": args, "llm_error": str(e)})
-                out["reply"] = "ขอโทษค่ะ ตอนนี้ระบบ AI ขัดข้องชั่วคราว ลองส่งรูปใหม่อีกสักครู่นะคะ"
+            if not await dispatch(act):
                 break
-            except Exception:
-                log.exception("tool %s crashed", act["tool"])  # guardrail #6: log full, tell model little
-                turn_log["steps"].append({"tool": act["tool"], "args": args, "tool_error": "internal"})
-                payload = json.dumps({"error": "เครื่องมือขัดข้องภายใน ลองวิธีอื่นหรือแจ้ง user"}, ensure_ascii=False)
-            _store(s, user_id, "user", {"text": f"TOOL_RESULT {act['tool']}: {payload}"})
         else:
-            out["reply"] = "ขั้นตอนเยอะเกินไป ขอหยุดก่อนนะคะ ลองสั่งใหม่อีกครั้งได้เลย"  # loop cap hit
+            if alive:
+                out["reply"] = "ขั้นตอนเยอะเกินไป ขอหยุดก่อนนะคะ ลองสั่งใหม่อีกครั้งได้เลย"  # loop cap hit
 
     usage = llm.USAGE.get()
     llm.USAGE.reset(usage_token)

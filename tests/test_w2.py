@@ -180,6 +180,27 @@ def test_tool_crash_does_not_leak():
     assert "เครื่องมือขัดข้องภายใน" in fed
     print("test_tool_crash_does_not_leak OK")
 
+def test_image_routed_then_prose_reply():
+    """speed path: a photo goes straight to analyze_receipt (no LLM 'decide' call), and a plain-text reply
+    after a tool result is accepted instead of burning a retry. Expect exactly 2 LLM calls."""
+    from PIL import Image
+    ext, uid = fresh_user("route")
+    png_path = f"/data/uploads/route{uuid.uuid4().hex[:8]}.png"
+    Image.new("RGB", (8, 8), "white").save(png_path)
+    calls = stub_llm([
+        json.dumps({"vendor": "ร้านเส้นทาง", "date": "2026-08-25", "total": 90, "vat": 0, "subtotal": 90, "category": "อาหาร", "items": []}),  # analyze_receipt's own call
+        "สรุปใบเสร็จร้านเส้นทาง 90 บาท ถูกต้องไหมครับ",                                                                    # agent answers in prose
+    ])
+    out = asyncio.run(agent.run_turn(ext, image_path=png_path))
+    assert len(calls) == 2, len(calls)
+    assert out["reply"].startswith("สรุปใบเสร็จร้านเส้นทาง"), out["reply"]
+    assert out["draft"] is True
+    steps = [json.loads(l) for l in open("/data/logs/turns.jsonl", encoding="utf-8")][-1]["steps"]
+    assert steps[0].get("tool") == "analyze_receipt" and steps[0].get("routed") is True, steps[0]
+    assert steps[-1].get("prose") is True, steps[-1]
+    print("test_image_routed_then_prose_reply OK")
+
+
 
 if __name__ == "__main__":
     init_db()
@@ -190,4 +211,5 @@ if __name__ == "__main__":
     test_unknown_tool_then_recover()
     test_llm_down_and_turn_budget()
     test_tool_crash_does_not_leak()
+    test_image_routed_then_prose_reply()
     print("ALL W2 STUB TESTS PASSED")

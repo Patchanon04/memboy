@@ -4,8 +4,15 @@ import json
 import time
 import uuid
 
-from app import agent, llm, worker
+from app import agent, line_io, llm, worker
 from app.db import init_db, session
+
+
+async def _no_line(*a, **k):  # this test is about ordering, not LINE — never hit api.line.me
+    return {}
+
+
+line_io._post = _no_line
 
 
 def ev(uid, i):
