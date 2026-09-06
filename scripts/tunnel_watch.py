@@ -118,7 +118,7 @@ def tick(current: str, misses: int) -> tuple[str, int]:
         set_env("PUBLIC_BASE_URL", url)
         BASE_FILE.write_text(url, encoding="utf-8")
         point_line(url)
-return current, misses
+    return current, misses
 
 if __name__ == "__main__":
     main()
