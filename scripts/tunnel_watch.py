@@ -36,7 +36,10 @@ def set_env(key: str, value: str):
 
 
 def curl(*args) -> str:
-    return subprocess.run(["curl", "-s", *args], capture_output=True, text=True, timeout=60).stdout
+    try:
+        return subprocess.run(["curl", "-s", *args], capture_output=True, text=True, timeout=60).stdout
+    except subprocess.TimeoutExpired:  # a hung LINE/tunnel call must never take the watchdog down with it
+        return ""
 
 
 def alive(base: str) -> bool:
@@ -90,26 +93,32 @@ def main():
     current = env("PUBLIC_BASE_URL")
     misses = 0
     while True:
-        if current.startswith("https://") and alive(current):
-            misses = 0
-        else:
-            misses += 1
-        # one miss is usually just an app restart; a new tunnel means a new hostname, so be sure first
-        if misses >= 3:
-            misses = 0
-            print(f"{time.strftime('%H:%M:%S')} tunnel down ({current or 'none'}) — restarting", flush=True)
-            url = start_tunnel()
-            if not url:
-                print("  tunnel not ready; will retry", flush=True)
-                time.sleep(CHECK_EVERY)
-                continue
-            print(f"  up: {url}", flush=True)
-            current = url
-            set_env("PUBLIC_BASE_URL", url)
-            BASE_FILE.write_text(url, encoding="utf-8")
-            point_line(url)
+        try:
+            current, misses = tick(current, misses)
+        except Exception as e:  # keep watching no matter what one iteration did
+            print(f"{time.strftime('%H:%M:%S')} watchdog iteration failed: {e!r}", flush=True)
         time.sleep(CHECK_EVERY)
 
+
+def tick(current: str, misses: int) -> tuple[str, int]:
+    if current.startswith("https://") and alive(current):
+        misses = 0
+    else:
+        misses += 1
+    # one miss is usually just an app restart; a new tunnel means a new hostname, so be sure first
+    if misses >= 3:
+        misses = 0
+        print(f"{time.strftime('%H:%M:%S')} tunnel down ({current or 'none'}) — restarting", flush=True)
+        url = start_tunnel()
+        if not url:
+            print("  tunnel not ready; will retry", flush=True)
+            return current, misses
+        print(f"  up: {url}", flush=True)
+        current = url
+        set_env("PUBLIC_BASE_URL", url)
+        BASE_FILE.write_text(url, encoding="utf-8")
+        point_line(url)
+return current, misses
 
 if __name__ == "__main__":
     main()
