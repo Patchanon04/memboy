@@ -57,6 +57,15 @@ services:
       timeout: 3s
       retries: 15
 
+  cloudflared:
+    # named tunnel from inside the compose network: origin is http://app:8080, so Docker Desktop's flaky host
+    # port-forward (127.0.0.1:8080 dying while containers stay Up) is out of the path. Token = TUNNEL_TOKEN in .env.
+    build: { context: ., dockerfile: Dockerfile.cloudflared }
+    restart: unless-stopped
+    command: tunnel --no-autoupdate --protocol http2 run --token ${TUNNEL_TOKEN}   # UDP/QUIC doesn't leave the Docker VM here
+    depends_on: [app]
+    networks: [default, retouch]   # also serves the sibling project's routes (retouch/healthcoach.ohmpire.dev)
+
 volumes:
   pgdata:
   redisdata:
@@ -65,3 +74,6 @@ networks:
   default:
     driver_opts:
       com.docker.network.driver.mtu: 1280   # Docker Desktop + VPN/WARP: large POST bodies stall at default MTU
+  retouch:
+    external: true
+    name: auto-retouch_default

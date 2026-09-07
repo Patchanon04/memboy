@@ -119,10 +119,16 @@ The public URL is permanent: `https://pbook.ohmpire.dev` (Cloudflare named tunne
 
 ## Public URL: Cloudflare named tunnel (permanent)
 
-`https://pbook.ohmpire.dev` → Cloudflare tunnel `ohmpire` → `cloudflared` **Windows service** on the dev machine →
-`127.0.0.1:8080` (Docker). The route/DNS lives in the Cloudflare dashboard (Networking → Tunnels → ohmpire → Routes);
-adding another project = one more route there, nothing to change locally. The service starts with Windows, so the URL,
-the LINE webhook and the MCP endpoint never change. `scripts/tunnel_watch.py` (quick-tunnel babysitter) is retired.
+`https://pbook.ohmpire.dev` → Cloudflare tunnel `ohmpire` → **`cloudflared` runs inside this compose stack**
+(`Dockerfile.cloudflared`, token = `TUNNEL_TOKEN` in `.env`, `--protocol http2` because UDP/QUIC does not leave the
+Docker VM here) → `http://pbook-app-1:8080` on the compose network. Routes/DNS live in the Cloudflare dashboard
+(Networking → Tunnels → ohmpire → Routes); nothing tunnel-related is configured locally besides the token.
 
-If `/health` gives 502 through the domain while `docker compose ps` is Up: Docker Desktop's host port-forward for 8080
-has died — `docker compose up -d --force-recreate app` rebinds it.
+Rules for routes on this tunnel (learned the hard way):
+- Origin for pbook is the **container name** `pbook-app-1:8080`, not `app:8080` — the cloudflared container also joins the
+  sibling project's network where `app` resolves to a different container.
+- Anything published on a **host port** (other projects) uses `http://host.docker.internal:<port>`, never `127.0.0.1`
+  (127.0.0.1 inside the cloudflared container is the container itself).
+- Why not the `cloudflared` Windows service + `127.0.0.1:8080`: Docker Desktop's host port-forward for a container dies
+  every hour or so while the container stays Up → 502. Inside the compose network there is no port-forward to die.
+  If a host-port route 502s, `docker compose up -d --force-recreate <that service>` in that project rebinds it.
