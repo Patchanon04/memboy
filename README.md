@@ -3,9 +3,24 @@
 Agentic AI Application (KMITL NLP Final Project) — agent loop + JSON tool calling เขียนเองบน Gemma 4
 
 - แผนงานเต็ม: [PLAN.md](PLAN.md) · คู่มือทีม: [TEAM_GUIDE.md](TEAM_GUIDE.md)
-- รัน: `cp .env.example .env` (ใส่ key) → `docker compose up --build`
-- เช็ค: `curl localhost:8080/health` · PDF ไทย: `localhost:8080/files/test.pdf`
-- eval assets + dataset 220 ใบ: `eval/`
+- ผลการทดลอง: [eval/logs/EVAL_REPORT.md](eval/logs/EVAL_REPORT.md) · [HARNESS_REPORT.md](eval/logs/HARNESS_REPORT.md) · [OCR_ABLATION.md](eval/logs/OCR_ABLATION.md)
+- eval assets + dataset สังเคราะห์ 230 ใบ (ไม่มีข้อมูลจริง): `eval/`
+
+## สำหรับผู้ตรวจ — รันเองใน 5 นาที (ไม่ต้องมี LINE)
+
+ต้องมี Docker Desktop และ Gemini API key (Gemma 4 ผ่าน Google AI Studio, free tier พอ)
+
+```bash
+cp .env.example .env            # ใส่ GEMINI_API_KEY และตั้ง WEB_PASSWORD อะไรก็ได้ (ช่อง LINE_* ปล่อยว่างได้)
+docker compose up -d --build    # app + worker + redis + postgres (~3 นาทีครั้งแรก)
+curl localhost:8080/health      # {"ok":true,"queue":true}
+```
+
+แล้วเปิด <http://localhost:8080> → login ชื่ออะไรก็ได้ → ลากรูปจาก `eval/dataset/` ใส่แชท → พิมพ์ "ยืนยัน" → "สรุปเดือนสิงหา" → "ขอ PDF"
+หน้าเว็บใช้ agent ตัวเดียวกับ LINE ทุกบรรทัด (ต่างแค่ transport) — log การตัดสินใจทุกเทิร์นอยู่ที่ `data/logs/turns.jsonl`
+
+ทดสอบซ้ำได้โดยไม่ใช้ LLM: `docker compose run -T --rm app python -m tests.test_w2` (loop) · `tests.test_w3` (tools) ·
+`tests.test_concurrency` (ลำดับ/คิว) · `tests.test_mcp` (MCP) — ที่ใช้ LLM: `tests.test_harness` (18 ข้อ) · `eval.eval_tools` · `eval.eval_scenarios`
 
 ## ทดสอบผ่านหน้าเว็บ (ไม่ต้องใช้ LINE)
 
@@ -16,8 +31,7 @@ docker compose up -d                                   # เปิดระบ�
 # เปิด http://localhost:8080 -> login (ชื่อผู้ใช้อะไรก็ได้ + WEB_PASSWORD ใน .env)
 
 python scripts/dns_pin.py && docker compose up -d       # ถ้า LLM error เรื่อง DNS (WARP)
-cloudflared tunnel --url http://localhost:8080          # ให้เพื่อนเข้าทดสอบจากที่อื่น
-# เอา URL ที่ได้ไปใส่ PUBLIC_BASE_URL ใน .env แล้ว docker compose up -d ซ้ำ (ลิงก์ PDF ในข้อความจะได้ถูก)
+python scripts/tunnel_watch.py                          # เปิด cloudflare quick tunnel + เฝ้าให้ตลอด + ตั้ง LINE webhook เอง
 ```
 
 ข้อมูลแยกตามชื่อผู้ใช้ที่ล็อกอิน (`web:<username>`) — เพื่อนหลายคนเทสพร้อมกันได้โดยบิลไม่ปนกัน
@@ -29,13 +43,13 @@ docker compose up -d --build                                   # app + worker + 
 docker compose run --rm app python -m app.cli                  # คุยกับ agent (dev)
 docker compose run -T --rm app python -m app.cli --user u1 --img /srv/eval/receipts/02_coffee.png
 docker compose run -T --rm app python -m tests.test_w2         # stub tests (ไม่ใช้โควต้า LLM)
-docker compose run -T --rm app python -m eval.eval_tools       # Eval A/D tool-selection (48 เคส)
-docker compose run -T --rm app python -m eval.eval_scenarios   # Eval B end-to-end (10 scenario, assert DB)
+docker compose run -T --rm app python -m eval.eval_tools       # Eval A/D tool-selection (55 เคส)
+docker compose run -T --rm app python -m eval.eval_scenarios   # Eval B end-to-end (11 scenario, assert DB)
 docker compose run -T --rm app python -m eval.metrics          # Eval C จาก turn log
 ```
 
 Dashboard (dev): `http://localhost:8080/dashboard?uid=<user>` · LIFF: ตั้ง `LIFF_ID` + `LINE_LOGIN_CHANNEL_ID` ใน .env
-Rich menu: `python scripts/make_rich_menu.py` แล้ว `await line_io.setup_rich_menu("eval/assets/rich_menu.png")` เมื่อมี token
+Rich menu: `python scripts/make_rich_menu.py` แล้ว `docker compose exec -T -e PYTHONPATH=/srv app python scripts/setup_line.py --richmenu /srv/eval/assets/rich_menu.png`
 
 ## ทดสอบ harness (guardrails/determinism) รายข้อ
 
