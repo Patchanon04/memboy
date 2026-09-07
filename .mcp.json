@@ -1,8 +1,8 @@
 {
   "mcpServers": {
-    "pbook": {
+    "memboy": {
       "command": "docker",
-      "args": ["compose", "-f", "docker-compose.yml", "exec", "-T", "-e", "PBOOK_MCP_USER=mcp:local", "app", "python", "-m", "app.mcp_server"]
+      "args": ["compose", "-f", "docker-compose.yml", "exec", "-T", "-e", "MEMBOY_MCP_USER=mcp:local", "app", "python", "-m", "app.mcp_server"]
     }
   }
 }

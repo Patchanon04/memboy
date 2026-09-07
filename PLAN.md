@@ -1,4 +1,4 @@
-# PBook — แผนพัฒนา LINE Bot (สโคปหลักตาม proposal)
+# MemBoy — แผนพัฒนา LINE Bot (สโคปหลักตาม proposal)
 
 > ผู้ช่วยจัดการใบเสร็จและรายงานค่าใช้จ่ายผ่าน LINE — Agentic AI Application
 > อัปเดต: 2026-08-25
@@ -19,7 +19,7 @@
 | W5 ความเร็วเทิร์นรูป | ✅ live | จาก 53 เทิร์นรูปจริง: call แรกเป็น analyze_receipt 53/53 → route ตรง (`ROUTE_IMAGE`), รับคำตอบ prose หลัง tool (11/53 เคยเสีย retry) → **p50 72 s → 42 s** (2 calls แทน 3) |
 | OCR ablation | ✅ รันแล้ว | 60 ใบ: รูปอย่างเดียว **97%** vs รูป+OCR 96% vs OCR อย่างเดียว 55%; รูปกิน ~460 token, latency มาจาก API ไม่ใช่ input → ไม่ใช้ OCR (`eval/logs/OCR_ABLATION.md`) |
 | ช่อง discount | ✅ | สกัด + เช็คเลข `subtotal - discount + vat = total` (เคสจริง: ส่วนลด 30 เคยถูกเตือนผิด) + แก้ได้ + CSV; migrate ด้วย ALTER IF NOT EXISTS |
-| MCP server | ✅ ทดสอบผ่าน | tools ชุดเดียวกับ agent เปิดให้ client ภายนอก: stdio (`.mcp.json`) + **HTTP `/mcp`** (stateless, bearer `MCP_TOKEN`, `X-PBook-User` แยกข้อมูล) — `tests.test_mcp` ผ่านทั้งสอง transport, ทดสอบผ่าน tunnel จริง |
+| MCP server | ✅ ทดสอบผ่าน | tools ชุดเดียวกับ agent เปิดให้ client ภายนอก: stdio (`.mcp.json`) + **HTTP `/mcp`** (stateless, bearer `MCP_TOKEN`, `X-MemBoy-User` แยกข้อมูล) — `tests.test_mcp` ผ่านทั้งสอง transport, ทดสอบผ่าน tunnel จริง |
 | Ops บนเครื่อง dev | ✅ | `tunnel_watch.py` เฝ้า quick tunnel + ตั้ง LINE webhook เอง (เช็ค body, 3-strike, เขียน `data/public_base_url` ให้ container อ่านสด); compose `restart: unless-stopped`; สาเหตุ Docker Desktop ดับซ้ำ = socket `dockerInference` ค้าง (README troubleshooting) |
 | **ค้าง** | rotate Gemini key + LINE token ก่อนส่ง (เคยหลุดใน log), **URL ถาวร** (Railway/named tunnel — quick tunnel เปลี่ยน hostname ทุกครั้งที่ restart ทำให้ MCP client ภายนอกต้องแก้ URL), LIFF (LINE Login channel), `git tag v1.0` | — |
 
@@ -50,7 +50,7 @@ LINE OA ── webhook ──> FastAPI ──> agent loop (Gemma 4 + JSON tool c
 ## โครง repo
 
 ```
-pbook/
+memboy/
 ├── docker-compose.yml          # app + postgres, volume ./data:/data
 ├── Dockerfile                  # python:3.11-slim + weasyprint deps + ฟอนต์ Sarabun
 ├── .env.example                # LINE_CHANNEL_SECRET/TOKEN, GEMINI_API_KEY, DATABASE_URL
@@ -164,7 +164,7 @@ categories    (id, user_id FK, name UNIQUE per user)              -- หมว�
 
 **W3.7 — ชั้นสุดท้าย (สโคป FREEZE แล้ว — ห้ามเพิ่มอีกจนกว่า core จะรันได้จริง)**
 1. **Onboarding flow** — follow event → แนะนำตัว + ส่งรูปบิลตัวอย่างให้ลองเล่นทันที (ปิดจุดตาย "แอดบอทแล้วไม่รู้จะพิมพ์อะไร" วันพรีเซนต์)
-2. **LIFF dashboard** — หน้าเว็บกราฟสรุปเปิดในแอป LINE (ปิด loop กับอีเมล proposal ที่เขียนเรื่อง LIFF ไว้; reuse ทักษะจาก pbook-chat)
+2. **LIFF dashboard** — หน้าเว็บกราฟสรุปเปิดในแอป LINE (ปิด loop กับอีเมล proposal ที่เขียนเรื่อง LIFF ไว้; reuse ทักษะจาก memboy-chat)
 
 ⚠️ สโคป **FREEZE** ณ 2026-09-02 — เกิน 4 สัปดาห์จริงประมาณ 2.5 สัปดาห์ ลำดับ unlock ตายตัว: core W1–W3 ต้องรันได้จริงก่อน → W3.5 → W3.6 — เส้นตัดอยู่ระหว่างข้อไหนก็ได้โดย proposal ไม่เสียคำพูด เพราะชั้น stretch ทั้งหมดไม่เคยสัญญากับอาจารย์
 

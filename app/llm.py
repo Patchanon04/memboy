@@ -9,7 +9,7 @@ import httpx
 import logging
 import time
 
-log = logging.getLogger("pbook")
+log = logging.getLogger("memboy")
 # per-turn accounting: agent.run_turn sets this, every call adds to it (asyncio-safe)
 USAGE: contextvars.ContextVar = contextvars.ContextVar("llm_usage", default=None)
 logging.getLogger("httpx").setLevel(logging.WARNING)  # httpx INFO logs the full URL incl. ?key= — never

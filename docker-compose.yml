@@ -1,3 +1,4 @@
+name: memboy   # compose project name (containers memboy-*, volumes memboy_*) regardless of the folder name
 services:
   app:
     restart: unless-stopped   # come back on their own after Docker Desktop restarts/updates
@@ -6,7 +7,7 @@ services:
     ports: ["8080:8080"]
     env_file: .env
     environment:
-      DATABASE_URL: postgresql+psycopg://pbook:pbook@db:5432/pbook
+      DATABASE_URL: postgresql+psycopg://memboy:memboy@db:5432/memboy
       REDIS_URL: redis://redis:6379
       TZ: Asia/Bangkok
     volumes:
@@ -26,7 +27,7 @@ services:
     dns: [1.1.1.1, 8.8.8.8]
     env_file: .env
     environment:
-      DATABASE_URL: postgresql+psycopg://pbook:pbook@db:5432/pbook
+      DATABASE_URL: postgresql+psycopg://memboy:memboy@db:5432/memboy
       REDIS_URL: redis://redis:6379
       TZ: Asia/Bangkok
     volumes:
@@ -47,12 +48,12 @@ services:
     restart: unless-stopped   # come back on their own after Docker Desktop restarts/updates
     image: postgres:16-alpine
     environment:
-      POSTGRES_USER: pbook
-      POSTGRES_PASSWORD: pbook   # ponytail: dev creds, compose-internal only
-      POSTGRES_DB: pbook
+      POSTGRES_USER: memboy
+      POSTGRES_PASSWORD: memboy   # ponytail: dev creds, compose-internal only
+      POSTGRES_DB: memboy
     volumes: ["pgdata:/var/lib/postgresql/data"]
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U pbook"]
+      test: ["CMD-SHELL", "pg_isready -U memboy"]
       interval: 2s
       timeout: 3s
       retries: 15

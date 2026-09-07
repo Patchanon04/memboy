@@ -53,7 +53,7 @@ async def main():
         print(show(await run_turn(args.user, text=args.once, image_path=img)))
         return
 
-    print("PBook CLI — พิมพ์คุยได้เลย | /img <path> [ข้อความ] | Ctrl-C ออก")
+    print("MemBoy CLI — พิมพ์คุยได้เลย | /img <path> [ข้อความ] | Ctrl-C ออก")
     while True:
         try:
             line = input("คุณ> ").strip()

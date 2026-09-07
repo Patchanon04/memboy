@@ -157,7 +157,7 @@ add("07_ptt_fuel.png", [("PTT Station", "c", "tahomab", 20), ("บจก. ปิ
 # ---------- 8. Hotel folio ----------
 room = 2 * 1850; svc = round(room * 0.10, 2); b = room + svc; v = round(b * 0.07, 2); tot = b + v
 add("08_hotel.png", [("The Riverside Hotel Chiang Mai", "c", "leelab", 20), ("99 Charoenrat Rd., Chiang Mai 50000 | Tax ID 0505551000789", "c", "leela", 11), ("", 4), ("GUEST FOLIO / TAX INVOICE", "c", "leelab", 14), ("--",),
-    ("2col", "Guest: Mr. Somchai Jaidee", "Room 1207", "leela", 12), ("2col", "Arrival 10 Aug 2026", "Departure 12 Aug 2026", "leela", 12), ("2col", "Folio No. F-230811", "Company: PBook Technology Co., Ltd.", "leela", 11), ("--",),
+    ("2col", "Guest: Mr. Somchai Jaidee", "Room 1207", "leela", 12), ("2col", "Arrival 10 Aug 2026", "Departure 12 Aug 2026", "leela", 12), ("2col", "Folio No. F-230811", "Company: MemBoy Technology Co., Ltd.", "leela", 11), ("--",),
     ("2col", "10/08 Room Charge - Deluxe", "1,850.00", "leela", 12), ("2col", "11/08 Room Charge - Deluxe", "1,850.00", "leela", 12), ("2col", "Service Charge 10%", money(svc), "leela", 12), ("--",),
     ("2col", "Subtotal", money(b), "leela", 12), ("2col", "VAT 7%", money(v), "leela", 12), ("2col", "GRAND TOTAL (THB)", money(tot), "leelab", 16), ("2col", "Paid by VISA ****9921", "Balance 0.00", "leela", 12)],
     dict(vendor="The Riverside Hotel Chiang Mai", date="2026-08-12", total=tot, vat=v, category="ที่พัก"), dict(width=560, pad=30), dict(rot=2, blur=0.4))
@@ -219,7 +219,7 @@ add("17_bigc.png", [("Big C", "c", "tahomab", 26), ("บิ๊กซี ซู�
 
 # ---------- 18. IT repair service (abbreviated tax invoice, Consolas mono) ----------
 b = 1500 + 890; v = round(b * 0.07, 2); tot = b + v
-add("18_it_repair.png", [("QUICKFIX COMPUTER SERVICE", "c", "consola", 16), ("Tax ID 0115560012378", "c", "consola", 12), ("ABB. TAX INVOICE", "c", "consola", 12), ("------------------------------", "c", "consola", 12), ("Date: 06/08/2026   No: 26-0318", "l", "consola", 12), ("Cust: PBook Tech Co.,Ltd.", "l", "consola", 12), ("------------------------------", "c", "consola", 12),
+add("18_it_repair.png", [("QUICKFIX COMPUTER SERVICE", "c", "consola", 16), ("Tax ID 0115560012378", "c", "consola", 12), ("ABB. TAX INVOICE", "c", "consola", 12), ("------------------------------", "c", "consola", 12), ("Date: 06/08/2026   No: 26-0318", "l", "consola", 12), ("Cust: MemBoy Tech Co.,Ltd.", "l", "consola", 12), ("------------------------------", "c", "consola", 12),
     ("2col", "Laptop SSD upgrade 1TB", "1500.00", "consola", 12), ("2col", "Labor / diagnostic", "890.00", "consola", 12), ("------------------------------", "c", "consola", 12), ("2col", "SUBTOTAL", money(b), "consola", 12), ("2col", "VAT 7%", money(v), "consola", 12), ("2col", "TOTAL", money(tot), "consola", 15), ("Warranty 90 days", "l", "consola", 11)],
     dict(vendor="QuickFix Computer Service", date="2026-08-06", total=tot, vat=v, category="อุปกรณ์"), dict(width=380, bg=(248, 248, 248)), dict(rot=-2, blur=0.4, noise=0.008))
 

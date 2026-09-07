@@ -1,4 +1,4 @@
-"""PBook — W1: webhook -> Redis queue (arq), Thai PDF proof, DB init. Processing lives in app/worker.py."""
+"""MemBoy — W1: webhook -> Redis queue (arq), Thai PDF proof, DB init. Processing lives in app/worker.py."""
 import datetime
 import json
 import logging
@@ -16,7 +16,7 @@ import httpx
 from app import line_io, report, web, tools
 from app.db import User, init_db, session
 
-log = logging.getLogger("pbook")
+log = logging.getLogger("memboy")
 logging.basicConfig(level=logging.INFO)
 
 Path("/data/uploads").mkdir(parents=True, exist_ok=True)

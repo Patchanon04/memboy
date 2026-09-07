@@ -14,7 +14,7 @@ from sqlalchemy import select
 from app import llm, tools
 from app.db import Conversation, Note, User, session
 
-log = logging.getLogger("pbook")
+log = logging.getLogger("memboy")
 TZ = zoneinfo.ZoneInfo("Asia/Bangkok")
 HISTORY_LIMIT = 30
 LOOP_CAP = 6          # guardrail #2
@@ -53,7 +53,7 @@ def system_prompt(user: User, s) -> str:
     notes = [n.text for n in s.scalars(select(Note).where(Note.user_id == user.id))]
     prof = tools._active_profile(user, s).name
     cats = tools.user_categories(user, s)
-    return f"""คุณคือ PBook ผู้ช่วยจัดการใบเสร็จและค่าใช้จ่ายใน LINE พูดไทยสุภาพ กระชับ
+    return f"""คุณคือ MemBoy ผู้ช่วยจัดการใบเสร็จและค่าใช้จ่ายใน LINE พูดไทยสุภาพ กระชับ
 วันนี้คือ {now.strftime("%Y-%m-%d")} ({now.strftime("%A")}) เวลา {now.strftime("%H:%M")} เวลาไทย — ใช้คำนวณ "เดือนนี้/เมื่อวาน/สัปดาห์ก่อน" เป็นช่วงวันที่เอง
 โปรไฟล์ที่ใช้อยู่: {prof} | หมวดหมู่ที่มี: {cats}
 สิ่งที่ user เคยให้จำไว้: {notes if notes else "(ยังไม่มี)"}

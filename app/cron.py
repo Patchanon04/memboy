@@ -13,7 +13,7 @@ from app import agent, line_io
 from app.db import User, session
 from app.events import _messages
 
-log = logging.getLogger("pbook")
+log = logging.getLogger("memboy")
 USER_PREFIX = os.environ.get("CRON_USER_PREFIX", "U")  # real LINE ids start with "U"; override for dev tests
 
 WEEKLY_GOAL = ("SYSTEM_GOAL: ถึงเวลาสรุปประจำสัปดาห์ (ระบบส่งเอง user ไม่ได้ถาม) — ดูค่าใช้จ่าย 7 วันล่าสุดทุกโปรไฟล์ "

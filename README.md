@@ -1,4 +1,4 @@
-# PBook — ผู้ช่วยจัดการใบเสร็จและรายงานค่าใช้จ่ายผ่าน LINE
+# MemBoy — ผู้ช่วยจัดการใบเสร็จและรายงานค่าใช้จ่ายผ่าน LINE
 
 Agentic AI Application (KMITL NLP Final Project) — agent loop + JSON tool calling เขียนเองบน Gemma 4
 
@@ -99,33 +99,33 @@ answer after a tool result is accepted as the reply. Live photo turn: 72 s → ~
 
 The 18 tool functions the LINE agent calls are also served over MCP, so any MCP client — Claude Desktop, Claude Code,
 another agent — can work on the same data with the same guardrails (user scoping, arg validation, draft→confirm, soft
-delete). Nothing is duplicated: tools are read from `agent.TOOLS`; one extra tool `pbook_upload_receipt` takes a base64
-image and hands back an `image_id` for `pbook_analyze_receipt`. One server object, two transports:
+delete). Nothing is duplicated: tools are read from `agent.TOOLS`; one extra tool `memboy_upload_receipt` takes a base64
+image and hands back an `image_id` for `memboy_analyze_receipt`. One server object, two transports:
 
 | transport | for | how |
 |---|---|---|
-| **HTTP** (`POST {PUBLIC_BASE_URL}/mcp`) | many remote clients at once | stateless Streamable HTTP · `Authorization: Bearer <MCP_TOKEN>` (401 without, 503 if unset) · `X-PBook-User: <id>` picks the user (default `mcp:remote`) |
-| **stdio** | one local client | `docker compose exec -T -e PBOOK_MCP_USER=web:alice app python -m app.mcp_server` — the repo's `.mcp.json` does this for Claude Code |
+| **HTTP** (`POST {PUBLIC_BASE_URL}/mcp`) | many remote clients at once | stateless Streamable HTTP · `Authorization: Bearer <MCP_TOKEN>` (401 without, 503 if unset) · `X-MemBoy-User: <id>` picks the user (default `mcp:remote`) |
+| **stdio** | one local client | `docker compose exec -T -e MEMBOY_MCP_USER=web:alice app python -m app.mcp_server` — the repo's `.mcp.json` does this for Claude Code |
 
 Connect a remote client (Claude Code example; Claude Desktop/claude.ai connectors take the same URL + header):
 
 ```bash
-claude mcp add --transport http pbook https://pbook.ohmpire.dev/mcp -H "Authorization: Bearer <MCP_TOKEN>" -H "X-PBook-User: mcp:demo"
+claude mcp add --transport http memboy https://memboy.ohmpire.dev/mcp -H "Authorization: Bearer <MCP_TOKEN>" -H "X-MemBoy-User: mcp:demo"
 ```
 
 Test without an LLM: `docker compose exec -T app python -m tests.test_mcp` — real stdio and HTTP clients: tool list,
 per-user scoping through both transports, actionable errors, upload, 401 without token.
-The public URL is permanent: `https://pbook.ohmpire.dev` (Cloudflare named tunnel, see below).
+The public URL is permanent: `https://memboy.ohmpire.dev` (Cloudflare named tunnel, see below).
 
 ## Public URL: Cloudflare named tunnel (permanent)
 
-`https://pbook.ohmpire.dev` → Cloudflare tunnel `ohmpire` → **`cloudflared` runs inside this compose stack**
+`https://memboy.ohmpire.dev` → Cloudflare tunnel `ohmpire` → **`cloudflared` runs inside this compose stack**
 (`Dockerfile.cloudflared`, token = `TUNNEL_TOKEN` in `.env`, `--protocol http2` because UDP/QUIC does not leave the
-Docker VM here) → `http://pbook-app-1:8080` on the compose network. Routes/DNS live in the Cloudflare dashboard
+Docker VM here) → `http://memboy-app-1:8080` on the compose network. Routes/DNS live in the Cloudflare dashboard
 (Networking → Tunnels → ohmpire → Routes); nothing tunnel-related is configured locally besides the token.
 
 Rules for routes on this tunnel (learned the hard way):
-- Origin for pbook is the **container name** `pbook-app-1:8080`, not `app:8080` — the cloudflared container also joins the
+- Origin for memboy is the **container name** `memboy-app-1:8080`, not `app:8080` — the cloudflared container also joins the
   sibling project's network where `app` resolves to a different container.
 - Anything published on a **host port** (other projects) uses `http://host.docker.internal:<port>`, never `127.0.0.1`
   (127.0.0.1 inside the cloudflared container is the container itself).

@@ -9,7 +9,7 @@ import os
 import httpx
 from pathlib import Path
 
-log = logging.getLogger("pbook")
+log = logging.getLogger("memboy")
 SECRET = os.environ.get("LINE_CHANNEL_SECRET", "")
 TOKEN = os.environ.get("LINE_CHANNEL_ACCESS_TOKEN", "")
 API = "https://api.line.me/v2/bot"
@@ -109,7 +109,7 @@ def summary_card(title: str, total: float, by_category: dict, period: str) -> di
 
 # ---------- rich menu (run once) ----------
 RICH_MENU = {
-    "size": {"width": 2500, "height": 1686}, "selected": True, "name": "pbook-main", "chatBarText": "เมนู PBook",
+    "size": {"width": 2500, "height": 1686}, "selected": True, "name": "memboy-main", "chatBarText": "เมนู MemBoy",
     "areas": [
         {"bounds": {"x": 0, "y": 0, "width": 833, "height": 843}, "action": {"type": "message", "text": "วิธีส่งบิล"}},
         {"bounds": {"x": 833, "y": 0, "width": 834, "height": 843}, "action": {"type": "message", "text": "สรุปค่าใช้จ่ายเดือนนี้"}},

@@ -1,11 +1,11 @@
-"""PBook as an MCP server: the same 18 tool functions the LINE agent uses, exposed to any MCP client
+"""MemBoy as an MCP server: the same 18 tool functions the LINE agent uses, exposed to any MCP client
 (Claude Desktop, Claude Code, other agents). Nothing is re-implemented — tools come straight from agent.TOOLS, so the
 user-scoping / validation / soft-delete guardrails apply unchanged.
 
 Two transports, one server object:
-  stdio  (local, one process per client)   docker compose exec -T -e PBOOK_MCP_USER=web:alice app python -m app.mcp_server
+  stdio  (local, one process per client)   docker compose exec -T -e MEMBOY_MCP_USER=web:alice app python -m app.mcp_server
   HTTP   (remote, many clients at once)    POST {PUBLIC_BASE_URL}/mcp  — mounted by app.main, bearer MCP_TOKEN,
-                                           header X-PBook-User picks the user (default "mcp:remote")
+                                           header X-MemBoy-User picks the user (default "mcp:remote")
 ponytail: low-level Server (mcp 2.x) + permissive schemas generated from the TOOLS hints — the tools validate their own args.
 """
 import asyncio
@@ -26,8 +26,8 @@ from app import agent, tools
 from app.db import User, init_db, session
 from app.line_io import base_url
 
-log = logging.getLogger("pbook.mcp")
-USER_EXT = os.environ.get("PBOOK_MCP_USER", "mcp:local")
+log = logging.getLogger("memboy.mcp")
+USER_EXT = os.environ.get("MEMBOY_MCP_USER", "mcp:local")
 UPLOADS = Path("/data/uploads")
 READ_ONLY = {"check_duplicate", "find_invoices", "summarize_expenses", "analyze_trends", "get_invoice_image", "split_bill", "convert_currency"}
 ANY = ["string", "number", "boolean", "object", "array", "null"]
@@ -39,8 +39,8 @@ def _schema(params: dict) -> dict:
 
 
 UPLOAD_TOOL = Tool(
-    name="pbook_upload_receipt",
-    description="อัปโหลดรูปใบเสร็จ/สลิป (base64) เข้าระบบ คืน image_id สำหรับ pbook_analyze_receipt",
+    name="memboy_upload_receipt",
+    description="อัปโหลดรูปใบเสร็จ/สลิป (base64) เข้าระบบ คืน image_id สำหรับ memboy_analyze_receipt",
     input_schema={"type": "object", "required": ["image_base64"],
                   "properties": {"image_base64": {"type": "string", "description": "เนื้อไฟล์เข้ารหัส base64"},
                                  "filename": {"type": "string", "description": "ชื่อไฟล์เดิม ใช้เอานามสกุล (.jpg/.png/.pdf) ค่าเริ่มต้น .jpg"}}},
@@ -50,7 +50,7 @@ UPLOAD_TOOL = Tool(
 async def list_tools(ctx, params) -> ListToolsResult:
     out = [UPLOAD_TOOL]
     for name, (fn, desc, hints) in agent.TOOLS.items():
-        out.append(Tool(name=f"pbook_{name}", description=desc, input_schema=_schema(hints),
+        out.append(Tool(name=f"memboy_{name}", description=desc, input_schema=_schema(hints),
                         annotations=ToolAnnotations(read_only_hint=name in READ_ONLY,
                                                     destructive_hint=name == "delete_invoice",
                                                     idempotent_hint=name in READ_ONLY or name in ("restore_invoice", "mark_reimbursed"),
@@ -59,10 +59,10 @@ async def list_tools(ctx, params) -> ListToolsResult:
 
 
 def _user_ext(ctx) -> str:
-    """Over HTTP each client says who it is (X-PBook-User); over stdio the env decides. Same id space as LINE/web."""
+    """Over HTTP each client says who it is (X-MemBoy-User); over stdio the env decides. Same id space as LINE/web."""
     req = getattr(ctx, "request", None)
     if req is not None and hasattr(req, "headers"):
-        return (req.headers.get("x-pbook-user") or "mcp:remote").strip()[:80]
+        return (req.headers.get("x-memboy-user") or "mcp:remote").strip()[:80]
     return USER_EXT
 
 
@@ -79,7 +79,7 @@ def _upload(args: dict) -> dict:
     UPLOADS.mkdir(parents=True, exist_ok=True)
     image_id = f"mcp{uuid.uuid4().hex[:10]}"
     (UPLOADS / f"{image_id}{ext}").write_bytes(data)
-    return {"image_id": image_id, "bytes": len(data), "next": f"pbook_analyze_receipt(image_id={image_id!r})"}
+    return {"image_id": image_id, "bytes": len(data), "next": f"memboy_analyze_receipt(image_id={image_id!r})"}
 
 
 def _error(msg: str) -> CallToolResult:
@@ -88,7 +88,7 @@ def _error(msg: str) -> CallToolResult:
 
 async def call_tool(ctx, params) -> CallToolResult:
     args = dict(params.arguments or {})
-    key = params.name.removeprefix("pbook_")
+    key = params.name.removeprefix("memboy_")
     try:
         if key == "upload_receipt":
             result = _upload(args)
@@ -118,7 +118,7 @@ async def call_tool(ctx, params) -> CallToolResult:
     return CallToolResult(content=content, structured_content=public)
 
 
-server = Server("pbook", on_list_tools=list_tools, on_call_tool=call_tool)
+server = Server("memboy", on_list_tools=list_tools, on_call_tool=call_tool)
 
 
 def http_app():
@@ -131,7 +131,7 @@ def http_app():
 async def main():
     logging.basicConfig(level=logging.INFO, stream=open(os.devnull, "w"))  # stdout is the protocol channel — keep it clean
     init_db()
-    log.info("pbook mcp up as %s (%s)", USER_EXT, base_url())
+    log.info("memboy mcp up as %s (%s)", USER_EXT, base_url())
     async with stdio_server() as (read, write):
         await server.run(read, write, server.create_initialization_options())
 

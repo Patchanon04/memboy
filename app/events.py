@@ -10,7 +10,7 @@ from sqlalchemy.exc import IntegrityError
 from app import agent, line_io
 from app.db import ProcessedEvent, session
 
-log = logging.getLogger("pbook")
+log = logging.getLogger("memboy")
 UPLOADS = Path("/data/uploads")
 UPLOADS.mkdir(parents=True, exist_ok=True)
 CONFIRM_QUICK = ["ยืนยัน บันทึกเลย", "ขอแก้ไข", "ยกเลิก ไม่บันทึก"]
@@ -40,7 +40,7 @@ def shrink(data: bytes, max_px: int = 1280) -> bytes:
     except Exception:
         return data
 
-WELCOME = ("สวัสดีค่ะ 👋 PBook ช่วยเก็บใบเสร็จและทำรายงานเบิกให้ค่ะ\n"
+WELCOME = ("สวัสดีค่ะ 👋 MemBoy ช่วยเก็บใบเสร็จและทำรายงานเบิกให้ค่ะ\n"
            "ลองส่ง 📷 รูปใบเสร็จมาได้เลย เดี๋ยวสรุปให้ยืนยันก่อนบันทึก\n"
            "ถามได้เช่น: \"เดือนนี้ใช้ไปเท่าไหร่\" / \"ขอรายงาน PDF\" / \"สร้างโปรไฟล์ทริปเชียงใหม่\"")
 

@@ -25,7 +25,7 @@ def _token(user: str) -> str:
 
 
 def current_user(request: Request) -> str | None:
-    c = request.cookies.get("pbook_auth", "")
+    c = request.cookies.get("memboy_auth", "")
     user = c.split(":", 1)[0]
     if not PASSWORD:
         return user or "dev"
@@ -51,14 +51,14 @@ async def login(request: Request):
     if not user or (PASSWORD and not hmac.compare_digest(str(body.get("password", "")), PASSWORD)):
         return Response(status_code=401)
     r = Response(status_code=204)
-    r.set_cookie("pbook_auth", _token(user), max_age=30 * 24 * 3600, httponly=True, samesite="lax")
+    r.set_cookie("memboy_auth", _token(user), max_age=30 * 24 * 3600, httponly=True, samesite="lax")
     return r
 
 
 @router.post("/api/logout")
 def logout():
     r = Response(status_code=204)
-    r.delete_cookie("pbook_auth")
+    r.delete_cookie("memboy_auth")
     return r
 
 

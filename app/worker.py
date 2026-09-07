@@ -11,7 +11,7 @@ from app import cron as jobs, events
 from app.db import init_db
 
 logging.basicConfig(level=logging.INFO)
-log = logging.getLogger("pbook")
+log = logging.getLogger("memboy")
 
 _locks: dict[str, asyncio.Lock] = collections.defaultdict(asyncio.Lock)  # per-user ordering (arq itself doesn't order)
 

@@ -6,7 +6,7 @@ from pathlib import Path
 
 LOGS = Path("/data/logs")
 OUT = Path("/srv/eval/logs/EVAL_REPORT.md") if Path("/srv/eval/logs").exists() else Path("EVAL_REPORT.md")
-md = ["# PBook — Evaluation Report (auto-generated)\n"]
+md = ["# MemBoy — Evaluation Report (auto-generated)\n"]
 
 # ---- A/D tool selection per model ----
 for f in sorted(LOGS.glob("evalA_*.json")):

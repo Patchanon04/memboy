@@ -1,4 +1,4 @@
-# PBook — คู่มืองานสำหรับเพื่อนร่วมทีม (ฉบับส่งต่อได้เลย)
+# MemBoy — คู่มืองานสำหรับเพื่อนร่วมทีม (ฉบับส่งต่อได้เลย)
 
 > ไม่ต้องเขียนโค้ดแม้แต่บรรทัดเดียว ทุกงานทำใน Google Sheet / Canva / LINE / PowerPoint
 > ข้อห้ามเดียวของอาจารย์: **ห้ามใช้ข้อมูลจริง/ข้อมูลส่วนตัว** — ชื่อร้าน ราคา ชื่อคน แต่งขึ้นทั้งหมด
@@ -75,7 +75,7 @@
 
 ### งานที่ 1: ตั้ง LINE Official Account (W1, ~1 ชม.)
 
-1. สมัคร https://developers.line.biz → สร้าง Provider ชื่อ "PBook"
+1. สมัคร https://developers.line.biz → สร้าง Provider ชื่อ "MemBoy"
 2. สร้าง Messaging API channel → เก็บ **Channel secret** กับ **Channel access token** ส่งให้คนเขียนโค้ด (ห้ามโพสต์ลงกลุ่มสาธารณะ)
 3. ปิด auto-reply / greeting message ที่ LINE ใส่มาให้ (Settings → Response)
 
