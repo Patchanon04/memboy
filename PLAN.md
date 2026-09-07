@@ -4,7 +4,7 @@
 > อัปเดต: 2026-08-25
 
 
-## สถานะ (อัปเดต 2026-09-03)
+## สถานะ (อัปเดต 2026-09-07)
 
 | ส่วน | สถานะ | หลักฐาน |
 |---|---|---|
@@ -13,10 +13,15 @@
 | W3 tools ถามตอบ/โปรไฟล์/รายงาน/CSV/notes/เบิก + LINE wiring | ✅ โค้ด + live บางส่วน | PDF มีกราฟ, CSV, quick reply, flex card, onboarding, rich menu image |
 | W3.5 รูปคืน/compare/กราฟ/สลิป+QR/undo/Flex/FX/PDF input/หลายใบ/สรุปสัปดาห์ | ✅ โค้ด | สลิป QR verified/mismatch/dup-ref live ผ่าน; cron ผ่าน arq |
 | W3.6 หารบิล/ค้น item/trends/รายงานอัตโนมัติ/ค้นหลวม/หมวด custom | ✅ โค้ด | tools 19 ตัว |
-| W3.7 onboarding + LIFF dashboard | ✅ โค้ด | /dashboard + /api/dashboard (dev uid mode ผ่าน) |
+| W3.7 onboarding + LIFF dashboard | ✅ โค้ด / ⏳ LIFF | /dashboard + /api/dashboard (dev uid mode ผ่าน); เปิดในแอป LINE ต้องมี LINE Login channel + `LIFF_ID` — ยังไม่ได้ทำ (harness X2) |
 | W4 eval A/B/C/D | ✅ **รันแล้ว** | Eval A/D tool-selection 54 เคส: **26B 54/54 (หลังแก้ scorer/เกณฑ์ที่ผิด — ดิบ 44/48), 31B 47/48**; Eval B end-to-end 10 scenario: **9/10** (ตกเคสเตือนงบ → เพิ่ม month_total_so_far ใน save_invoice); Eval C: JSON first-try **98.3%** บน 298 calls, loop-cap 0; extraction 200 ใบ: 95.5% (v3 prompt); **สลิป 30 ใบ 6 layout: 30/30 ทุก field, QR mismatch จับได้ 5/5**; PDF input/FX/บิลหลายใบ probe ผ่าน — รายงานรวม `eval/logs/EVAL_REPORT.md` |
 | Web UI ทดสอบ (login + แชท + quick reply + ลิงก์ PDF/CSV, agent เดียวกับ LINE) | ✅ | เปิดผ่าน cloudflared ให้ทีมเทสได้ทันทีโดยไม่ต้องรอ LINE |
-| **ค้าง** | rotate Gemini key (key เคยหลุดใน log ที่ push ไป — โค้ดปิด httpx log แล้ว), LINE credentials จริง (webhook ผ่านมือถือ, rich menu upload, LIFF id — `scripts/setup_line.py` พร้อม), สไลด์/video (งานเพื่อน) | |
+| W5 ความเร็วเทิร์นรูป | ✅ live | จาก 53 เทิร์นรูปจริง: call แรกเป็น analyze_receipt 53/53 → route ตรง (`ROUTE_IMAGE`), รับคำตอบ prose หลัง tool (11/53 เคยเสีย retry) → **p50 72 s → 42 s** (2 calls แทน 3) |
+| OCR ablation | ✅ รันแล้ว | 60 ใบ: รูปอย่างเดียว **97%** vs รูป+OCR 96% vs OCR อย่างเดียว 55%; รูปกิน ~460 token, latency มาจาก API ไม่ใช่ input → ไม่ใช้ OCR (`eval/logs/OCR_ABLATION.md`) |
+| ช่อง discount | ✅ | สกัด + เช็คเลข `subtotal - discount + vat = total` (เคสจริง: ส่วนลด 30 เคยถูกเตือนผิด) + แก้ได้ + CSV; migrate ด้วย ALTER IF NOT EXISTS |
+| MCP server | ✅ ทดสอบผ่าน | tools ชุดเดียวกับ agent เปิดให้ client ภายนอก: stdio (`.mcp.json`) + **HTTP `/mcp`** (stateless, bearer `MCP_TOKEN`, `X-PBook-User` แยกข้อมูล) — `tests.test_mcp` ผ่านทั้งสอง transport, ทดสอบผ่าน tunnel จริง |
+| Ops บนเครื่อง dev | ✅ | `tunnel_watch.py` เฝ้า quick tunnel + ตั้ง LINE webhook เอง (เช็ค body, 3-strike, เขียน `data/public_base_url` ให้ container อ่านสด); compose `restart: unless-stopped`; สาเหตุ Docker Desktop ดับซ้ำ = socket `dockerInference` ค้าง (README troubleshooting) |
+| **ค้าง** | rotate Gemini key + LINE token ก่อนส่ง (เคยหลุดใน log), **URL ถาวร** (Railway/named tunnel — quick tunnel เปลี่ยน hostname ทุกครั้งที่ restart ทำให้ MCP client ภายนอกต้องแก้ URL), LIFF (LINE Login channel), `git tag v1.0` | — |
 
 ## การตัดสินใจที่ปิดแล้ว (พร้อมเหตุผล)
 
