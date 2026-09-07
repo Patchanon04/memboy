@@ -12,7 +12,7 @@ from pathlib import Path
 from sqlalchemy import func, select
 
 from app import llm, report
-from app.line_io import base_url
+from app import files
 from app.db import Category, Invoice, Note, Profile, User, VendorPref
 
 CATS_DEFAULT = ["อาหาร", "เดินทาง", "ที่พัก", "อุปกรณ์", "สุขภาพ", "ของใช้"]
@@ -514,7 +514,7 @@ def generate_report(user, s, date_from=None, date_to=None, profile=None, reimbur
            "sum_total": t["total"], "sum_vat": t["vat"], "by_category": t["by_category"],
            "chart": report.chart_png(t["by_category"], rows)}
     path = report.render_report(ctx)
-    return {"pdf_url": f"{base_url()}/files/{path.name}", "_file": str(path), "count": len(rows), "total": t["total"]}
+    return {"pdf_url": files.url("files", path.name), "_file": str(path), "count": len(rows), "total": t["total"]}
 
 
 def export_csv(user, s, date_from=None, date_to=None, profile=None, reimbursed=None, **_):
@@ -526,7 +526,7 @@ def export_csv(user, s, date_from=None, date_to=None, profile=None, reimbursed=N
         for iv in rows:
             w.writerow([iv.id, iv.invoice_date, iv.vendor, iv.category, iv.total_thb, iv.discount or 0, iv.vat, iv.currency,
                         "yes" if iv.reimbursed_at else "no", iv.doc_type, iv.qr_status or ""])
-    return {"csv_url": f"{base_url()}/files/{path.name}", "_file": str(path), "count": len(rows)}
+    return {"csv_url": files.url("files", path.name), "_file": str(path), "count": len(rows)}
 
 
 # ---------- 13. image back ----------
@@ -535,7 +535,7 @@ def get_invoice_image(user, s, invoice_id=None, **_):
     if not iv.image_path or not Path(iv.image_path).exists():
         raise ToolError("บิลนี้ไม่มีรูปเก็บไว้")
     return {"invoice_id": iv.id, "vendor": iv.vendor, "_image": iv.image_path,
-            "image_url": f"{base_url()}/uploads/{Path(iv.image_path).name}"}
+            "image_url": files.url("uploads", Path(iv.image_path).name)}
 
 
 # ---------- 14. categories ----------

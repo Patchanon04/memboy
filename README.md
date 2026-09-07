@@ -132,3 +132,17 @@ Rules for routes on this tunnel (learned the hard way):
 - Why not the `cloudflared` Windows service + `127.0.0.1:8080`: Docker Desktop's host port-forward for a container dies
   every hour or so while the container stays Up → 502. Inside the compose network there is no port-forward to die.
   If a host-port route 502s, `docker compose up -d --force-recreate <that service>` in that project rebinds it.
+
+## Security (what stops strangers from using memboy.ohmpire.dev)
+
+| surface | control |
+|---|---|
+| `/webhook` | LINE signature (HMAC-SHA256 with the channel secret) verified before anything is read; anything else → 403 |
+| `/files/*`, `/uploads/*` | no static mount: every link the bot sends is **signed + expiring** (`?e=<exp>&s=<hmac>`, 7 days); unsigned/expired/tampered → 403, path traversal → 400; the browser UI reaches them via its login cookie |
+| `/mcp` | bearer `MCP_TOKEN` (401 without, 503 if unset) + `X-MemBoy-User` scoping; every tool re-checks ownership |
+| `/` chat UI | per-tester password → HMAC cookie, per-user rate limit |
+| host | port 8080 bound to `127.0.0.1` only — the tunnel reaches the app on the compose network, nothing is reachable from the LAN |
+| tunnel | outbound-only; no inbound port, no public IP; Cloudflare terminates TLS |
+| secrets | `.env` is git-ignored; rotate `LINE_CHANNEL_ACCESS_TOKEN`, `GEMINI_API_KEY`, `MCP_TOKEN` before hand-in |
+
+Optional extras: Cloudflare WAF rate-limit rule on `/webhook` and `/mcp`; Cloudflare Access (email OTP) in front of `/` if the chat UI stays up.

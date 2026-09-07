@@ -4,7 +4,7 @@ services:
     restart: unless-stopped   # come back on their own after Docker Desktop restarts/updates
     build: .
     dns: [1.1.1.1, 8.8.8.8]
-    ports: ["8080:8080"]
+    ports: ["127.0.0.1:8080:8080"]   # loopback only: the tunnel reaches the app on the compose network, the LAN must not
     env_file: .env
     environment:
       DATABASE_URL: postgresql+psycopg://memboy:memboy@db:5432/memboy

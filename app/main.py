@@ -21,8 +21,21 @@ logging.basicConfig(level=logging.INFO)
 
 Path("/data/uploads").mkdir(parents=True, exist_ok=True)
 app = FastAPI()
-app.mount("/files", StaticFiles(directory="/data/reports"), name="files")
-app.mount("/uploads", StaticFiles(directory="/data/uploads"), name="uploads")
+from app import files  # noqa: E402
+
+
+@app.get("/files/{name}")
+@app.get("/uploads/{name}")
+async def serve_file(name: str, request: Request):
+    kind = request.url.path.split("/")[1]
+    """Reports + receipt images: signed link (from the bot) or the web UI's cookie session — never a bare static mount."""
+    p = files.DIRS[kind] / Path(name).name  # basename only: no traversal
+    if not p.is_file():
+        return Response(status_code=404)
+    q = request.query_params
+    if not (files.valid(kind, name, q.get("e"), q.get("s")) or web.current_user(request)):
+        return Response(status_code=403)
+    return FileResponse(p, headers={"Cache-Control": "private, no-store"})
 app.include_router(web.router)  # browser chat UI: same agent as LINE
 
 # Remote MCP: the agent's tools for any number of external clients. Fail closed — no MCP_TOKEN, no /mcp.
