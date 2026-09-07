@@ -146,3 +146,6 @@ Rules for routes on this tunnel (learned the hard way):
 | secrets | `.env` is git-ignored; rotate `LINE_CHANNEL_ACCESS_TOKEN`, `GEMINI_API_KEY`, `MCP_TOKEN` before hand-in |
 
 Optional extras: Cloudflare WAF rate-limit rule on `/webhook` and `/mcp`; Cloudflare Access (email OTP) in front of `/` if the chat UI stays up.
+
+> Dev note: `app` hot-reloads (uvicorn `--reload`), the **worker does not** — after editing `app/*.py` run
+> `docker compose restart worker`, or LINE keeps being served by the old code (`up -d` alone leaves a running worker untouched).
