@@ -110,10 +110,19 @@ image and hands back an `image_id` for `pbook_analyze_receipt`. One server objec
 Connect a remote client (Claude Code example; Claude Desktop/claude.ai connectors take the same URL + header):
 
 ```bash
-claude mcp add --transport http pbook https://<public-url>/mcp -H "Authorization: Bearer <MCP_TOKEN>" -H "X-PBook-User: mcp:demo"
+claude mcp add --transport http pbook https://pbook.ohmpire.dev/mcp -H "Authorization: Bearer <MCP_TOKEN>" -H "X-PBook-User: mcp:demo"
 ```
 
 Test without an LLM: `docker compose exec -T app python -m tests.test_mcp` — real stdio and HTTP clients: tool list,
 per-user scoping through both transports, actionable errors, upload, 401 without token.
-Caveat: on the free quick tunnel the hostname changes whenever the tunnel restarts, so remote clients must be re-pointed;
-a permanent URL (Railway/own domain) removes that.
+The public URL is permanent: `https://pbook.ohmpire.dev` (Cloudflare named tunnel, see below).
+
+## Public URL: Cloudflare named tunnel (permanent)
+
+`https://pbook.ohmpire.dev` → Cloudflare tunnel `ohmpire` → `cloudflared` **Windows service** on the dev machine →
+`127.0.0.1:8080` (Docker). The route/DNS lives in the Cloudflare dashboard (Networking → Tunnels → ohmpire → Routes);
+adding another project = one more route there, nothing to change locally. The service starts with Windows, so the URL,
+the LINE webhook and the MCP endpoint never change. `scripts/tunnel_watch.py` (quick-tunnel babysitter) is retired.
+
+If `/health` gives 502 through the domain while `docker compose ps` is Up: Docker Desktop's host port-forward for 8080
+has died — `docker compose up -d --force-recreate app` rebinds it.
