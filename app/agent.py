@@ -11,7 +11,7 @@ from pathlib import Path
 
 from sqlalchemy import select
 
-from app import llm, tools
+from app import gate, llm, tools
 from app.db import Conversation, Note, User, session
 
 log = logging.getLogger("memboy")
@@ -73,6 +73,7 @@ def system_prompt(user: User, s) -> str:
 - ถามยอด/สรุป → ใช้ summarize_expenses/find_invoices เสมอ ห้ามคำนวณเลขเองหรือเดาจากความจำ
 - ถ้า notes มีงบประมาณ ให้เทียบยอดสะสมแล้วเตือนเองเมื่อใกล้/เกินงบหลังบันทึกบิล
 - ทำไม่ได้/ไม่มีเครื่องมือ → บอกตรงๆ ห้ามแกล้งทำว่าทำแล้ว
+- save_invoice / update_invoice (บิลที่บันทึกแล้ว) / delete_invoice ถูกระบบล็อกไว้เสมอ: ครั้งแรกจะได้ needs_confirmation พร้อม preview → แสดง preview ให้ user แล้วบอกให้พิมพ์ "ยืนยัน" ระบบจะทำเองเมื่อ user ยืนยัน ห้ามเรียกซ้ำ
 - คำสั่งซ้อน ("บันทึกแล้วขอรีพอร์ทด้วย") → ทำให้ครบทุกส่วน**ที่ระบุชัดแล้ว** โดยเรียกเครื่องมือต่อกันหลายครั้งในเทิร์นเดียว อย่าหยุดครึ่งทาง
 - กำกวมแล้วต้อง**ถามก่อน**เฉพาะคำสั่งที่เปลี่ยนข้อมูล (ลบ/แก้/บันทึก/ติ๊กเบิก) และยังไม่รู้ว่าหมายถึงบิลใบไหน — เสียหนึ่งเทิร์นดีกว่าทำผิดกับข้อมูลของ user
 - ส่วนคำสั่งอ่านข้อมูล (สรุป/ค้นหา/รายงาน/CSV) ที่ไม่ระบุช่วงเวลา → **ลงมือเลย**ด้วยค่าเริ่มต้นที่สมเหตุสมผล (ไม่ระบุช่วง = ทั้งหมดเท่าที่มี, "เดือนนี้" = ตั้งแต่วันที่ 1 ถึงวันนี้) แล้วบอก user ว่าใช้ช่วงไหน ห้ามถามกลับเฉยๆ
@@ -140,13 +141,21 @@ def _store(s, user_id: int, role: str, content: dict):
     s.commit()
 
 
+def _brief(result: dict) -> dict:
+    """Turn log keeps what the evals need (which tool, did it work, ids, flags) — not the invoice contents."""
+    keep = ("draft_id", "saved", "saved_all", "deleted", "updated", "count", "total", "warnings", "qr_status",
+            "is_receipt", "multiple", "pending_drafts", "doc_type")
+    return {"keys": sorted(k for k in result if not k.startswith("_")), **{k: result[k] for k in keep if k in result}}
+
+
 async def run_turn(external_id: str, text: str | None = None, image_path: str | None = None) -> dict:
     """One user event in -> {"reply", "images": [paths], "files": [paths], "draft": bool}.
     draft=True means a confirmation is pending (LINE layer adds quick-reply buttons)."""
     user_id = get_user(external_id)
     t_turn = time.monotonic()
     usage_token = llm.USAGE.set({"calls": 0, "llm_s": 0.0, "in_tok": 0, "out_tok": 0, "models": []})
-    turn_log = {"user": external_id, "in": {"text": text, "image": image_path}, "steps": []}
+    turn_log = {"ts": datetime.datetime.now().isoformat(timespec="seconds"), "user": external_id,
+                "in": {"text": text, "image": image_path}, "steps": []}
     out = {"reply": "", "images": [], "files": [], "draft": False}
     with session() as s:
         user = s.get(User, user_id)
@@ -157,14 +166,34 @@ async def run_turn(external_id: str, text: str | None = None, image_path: str | 
                     {"role": "model", "parts": [{"text": '{"reply": "รับทราบกติกา"}'}]}]  # Gemma has no system role
         parse_fails = 0
 
+        confirmed = gate.is_confirm(text)   # the user opened this turn with "ยืนยัน": consent for one gated action
+        pending = gate.peek(user) if text else None
+
         async def dispatch(act) -> bool:
             """Run one tool action and feed its result back into history. False = turn is over (reply set)."""
             fn = TOOLS[act["tool"]][0]
             args = act.get("args") or {}
-            step = {"tool": act["tool"], "args": args, **({"routed": True} if act.get("_routed") else {})}
+            step = {"tool": act["tool"], "args": args, **({"routed": True} if act.get("_routed") else {}),
+                    **({"confirmed": True} if act.get("_confirmed") or confirmed else {})}
             try:
+                needs = gate.needs_gate(user, s, act["tool"], args)
+                if act["tool"] in gate.GATED and not needs:
+                    step["gate"] = "exempt"   # editing a draft: part of the preview loop, the save is still gated
+                if needs and not (confirmed or act.get("_confirmed")):
+                    # guardrail #9: mutations wait for the user, in code — the model only gets a preview to show
+                    pv = gate.preview(user, s, act["tool"], args)
+                    gate.park(user, s, act["tool"], args)
+                    turn_log["steps"].append({**step, "gated": True})
+                    out["draft"] = True
+                    payload = json.dumps({"needs_confirmation": True, "action": act["tool"], "args": args, "preview": pv,
+                                          "note": "ยังไม่ได้ทำ — ระบบล็อกไว้รอ user แสดง preview นี้แล้วบอกให้พิมพ์ 'ยืนยัน' (ระบบจะดำเนินการเองเมื่อ user ยืนยัน ห้ามเรียก tool นี้ซ้ำ)"},
+                                         ensure_ascii=False, default=str)
+                    _store(s, user_id, "user", {"text": f"TOOL_RESULT {act['tool']}: {payload}"})
+                    return True
                 result = await fn(user, s, **args) if inspect.iscoroutinefunction(fn) else fn(user, s, **args)
-                turn_log["steps"].append({**step, "result": result})
+                if act["tool"] in gate.GATED:
+                    gate.clear(user, s)
+                turn_log["steps"].append({**step, "result": _brief(result)})
                 if result.get("_image"):
                     out["images"].append(result["_image"])
                 if result.get("_file"):
@@ -189,6 +218,14 @@ async def run_turn(external_id: str, text: str | None = None, image_path: str | 
         # ponytail: all 53 live photo turns opened with analyze_receipt (0 exceptions), so the first ~23 s
         # "decide" call was pure latency — run perception deterministically, the agent reasons from the result.
         alive = True
+        if pending and confirmed:          # the previewed action runs now — no model in the loop for this decision
+            _store(s, user_id, "model", {"text": json.dumps(pending, ensure_ascii=False)})
+            alive = await dispatch({**pending, "_confirmed": True})
+            confirmed = False              # consent was spent on the action the user actually saw
+        elif pending and gate.is_cancel(text):
+            gate.clear(user, s)
+            turn_log["steps"].append({"cancelled": pending["tool"]})
+            _store(s, user_id, "user", {"text": f"SYSTEM: user ยกเลิก {pending['tool']} ที่รอยืนยัน — ไม่ได้ทำอะไร บอก user สั้นๆ"})
         if image_path and ROUTE_IMAGE:
             act = {"tool": "analyze_receipt", "args": {"image_id": Path(image_path).stem}}
             _store(s, user_id, "model", {"text": json.dumps(act, ensure_ascii=False)})

@@ -8,7 +8,7 @@ import uuid
 from app import agent, llm, tools
 from sqlalchemy import select
 
-from app.db import Conversation, Invoice, init_db, session
+from app.db import Conversation, Invoice, User, init_db, session
 
 
 def fresh_user(tag):
@@ -203,6 +203,70 @@ def test_image_routed_then_prose_reply():
         assert s.get(Invoice, steps[0]["result"]["draft_id"]).discount == 30
     print("test_image_routed_then_prose_reply OK")
 
+def test_confirmation_gate():
+    """guardrail #9 (program-enforced, professor's requirement): save/edit-confirmed/delete never run on the turn the
+    model asks for them; they run only after the user's own 'ยืนยัน', and 'ยกเลิก' drops them."""
+    from app import gate
+    ext, uid = fresh_user("gate")
+    with session() as s:
+        u = s.get(User, uid)
+        iv = make_draft(u, s, vendor="ร้านเกต", total=77.0, subtotal=77.0, vat=0.0, status="confirmed"); iv_id = iv.id
+        draft_id = make_draft(u, s, vendor="ร้านดราฟต์", total=10.0, subtotal=10.0, vat=0.0).id
+
+    # (a) model tries to delete a confirmed invoice without the user confirming -> parked, previewed, NOT deleted
+    stub_llm([json.dumps({"tool": "delete_invoice", "args": {"invoice_id": iv_id}}),
+              json.dumps({"reply": "จะลบบิลร้านเกต 77 บาท พิมพ์ ยืนยัน"})])
+    out = asyncio.run(agent.run_turn(ext, text="ลบบิลร้านเกตทิ้ง"))
+    assert out["draft"] is True and "ยืนยัน" in out["reply"], out
+    with session() as s:
+        assert s.get(Invoice, iv_id).deleted_at is None, "must not delete before confirmation"
+        assert s.get(User, uid).pending_action["tool"] == "delete_invoice"
+    steps = [json.loads(l) for l in open("/data/logs/turns.jsonl", encoding="utf-8")][-1]["steps"]
+    assert steps[0].get("gated") is True, steps[0]
+
+    # (b) an unrelated question keeps the pending action; (c) 'ยืนยัน' executes it with no model decision
+    stub_llm([json.dumps({"reply": "ยอด 77 บาทครับ"})])
+    asyncio.run(agent.run_turn(ext, text="ยอดเท่าไหร่นะ"))
+    with session() as s:
+        assert s.get(User, uid).pending_action["tool"] == "delete_invoice"
+    calls = stub_llm([json.dumps({"reply": "ลบแล้วครับ"})])
+    out = asyncio.run(agent.run_turn(ext, text="ยืนยัน"))
+    with session() as s:
+        assert s.get(Invoice, iv_id).deleted_at is not None, "confirmed action must run"
+        assert s.get(User, uid).pending_action is None
+    steps = [json.loads(l) for l in open("/data/logs/turns.jsonl", encoding="utf-8")][-1]["steps"]
+    assert steps[0].get("tool") == "delete_invoice" and steps[0].get("confirmed") is True, steps[0]
+    assert len(calls) == 1, "the deletion itself must not need an LLM call"
+
+    # (d) 'ยกเลิก' drops a pending save; the draft stays a draft
+    stub_llm([json.dumps({"tool": "save_invoice", "args": {"draft_id": draft_id}}), json.dumps({"reply": "รอยืนยัน"})])
+    asyncio.run(agent.run_turn(ext, text="บันทึกบิลดราฟต์"))
+    stub_llm([json.dumps({"reply": "ยกเลิกแล้ว"})])
+    asyncio.run(agent.run_turn(ext, text="ยกเลิก"))
+    with session() as s:
+        assert s.get(Invoice, draft_id).status == "draft" and s.get(User, uid).pending_action is None
+
+    # (e) the normal flow stays one round trip: user says 'ยืนยัน' after a preview, model calls save -> allowed
+    stub_llm([json.dumps({"tool": "save_invoice", "args": {"draft_id": draft_id}}), json.dumps({"reply": "บันทึกแล้ว"})])
+    asyncio.run(agent.run_turn(ext, text="ยืนยัน บันทึกเลย"))
+    with session() as s:
+        assert s.get(Invoice, draft_id).status == "confirmed"
+
+    # (f) editing a draft is not gated (preview loop), editing a confirmed invoice is
+    d2 = None
+    with session() as s:
+        d2 = make_draft(s.get(User, uid), s, vendor="ร้านแก้", total=5.0, subtotal=5.0, vat=0.0).id
+    stub_llm([json.dumps({"tool": "update_invoice", "args": {"invoice_id": d2, "fields": {"total": 6}}}), json.dumps({"reply": "แก้แล้ว"})])
+    asyncio.run(agent.run_turn(ext, text="ยอดจริง 6"))
+    with session() as s:
+        assert s.get(Invoice, d2).total == 6
+    stub_llm([json.dumps({"tool": "update_invoice", "args": {"invoice_id": draft_id, "fields": {"total": 11}}}), json.dumps({"reply": "รอยืนยัน"})])
+    asyncio.run(agent.run_turn(ext, text="บิลดราฟต์ยอดจริง 11"))
+    with session() as s:
+        assert s.get(Invoice, draft_id).total == 10, "confirmed invoice must not change before ยืนยัน"
+    print("test_confirmation_gate OK")
+
+
 
 
 if __name__ == "__main__":
@@ -215,4 +279,5 @@ if __name__ == "__main__":
     test_llm_down_and_turn_budget()
     test_tool_crash_does_not_leak()
     test_image_routed_then_prose_reply()
+    test_confirmation_gate()
     print("ALL W2 STUB TESTS PASSED")

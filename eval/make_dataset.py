@@ -9,9 +9,10 @@ from pathlib import Path
 import make_receipts as R   # render, photo_effect, money, vat_split, items_block
 import make_hard as H       # perspective, crumple, cheap_camera, ... EFFECTS
 
-OUT = Path(__file__).with_name("dataset")
+import os
+OUT = Path(__file__).with_name(os.environ.get("DATASET_OUT", "dataset"))  # dataset = prompt-tuning set, dataset_test = held-out
 OUT.mkdir(exist_ok=True)
-rng = random.Random(2026)
+rng = random.Random(int(os.environ.get("DATASET_SEED", "2026")))
 
 # ---------- content pools ----------
 TH = {
@@ -113,7 +114,7 @@ def build_one(i):
             "vat": v, "category": cat, "lang": lang, "difficulty": difficulty, "date_style": style}
 
 
-labels = [build_one(i) for i in range(1, 201)]
+labels = [build_one(i) for i in range(1, int(os.environ.get("DATASET_N", "200")) + 1)]
 (OUT / "labels.json").write_text(json.dumps(labels, ensure_ascii=False, indent=1), encoding="utf-8")
 from collections import Counter
 for k in ("lang", "difficulty", "date_style"):

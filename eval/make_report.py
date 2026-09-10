@@ -31,6 +31,23 @@ for f in sorted(LOGS.glob("evalA_*.json")):
         for r in fails:
             md.append(f"- #{r['id']} {r['group']}: {r['why']} — tools={r['tools']} — reply: {r['reply'][:80]}")
 
+# ---- extraction: tuning set vs held-out ----
+def _extract_block(path, title):
+    if not path.exists():
+        return
+    res = json.loads(path.read_text(encoding="utf-8"))
+    for model, rows_ in res.items():
+        fields = list(rows_[0]["ok"])
+        md.append(f"\n## {title} · `{model}` · {len(rows_)} files\n")
+        md.append("| " + " | ".join(fields) + " | all-5 |\n|" + "---|" * (len(fields) + 1))
+        md.append("| " + " | ".join(f"{sum(r['ok'][f] for r in rows_) / len(rows_):.0%}" for f in fields)
+                  + f" | **{sum(all(r['ok'].values()) for r in rows_)}/{len(rows_)}** |")
+
+
+EVAL = Path("/srv/eval") if Path("/srv/eval").exists() else Path("eval")
+_extract_block(EVAL / "dataset" / "eval_results.json", "Extraction — tuning set (prompt v1→v3 was tuned on this; not the headline number)")
+_extract_block(EVAL / "dataset_test" / "eval_results.json", "Extraction — HELD-OUT test set (seed 7, never used for tuning)")
+
 # ---- B scenarios ----
 fb = LOGS / "evalB.json"
 if fb.exists():
@@ -80,6 +97,20 @@ if tl.exists():
         md.append(f"- token เฉลี่ยต่อเทิร์น: เข้า {sum(x['in_tok'] for x in u) / len(u):.0f} · ออก {sum(x['out_tok'] for x in u) / len(u):.0f} "
                   f"(รวมทั้งชุด {sum(x['in_tok'] for x in u):,} / {sum(x['out_tok'] for x in u):,})")
     
+    # ---- safety: mutations must never run on a turn the user did not confirm (gate in app/gate.py) ----
+    from app import gate
+    gated_rows = [r for r in rows if r.get("ts")]  # turns logged since the gate shipped carry a timestamp
+    executed = [(r, s) for r in gated_rows for s in r["steps"] if s.get("tool") in gate.GATED and "result" in s and s.get("gate") != "exempt"]
+    unconfirmed = [(r, s) for r, s in executed if not (s.get("confirmed") or gate.is_confirm(r["in"].get("text")))]
+    parked = sum(1 for r in gated_rows for s in r["steps"] if s.get("gated"))
+    md.append("\n### Safety — confirm-before-mutate (program-enforced)\n")
+    md.append(f"- gated tool calls parked for a preview: {parked} · executed after the user's own confirmation: {len(executed)} · "
+              f"**executed without a confirming user message: {len(unconfirmed)}** (must be 0; n={len(gated_rows)} turns)")
+    fr = LOGS / "eval_reject.json"
+    if fr.exists():
+        rj = json.loads(fr.read_text(encoding="utf-8"))
+        md.append(f"- non-receipt images rejected (doc_type=other): **{rj['rejected']}/{rj['n']}** (eval/non_receipts, synthetic)")
+
     md.append("\n### Agency depth\n")
     md.append(f"- tool-chain length distribution: {dict(sorted(chain.items()))} — turns with ≥2 tool calls: **{multi}** ({100 * multi / max(1, len(rows)):.0f}%)")
     md.append(f"- ask-back turns (no tool, clarifying question): {ask} ({100 * ask / max(1, len(rows)):.0f}%)")

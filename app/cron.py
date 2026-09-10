@@ -46,3 +46,37 @@ async def weekly_summary(ctx, only_user: str | None = None):
 
 async def monthly_report(ctx, only_user: str | None = None):
     await _run_goal(MONTHLY_GOAL, only_user)
+
+
+REPORT_DAYS, DELETED_IMAGE_DAYS, ORPHAN_IMAGE_DAYS, CONVERSATION_DAYS = 7, 30, 7, 30
+
+
+async def purge_old_data(ctx=None) -> dict:
+    """Retention (privacy, professor's note): keep only what the product still needs.
+    - report PDFs/CSVs: 7 days (their signed links expire at 7 days anyway)
+    - receipt images of soft-deleted invoices: 30 days after deletion (undo window), orphan uploads: 7 days
+    - conversation rows: 30 days (the agent reads only the last 30 messages)
+    Invoices themselves are the user's records and are never auto-deleted."""
+    import datetime as dt
+    from pathlib import Path
+    from sqlalchemy import delete, select
+    from app.db import Conversation, Invoice, session
+    now = dt.datetime.utcnow()
+    n = {"reports": 0, "images": 0, "conversations": 0}
+    for f in Path("/data/reports").glob("*"):
+        if f.is_file() and f.name != "test.pdf" and now.timestamp() - f.stat().st_mtime > REPORT_DAYS * 86400:
+            f.unlink(); n["reports"] += 1
+    with session() as s:
+        referenced = {Path(p).name for (p,) in s.execute(select(Invoice.image_path).where(Invoice.image_path.isnot(None))) if p}
+        old_deleted = {Path(iv.image_path).name for iv in s.scalars(select(Invoice).where(
+            Invoice.deleted_at.isnot(None), Invoice.deleted_at < now - dt.timedelta(days=DELETED_IMAGE_DAYS), Invoice.image_path.isnot(None)))}
+        for f in Path("/data/uploads").glob("*"):
+            if not f.is_file():
+                continue
+            age = now.timestamp() - f.stat().st_mtime
+            if f.name in old_deleted or (f.name not in referenced and age > ORPHAN_IMAGE_DAYS * 86400):
+                f.unlink(); n["images"] += 1
+        n["conversations"] = s.execute(delete(Conversation).where(Conversation.created_at < now - dt.timedelta(days=CONVERSATION_DAYS))).rowcount
+        s.commit()
+    log.info("purge_old_data %s", n)
+    return n

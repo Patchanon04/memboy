@@ -44,7 +44,8 @@ async def startup(ctx):
 class WorkerSettings:
     functions = [process_event]
     cron_jobs = [cron(jobs.weekly_summary, weekday=6, hour=18, minute=0),        # Sunday 18:00 (container TZ=Asia/Bangkok)
-                 cron(jobs.monthly_report, day=25, hour=9, minute=0)]
+                 cron(jobs.monthly_report, day=25, hour=9, minute=0),
+                 cron(jobs.purge_old_data, hour=4, minute=0)]                       # daily retention sweep (app/cron.py)
     on_startup = startup
     redis_settings = RedisSettings.from_dsn(os.environ.get("REDIS_URL", "redis://localhost:6379"))
     max_tries = MAX_TRIES

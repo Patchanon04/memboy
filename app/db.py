@@ -16,6 +16,8 @@ class User(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     line_user_id: Mapped[str] = mapped_column(String(64), unique=True)
     active_profile_id: Mapped[int | None] = mapped_column(ForeignKey("profiles.id"), nullable=True)
+    pending_action: Mapped[dict | None] = mapped_column(JSON, nullable=True)   # gated tool call awaiting 'ยืนยัน' (app/gate.py)
+    pending_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
 
 
 class Profile(Base):
@@ -100,6 +102,8 @@ def init_db():
     with ENGINE.begin() as c:
         try:
             c.execute(text(f"ALTER TABLE {Invoice.__tablename__} ADD COLUMN IF NOT EXISTS discount FLOAT"))
+            c.execute(text(f"ALTER TABLE {User.__tablename__} ADD COLUMN IF NOT EXISTS pending_action JSON"))
+            c.execute(text(f"ALTER TABLE {User.__tablename__} ADD COLUMN IF NOT EXISTS pending_at TIMESTAMP"))
         except Exception:  # sqlite dev db: no IF NOT EXISTS; column already there on the 2nd run
             pass
 

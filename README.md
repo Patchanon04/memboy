@@ -63,7 +63,8 @@ docker compose run --rm app python -m tests.test_harness   # ตาราง 18 
 
 | ชุด | ผล |
 |---|---|
-| Extraction (200 ใบ TH/EN, png/jpg/pdf, clean/photo/camera) | ถูกครบ 5 field 95.5% (date 96%) หลัง prompt v3 |
+| Extraction — ชุดจูน prompt (200 ใบ TH/EN, png/jpg/pdf, clean/photo/camera) | ถูกครบ 5 field 95.5% (date 96%) หลัง prompt v3 |
+| **Extraction — ชุด held-out (100 ใบ seed ใหม่ ไม่เคยใช้จูน)** | **ถูกครบ 5 field 90/100 = 90%** · vendor 97% · date 93% · total 100% · VAT 100% · category 96% · พลาดทั้ง 10 ใบเป็นชุด camera (วันที่อ่านเลขผิด 1 หลัก 7 ใบ) · API fail 0 |
 | Eval A/D tool-selection 54 เคส | gemma-4-26b-a4b-it **54/54** · gemma-4-31b-it 47/48 (ชุด 48 เคส) |
 | Eval B end-to-end 11 scenario (assert DB) | **11/11** |
 | Eval C loop metrics (1,086 LLM calls) | JSON first-try 96.5%, loop-cap 0, chain ≥2 = 5%, ask-back 5% |
@@ -149,3 +150,15 @@ Optional extras: Cloudflare WAF rate-limit rule on `/webhook` and `/mcp`; Cloudf
 
 > Dev note: `app` hot-reloads (uvicorn `--reload`), the **worker does not** — after editing `app/*.py` run
 > `docker compose restart worker`, or LINE keeps being served by the old code (`up -d` alone leaves a running worker untouched).
+
+## What the agent decides vs what the program enforces
+
+| layer | owns | code |
+|---|---|---|
+| agent (Gemma 4) | intent across turns, tool choice, ask-back on ambiguity, wording | `app/agent.py` |
+| Python / SQL | money math, search, schema validation, arithmetic/tax-id/QR checks | `app/tools.py` |
+| control layer (the model cannot bypass) | per-user ownership at tool level · **confirm-before-save/edit/delete** (`app/gate.py`: the call is parked as a pending action, runs only after the user's own "ยืนยัน", 10-min TTL) · draft→confirmed · loop cap · rate limit | `app/gate.py`, `app/tools.py` |
+| transport | LINE HMAC signature on every webhook, event idempotency, signed expiring file links, bearer token on `/mcp` | `app/main.py`, `app/files.py` |
+
+Retention: `purge_old_data` runs daily (reports >7 d, images of deleted invoices >30 d, orphan uploads >7 d, chat rows >30 d).
+Backup: `sh scripts/backup.sh` (pg_dump, keeps 14) — a bind-mounted volume is not a backup.
