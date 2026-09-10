@@ -14,7 +14,7 @@ from app import tools
 
 GATED = {"save_invoice", "update_invoice", "delete_invoice"}
 # Thai has no word boundaries ("ยืนยันบันทึก" is one run), so \b only guards the Latin words.
-CONFIRM = re.compile(r"^\s*(ยืนยัน|บันทึกเลย|ตกลง|โอเค|(?:ok|okay|yes|confirm)\b)", re.I)
+CONFIRM = re.compile(r"^\s*(ยืนยัน|บันทึกเลย|ถูกต้อง|ใช่(?!ไหม|มั้ย|หรือ|ป่าว|เปล่า)|ตกลง|โอเค|(?:ok|okay|yes|confirm)\b)", re.I)
 CANCEL = re.compile(r"^\s*(ยกเลิก|ไม่บันทึก|ไม่เอา|(?:cancel|no)\b)", re.I)
 TTL = datetime.timedelta(minutes=10)   # a stale preview must not be confirmable an hour later
 
@@ -69,7 +69,8 @@ def clear(user, s):
 
 if __name__ == "__main__":  # python -m app.gate — the regex is the security boundary, so it has its own check
     for s_, want in [("ยืนยันบันทึก", True), ("ยืนยัน บันทึกเลย", True), ("โอเค บันทึก", True), ("okay", True), ("ok", True),
-                     ("ยอดจริง 350", False), ("ไม่เอา ยกเลิก", False), ("confirmation?", False)]:
+                     ("ถูกต้อง บันทึกเลย แล้วขอรีพอร์ท", True), ("ใช่ครับ", True),
+                     ("ยอดจริง 350", False), ("ไม่เอา ยกเลิก", False), ("confirmation?", False), ("ใช่ไหม", False), ("ใช่หรือเปล่า", False)]:
         assert is_confirm(s_) is want, (s_, want)
     for s_, want in [("ไม่เอา ยกเลิก", True), ("ยกเลิก", True), ("note", False), ("no", True), ("now", False), ("ยืนยัน", False)]:
         assert is_cancel(s_) is want, (s_, want)

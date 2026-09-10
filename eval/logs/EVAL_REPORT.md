@@ -73,7 +73,13 @@ Failures:
 |---|---|---|---|---|---|
 | 97% | 93% | 100% | 100% | 96% | **90/100** |
 
-## Eval B — end-to-end task success: 7/11
+## Extraction — HANDWRITTEN cash bills (separate hard set, synthetic, not a supported input) · `gemma-4-26b-a4b-it` · 30 files
+
+| vendor | date | total | vat | category | all-5 |
+|---|---|---|---|---|---|
+| 100% | 97% | 100% | 100% | 100% | **29/30** |
+
+## Eval B — end-to-end task success: 11/11
 
 - ✅ บันทึกบิลตรงๆ 
 - ✅ แก้ยอดก่อนยืนยัน 
@@ -81,10 +87,10 @@ Failures:
 - ✅ บิลผิดโปรไฟล์ → ย้าย 
 - ✅ บันทึกแล้วลบแล้วกู้ 
 - ✅ ถามยอดหลังบันทึก 2 ใบ 
-- ❌ บิลซ้ำ → ไม่บันทึกซ้ำ — confirmed: want 1 got 0
-- ❌ จำงบ + เตือนเมื่อเกิน — notes: want 1 got 0; confirmed: want 1 got 0; last_reply_mentions_budget: want True got False
-- ❌ ติ๊กเบิกแล้ว + รายงานเฉพาะยังไม่เบิก — reimbursed: want 1 got 0; files: want 1 got 0
-- ❌ สองใบ ยืนยันครั้งเดียว → ต้องไม่มีใบค้าง — confirmed: want 2 got 0; total_sum: want 384.0 got 0
+- ✅ บิลซ้ำ → ไม่บันทึกซ้ำ 
+- ✅ จำงบ + เตือนเมื่อเกิน 
+- ✅ ติ๊กเบิกแล้ว + รายงานเฉพาะยังไม่เบิก 
+- ✅ สองใบ ยืนยันครั้งเดียว → ต้องไม่มีใบค้าง 
 - ✅ รูปไม่ใช่บิล 
 
 ## Slip extraction + QR consistency (30 synthetic slips, 6 layouts, 5 deliberate mismatches)
@@ -99,21 +105,21 @@ Failures:
 
 ## Eval C — loop metrics (all live turns)
 
-- turns: 730 · LLM calls: 1278 · JSON first-try: **96.5%** · tool calls: 517 (avg 0.71/turn) · tool errors: 46 · loop-cap hits: 0
-- per tool: analyze_receipt 125, save_invoice 94, summarize_expenses 44, update_invoice 41, find_invoices 34, manage_profile 34, generate_report 23, remember_note 23, mark_reimbursed 21, delete_invoice 16, analyze_trends 12, export_csv 10, restore_invoice 10, get_invoice_image 9, split_bill 9, convert_currency 7, manage_category 5
+- turns: 838 · LLM calls: 1484 · JSON first-try: **96.4%** · tool calls: 608 (avg 0.73/turn) · tool errors: 53 · loop-cap hits: 0
+- per tool: analyze_receipt 146, save_invoice 110, summarize_expenses 50, update_invoice 49, find_invoices 40, manage_profile 40, remember_note 28, generate_report 27, mark_reimbursed 25, delete_invoice 18, analyze_trends 15, export_csv 12, split_bill 12, restore_invoice 11, get_invoice_image 11, convert_currency 8, manage_category 6
 
 ### Latency & tokens (เทิร์นที่วัดหลังติดตั้ง instrumentation)
 
-- เวลาต่อเทิร์น: p50 **18.49s** · p90 **71.92s** · สูงสุด 145.67s (n=321) — 96% ของเวลาอยู่ที่การเรียก LLM
-- token เฉลี่ยต่อเทิร์น: เข้า 4770 · ออก 157 (รวมทั้งชุด 1,531,106 / 50,438)
+- เวลาต่อเทิร์น: p50 **18.89s** · p90 **71.28s** · สูงสุด 155.63s (n=420) — 96% ของเวลาอยู่ที่การเรียก LLM
+- token เฉลี่ยต่อเทิร์น: เข้า 4581 · ออก 153 (รวมทั้งชุด 1,924,069 / 64,130)
 
 ### Safety — confirm-before-mutate (program-enforced)
 
-- gated tool calls parked for a preview: 2 · executed after the user's own confirmation: 7 · **executed without a confirming user message: 2** (must be 0; n=25 turns)
+- gated tool calls parked for a preview: 9 · executed after the user's own confirmation: 12 · **executed without a confirming user message: 0** (must be 0; n=97 turns)
 - non-receipt images rejected (doc_type=other): **12/12** (eval/non_receipts, synthetic)
 
 ### Agency depth
 
-- tool-chain length distribution: {0: 246, 1: 454, 2: 27, 3: 3} — turns with ≥2 tool calls: **30** (4%)
-- ask-back turns (no tool, clarifying question): 38 (5%)
-- self-recovery after a tool error (agent tried another call): 3/45
+- tool-chain length distribution: {0: 269, 1: 533, 2: 33, 3: 3} — turns with ≥2 tool calls: **36** (4%)
+- ask-back turns (no tool, clarifying question): 44 (5%)
+- self-recovery after a tool error (agent tried another call): 3/51

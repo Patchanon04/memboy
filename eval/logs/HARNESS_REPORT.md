@@ -14,11 +14,11 @@
 | G8 | ย่อรูปก่อนส่ง LLM | unit test | ✅ ผ่าน | 4000x3000 184KB → 1280x960 19KB |
 | D1 | temperature = 0 ทุก call | unit test | ✅ ผ่าน | payload ที่ส่งจริงมี generationConfig.temperature = 0.0 |
 | D2 | เลขเงินมาจาก SQL + เช็ค subtotal+vat≈total | unit test | ✅ ผ่าน | ยอดรวมจาก SQL = 441.5 (ตรงกับผลบวกจริง); บิลที่ 100+7≠500 ถูกติด warning อัตโนมัติ |
-| D3 | Webhook idempotency | agent loop (LLM จำลอง) | ✅ ผ่าน | event h-12d72411 ส่งซ้ำ → ไม่เข้า agent loop รอบสอง (ถูก dedupe จากตาราง processed_events) |
-| D4 | State machine ของบิล (draft → confirmed) | unit test | ✅ ผ่าน | บันทึกซ้ำถูกปฏิเสธที่ tool: บิล 570 ไม่ใช่ draft (status=confirmed) — บันทึกไปแล้ว |
+| D3 | Webhook idempotency | agent loop (LLM จำลอง) | ✅ ผ่าน | event h-a5d52061 ส่งซ้ำ → ไม่เข้า agent loop รอบสอง (ถูก dedupe จากตาราง processed_events) |
+| D4 | State machine ของบิล (draft → confirmed) | unit test | ✅ ผ่าน | บันทึกซ้ำถูกปฏิเสธที่ tool: บิล 638 ไม่ใช่ draft (status=confirmed) — บันทึกไปแล้ว |
 | D5 | Turn log ครบทุกเทิร์น (JSONL) | agent loop (LLM จำลอง) | ✅ ผ่าน | เทิร์นล่าสุดถูกบันทึกครบ: user/in/steps/out (1 step) |
 | D6 | Pin รุ่นโมเดล (ไม่ใช้ alias ลอยๆ) | unit test | ✅ ผ่าน | MODEL=gemma-4-26b-a4b-it · FALLBACK=gemma-4-31b-it (ระบุรุ่นเต็ม ไม่ใช่ alias) |
-| D7 | Inject วันที่ปัจจุบัน (Asia/Bangkok) | unit test | ✅ ผ่าน | system prompt มีวันที่ 2026-09-07 (เวลาไทย) → 'เดือนนี้/เมื่อวาน' คำนวณจากโค้ด ไม่ใช่ความจำโมเดล |
+| D7 | Inject วันที่ปัจจุบัน (Asia/Bangkok) | unit test | ✅ ผ่าน | system prompt มีวันที่ 2026-09-10 (เวลาไทย) → 'เดือนนี้/เมื่อวาน' คำนวณจากโค้ด ไม่ใช่ความจำโมเดล |
 | D8 | Serialize ต่อ user (ขนานข้าม user) | agent loop (LLM จำลอง) | ✅ ผ่าน | user เดียวกัน: sesese (s→e เรียงคู่ = ไม่ทับกัน) · คนละ user: ssseee (เริ่มซ้อนกันได้ = ขนาน) |
-| X1 | LINE transport (webhook/ack/quick reply/rich menu) | ระบบภายนอก | ✅ ผ่าน | บัญชีจริง: 34 เทิร์น (7 รูป) · เครื่องมือที่ถูกเรียกผ่าน LINE: ['analyze_receipt', 'export_csv', 'generate_report', 'manage_profile', 'save_invoice', 'summarize_expenses', 'update_invoice'] · ปุ่ม Rich Menu ที่กดจริง: ['ขอไฟล์ CSV เดือนนี้', 'ดูรายการโปรไฟล์', 'วิธีส่งบิล', 'วิธีใช้', 'สรุปค่าใช้จ่ายเดือนนี้'] · Quick reply ที่กดจริง: ['ยืนยัน บันทึกเลย'] |
+| X1 | LINE transport (webhook/ack/quick reply/rich menu) | ระบบภายนอก | ✅ ผ่าน | บัญชีจริง: 41 เทิร์น (8 รูป) · เครื่องมือที่ถูกเรียกผ่าน LINE: ['analyze_receipt', 'export_csv', 'generate_report', 'manage_profile', 'save_invoice', 'summarize_expenses', 'update_invoice'] · ปุ่ม Rich Menu ที่กดจริง: ['ขอไฟล์ CSV เดือนนี้', 'ดูรายการโปรไฟล์', 'วิธีส่งบิล', 'วิธีใช้', 'สรุปค่าใช้จ่ายเดือนนี้'] · Quick reply ที่กดจริง: ['ยืนยัน บันทึกเลย'] |
 | X2 | LIFF dashboard บนแอป LINE | ระบบภายนอก | ⏳ ยังไม่วัด | ยังไม่ได้วัด — ต้องสร้าง LINE Login channel + LIFF app แล้วตั้ง LIFF_ID ใน .env |

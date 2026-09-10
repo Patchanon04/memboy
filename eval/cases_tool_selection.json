@@ -900,11 +900,10 @@
     }
    },
    "reply_contains_any": [
-    "จำ",
-    "ครั้งหน้า",
-    "อัตโนมัติ"
+    "ยืนยัน"
    ]
-  }
+  },
+  "note": "learned-vendor message appears after the user confirms (gate); first turn must show a preview"
  },
  {
   "id": 54,

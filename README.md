@@ -65,8 +65,9 @@ docker compose run --rm app python -m tests.test_harness   # ตาราง 18 
 |---|---|
 | Extraction — ชุดจูน prompt (200 ใบ TH/EN, png/jpg/pdf, clean/photo/camera) | ถูกครบ 5 field 95.5% (date 96%) หลัง prompt v3 |
 | **Extraction — ชุด held-out (100 ใบ seed ใหม่ ไม่เคยใช้จูน)** | **ถูกครบ 5 field 90/100 = 90%** · vendor 97% · date 93% · total 100% · VAT 100% · category 96% · พลาดทั้ง 10 ใบเป็นชุด camera (วันที่อ่านเลขผิด 1 หลัก 7 ใบ) · API fail 0 |
-| Eval A/D tool-selection 54 เคส | gemma-4-26b-a4b-it **54/54** · gemma-4-31b-it 47/48 (ชุด 48 เคส) |
-| Eval B end-to-end 11 scenario (assert DB) | **11/11** |
+| Extraction — ชุดลายมือ (30 บิลเงินสดสังเคราะห์ `eval/handwritten`, ชุดยากแยก ไม่ใช่ input ที่รับรอง) | ถูกครบ 29/30 (date 97%) — **หมายเหตุ**: ลายมือจำลองจากฟอนต์ที่ทำให้สั่น/เอียงทีละตัวอักษร ไม่ใช่ลายมือคนจริง ตัวเลขนี้จึงเป็นขอบบน ของจริงคาดว่าต่ำกว่า |
+| Eval A/D tool-selection 54 เคส (รันซ้ำทั้งชุดหลังติดตั้ง gate) | gemma-4-26b-a4b-it **54/54** — รอบแรก 50/54: 1 เคส API ล่ม, 2 เคสเพราะ gate ("ถูกต้อง" ไม่อยู่ใน regex ยืนยัน / เคสคาดหวังข้อความหลังแก้ทันที) แก้ regex+เคสแล้วรัน 4 เคสซ้ำผ่านหมด |
+| Eval B end-to-end 11 scenario (assert DB, รันซ้ำภายใต้ confirmation gate) | **11/11** |
 | Eval C loop metrics (1,086 LLM calls) | JSON first-try 96.5%, loop-cap 0, chain ≥2 = 5%, ask-back 5% |
 | Latency / token ต่อเทิร์น | p50 17.5s · p90 76s (96% เป็นเวลา LLM) · token เข้า ~4.7k ออก ~154 |
 | สลิปโอน 30 ใบ (6 layout, 5 QR mismatch) | doc_type/total/ref/qr_status 100%, mismatch detection 5/5 |

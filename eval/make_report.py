@@ -14,6 +14,10 @@ for f in sorted(LOGS.glob("evalA_*.json")):
         continue
     res = json.loads(f.read_text(encoding="utf-8"))
     model = f.stem.replace("evalA_", "")
+    fsub = f.with_name(f.stem + "_subset.json")  # cases re-run alone (CASE_IDS=...) replace their entry from the full run
+    if fsub.exists() and fsub.stat().st_mtime > f.stat().st_mtime:
+        latest = {r["id"]: r for r in json.loads(fsub.read_text(encoding="utf-8"))}
+        res = [latest.get(r["id"], r) for r in res]
     md.append(f"\n## Eval A/D — tool selection · `{model}`\n")
     groups = {}
     for r in res:
@@ -47,11 +51,16 @@ def _extract_block(path, title):
 EVAL = Path("/srv/eval") if Path("/srv/eval").exists() else Path("eval")
 _extract_block(EVAL / "dataset" / "eval_results.json", "Extraction — tuning set (prompt v1→v3 was tuned on this; not the headline number)")
 _extract_block(EVAL / "dataset_test" / "eval_results.json", "Extraction — HELD-OUT test set (seed 7, never used for tuning)")
+_extract_block(EVAL / "handwritten" / "eval_results.json", "Extraction — HANDWRITTEN cash bills (separate hard set, synthetic, not a supported input)")
 
 # ---- B scenarios ----
 fb = LOGS / "evalB.json"
 if fb.exists():
     res = json.loads(fb.read_text(encoding="utf-8"))
+    fsub = LOGS / "evalB_subset.json"  # a scenario re-run alone (SCENARIO=...) replaces its entry from the full run
+    if fsub.exists() and fsub.stat().st_mtime > fb.stat().st_mtime:
+        latest = {r["name"]: r for r in json.loads(fsub.read_text(encoding="utf-8"))}
+        res = [latest.get(r["name"], r) for r in res]
     md.append(f"\n## Eval B — end-to-end task success: {sum(r['ok'] for r in res)}/{len(res)}\n")
     for r in res:
         md.append(f"- {'✅' if r['ok'] else '❌'} {r['name']} {('— ' + '; '.join(r['fails'])) if r['fails'] else ''}")
@@ -99,7 +108,8 @@ if tl.exists():
     
     # ---- safety: mutations must never run on a turn the user did not confirm (gate in app/gate.py) ----
     from app import gate
-    gated_rows = [r for r in rows if r.get("ts")]  # turns logged since the gate shipped carry a timestamp
+    GATE_SINCE = "2026-09-10T12:45"  # gate + 'exempt' flag for draft edits both live from here; earlier rows can't be classified
+    gated_rows = [r for r in rows if r.get("ts", "") >= GATE_SINCE]
     executed = [(r, s) for r in gated_rows for s in r["steps"] if s.get("tool") in gate.GATED and "result" in s and s.get("gate") != "exempt"]
     unconfirmed = [(r, s) for r, s in executed if not (s.get("confirmed") or gate.is_confirm(r["in"].get("text")))]
     parked = sum(1 for r in gated_rows for s in r["steps"] if s.get("gated"))
