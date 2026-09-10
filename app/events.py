@@ -40,6 +40,14 @@ def shrink(data: bytes, max_px: int = 1280) -> bytes:
     except Exception:
         return data
 
+HELP = ("📷 ส่งรูปใบเสร็จ/สลิป/PDF มาได้เลย เดี๋ยวอ่านให้แล้วให้คุณตรวจก่อนบันทึก\n"
+        "✏️ แก้ได้ทันที เช่น \"ยอดจริง 450\" / \"อันนี้หมวดเดินทาง\" แล้วพิมพ์ \"ยืนยัน\"\n"
+        "🔎 ถามได้เช่น \"เดือนนี้ใช้ไปเท่าไหร่\" / \"หาบิลร้าน 7-Eleven\" / \"ค่ากาแฟเดือนที่แล้ว\"\n"
+        "📄 \"ขอรายงาน PDF\" / \"ขอ CSV\" — ได้ลิงก์ที่เปิดได้ 7 วัน\n"
+        "📁 \"สร้างโปรไฟล์ทริปเชียงใหม่\" แยกบิลงาน/ทริป · \"บิลนี้เบิกแล้ว\" ติ๊กสถานะ\n"
+        "🧠 \"จำไว้ว่างบเดือนละ 5,000\" แล้วจะเตือนเมื่อใกล้เกิน\n"
+        "การบันทึก/แก้/ลบ ทุกครั้งจะถามยืนยันก่อนเสมอ ตอบ \"ยกเลิก\" ได้ตลอด")
+
 WELCOME = ("สวัสดีค่ะ 👋 MemBoy ช่วยเก็บใบเสร็จและทำรายงานเบิกให้ค่ะ\n"
            "ลองส่ง 📷 รูปใบเสร็จมาได้เลย เดี๋ยวสรุปให้ยืนยันก่อนบันทึก\n"
            "ถามได้เช่น: \"เดือนนี้ใช้ไปเท่าไหร่\" / \"ขอรายงาน PDF\" / \"สร้างโปรไฟล์ทริปเชียงใหม่\"")
@@ -102,6 +110,10 @@ async def handle_event(ev: dict):
         log.info("saved %s (%d bytes)", image_path, len(data))
     elif kind == "text":
         text = msg.get("text", "")
+        if text.strip() == "วิธีใช้":  # rich-menu button: a fixed answer, no model in the loop
+            await line_io.send(token, uid, [line_io.text(HELP, quick=["สรุปค่าใช้จ่ายเดือนนี้", "ดูรายการโปรไฟล์"])])
+            mark_processed(mid)
+            return
     else:
         return  # sticker/audio/etc: nothing to do, and don't mark processed for nothing
 

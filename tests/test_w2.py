@@ -266,6 +266,20 @@ def test_confirmation_gate():
         assert s.get(Invoice, draft_id).total == 10, "confirmed invoice must not change before ยืนยัน"
     print("test_confirmation_gate OK")
 
+def test_long_prose_is_a_reply():
+    """'วิธีใช้'-style answers came back as prose, got a format nag, and the user saw "ผมจะตอบเป็น JSON..." —
+    a long prose answer with no tool call is accepted as the reply in one call; a short intent still retries."""
+    ext, uid = fresh_user("prose")
+    howto = "ใช้งานได้ดังนี้ครับ: 1) ส่งรูปใบเสร็จมา 2) ตรวจข้อมูลแล้วพิมพ์ยืนยัน 3) ถามยอดได้ เช่น เดือนนี้ใช้ไปเท่าไหร่ 4) ขอรายงาน PDF ได้ทุกเมื่อ 5) สร้างโปรไฟล์แยกทริปได้"
+    calls = stub_llm([howto, json.dumps({"reply": "ไม่ควรถูกเรียก"})])
+    out = asyncio.run(agent.run_turn(ext, text="ใช้ยังไง"))["reply"]
+    assert out == howto and len(calls) == 1, (out, len(calls))
+    calls = stub_llm(["เอ่อ ผมจะบันทึกให้", json.dumps({"reply": "ไม่มีบิลให้บันทึกครับ"})])
+    out = asyncio.run(agent.run_turn(ext, text="บันทึก"))["reply"]
+    assert out == "ไม่มีบิลให้บันทึกครับ" and len(calls) == 2
+    print("test_long_prose_is_a_reply OK")
+
+
 
 
 
@@ -280,4 +294,5 @@ if __name__ == "__main__":
     test_tool_crash_does_not_leak()
     test_image_routed_then_prose_reply()
     test_confirmation_gate()
+    test_long_prose_is_a_reply()
     print("ALL W2 STUB TESTS PASSED")

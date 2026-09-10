@@ -246,7 +246,9 @@ async def run_turn(external_id: str, text: str | None = None, image_path: str | 
             except (ValueError, json.JSONDecodeError) as e:
                 # ponytail: 11/53 live photo turns ended in a perfectly good plain-text summary instead of
                 # {"reply": ...}. After a tool result prose can only be the reply — accept it, skip the 23 s retry.
-                prose = "{" not in raw and bool(raw.strip()) and any("tool" in st for st in turn_log["steps"])
+                # ...and a long prose answer with no tool call (a how-to, an explanation) is the reply too —
+                # only short prose like "ผมจะบันทึกให้" (an intent without the action) is worth a retry
+                prose = "{" not in raw and bool(raw.strip()) and (any("tool" in st for st in turn_log["steps"]) or len(raw.strip()) >= 120)
                 parse_fails += 1
                 turn_log["steps"].append({"parse_error": str(e), "raw": raw[:400]})
                 if prose or parse_fails > PARSE_RETRIES:  # or give up gracefully: raw text becomes the reply
@@ -255,7 +257,7 @@ async def run_turn(external_id: str, text: str | None = None, image_path: str | 
                     turn_log["steps"].append({"reply": out["reply"], "prose": True})
                     break
                 _store(s, user_id, "model", {"text": raw})
-                _store(s, user_id, "user", {"text": f"SYSTEM: ตอบไม่ตรง format ({e}) — ตอบใหม่เป็น JSON ก้อนเดียว ทำ action แรกที่ค้างอยู่ก่อน แล้วรอบถัดไปค่อยทำที่เหลือ ห้ามหยุดงาน"})
+                _store(s, user_id, "user", {"text": f"SYSTEM: ตอบไม่ตรง format ({e}) — ส่งเนื้อหาเดิมใหม่เป็น JSON ก้อนเดียว (คำตอบ → ห่อใน {{'reply': ...}}, action → เรียก tool) ห้ามพูดถึง JSON หรือรูปแบบกับ user เด็ดขาด"})
                 continue
 
             _store(s, user_id, "model", {"text": json.dumps(act, ensure_ascii=False)})
