@@ -111,7 +111,7 @@ async def handle_event(ev: dict):
     elif kind == "text":
         text = msg.get("text", "")
         if text.strip() == "วิธีใช้":  # rich-menu button: a fixed answer, no model in the loop
-            await line_io.send(token, uid, [line_io.text(HELP, quick=["สรุปค่าใช้จ่ายเดือนนี้", "ดูรายการโปรไฟล์"])])
+            await line_io.send(token, uid, [line_io.text(HELP, quick=["สรุปเดือนนี้", "ขอรายงาน PDF", "ดูรายการโปรไฟล์"])])
             mark_processed(mid)
             return
     else:
