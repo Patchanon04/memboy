@@ -163,3 +163,6 @@ Optional extras: Cloudflare WAF rate-limit rule on `/webhook` and `/mcp`; Cloudf
 
 Retention: `purge_old_data` runs daily (reports >7 d, images of deleted invoices >30 d, orphan uploads >7 d, chat rows >30 d).
 Backup: `sh scripts/backup.sh` (pg_dump, keeps 14) — a bind-mounted volume is not a backup.
+- **Worker log shows `httpx.ConnectTimeout` on every Gemini/LINE call after a Docker restart** — the container resolver
+  returns AAAA first and IPv6 is blackholed on the dev host. `docker-compose.yml` now sets
+  `net.ipv6.conf.all.disable_ipv6=1` on app/worker; if it recurs, check `docker compose exec worker python -c "import httpx;print(httpx.get('https://api.line.me/',timeout=8).status_code)"`.
