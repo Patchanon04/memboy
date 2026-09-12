@@ -1,6 +1,8 @@
 name: memboy   # compose project name (containers memboy-*, volumes memboy_*) regardless of the folder name
 services:
   app:
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=1   # resolver returns AAAA first; v6 is blackholed here -> fail fast, fall back to v4
     restart: unless-stopped   # come back on their own after Docker Desktop restarts/updates
     build: .
     dns: [1.1.1.1, 8.8.8.8]
@@ -22,6 +24,8 @@ services:
     command: uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload --app-dir /srv
 
   worker:
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=1   # resolver returns AAAA first; v6 is blackholed here -> fail fast, fall back to v4
     restart: unless-stopped   # come back on their own after Docker Desktop restarts/updates
     build: .
     dns: [1.1.1.1, 8.8.8.8]
