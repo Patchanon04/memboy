@@ -53,6 +53,14 @@ async def reply(reply_token: str, messages: list[dict]):
     await _post("message/reply", {"replyToken": reply_token, "messages": messages[:5]})
 
 
+async def loading(line_user_id: str, seconds: int = 60):
+    """Show the 'typing…' loading animation in the 1:1 chat (LINE caps it at 60 s; any message we send clears it)."""
+    try:
+        await _post("chat/loading/start", {"chatId": line_user_id, "loadingSeconds": max(5, min(60, seconds))})
+    except Exception:
+        log.debug("loading animation failed", exc_info=True)  # cosmetic: never let it break the turn
+
+
 async def push(line_user_id: str, messages: list[dict]):
     await _post("message/push", {"to": line_user_id, "messages": messages[:5]})
 

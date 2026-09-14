@@ -122,13 +122,20 @@ async def handle_event(ev: dict):
     # slow-turn ack: Gemma calls can take 60-80 s each; after ACK_AFTER_S with no answer, spend the reply token on
     # "still working" so the user is not staring at silence, and deliver the real answer by push.
     task = asyncio.ensure_future(agent.run_turn(uid, text=text, image_path=image_path))
-    done, _ = await asyncio.wait({task}, timeout=ACK_AFTER_S)
-    if not done and token:
-        try:
-            await line_io.send(token, uid, [line_io.text("กำลังอ่านและคิดอยู่ครับ ⏳ อีกสักครู่นะครับ")])
-        except Exception:
-            log.warning("slow-turn ack failed", exc_info=True)
-        token = None
+    await line_io.loading(uid)                       # "typing…" from the first second
+    acked = False
+    while True:
+        done, _ = await asyncio.wait({task}, timeout=ACK_AFTER_S if not acked else 50)
+        if done:
+            break
+        if not acked and token:                      # still nothing after ACK_AFTER_S: say so in words too
+            try:
+                await line_io.send(token, uid, [line_io.text("กำลังอ่านและคิดอยู่ครับ ⏳ อีกสักครู่นะครับ")])
+            except Exception:
+                log.warning("slow-turn ack failed", exc_info=True)
+            token = None
+        acked = True
+        await line_io.loading(uid)                   # a sent message clears the indicator; keep it alive every 50 s
     out = await task
     await line_io.send(token, uid, _messages(out))
     mark_processed(mid)  # AFTER success — a failed event must stay retryable

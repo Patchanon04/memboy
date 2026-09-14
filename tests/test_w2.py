@@ -279,6 +279,34 @@ def test_long_prose_is_a_reply():
     assert out == "ไม่มีบิลให้บันทึกครับ" and len(calls) == 2
     print("test_long_prose_is_a_reply OK")
 
+def test_typing_indicator_and_slow_ack():
+    """LINE 'typing…' animation starts immediately and is renewed while the turn runs; the text ack only after ACK_AFTER_S;
+    the real answer goes out by push once the reply token was spent on the ack."""
+    from app import events, line_io
+    sent = []
+
+    async def fake_post(path, body):
+        sent.append((path, (body.get("messages") or [{}])[0].get("text", "")[:12] or body.get("loadingSeconds")))
+        return {}
+    line_io._post = fake_post
+    events.ACK_AFTER_S = 0.3
+    stub_llm([json.dumps({"reply": "คำตอบจริง"})])
+
+    async def slow(contents, temperature=0.0, model=None):
+        await asyncio.sleep(0.8)
+        return json.dumps({"reply": "คำตอบจริง"})
+    llm.generate = slow
+    ev = {"type": "message", "replyToken": "tok", "source": {"userId": f"test:typing:{uuid.uuid4().hex[:6]}"},
+          "message": {"type": "text", "id": uuid.uuid4().hex, "text": "ช้าหน่อยนะ"}}
+    asyncio.run(events.handle_event(ev))
+    paths = [p for p, _ in sent]
+    assert paths[0] == "chat/loading/start", sent
+    assert ("message/reply", "กำลังอ่านและคิด") in sent, sent
+    assert paths.count("chat/loading/start") >= 2, sent          # renewed after the ack cleared it
+    assert sent[-1] == ("message/push", "คำตอบจริง"), sent
+    print("test_typing_indicator_and_slow_ack OK")
+
+
 
 
 
@@ -295,4 +323,5 @@ if __name__ == "__main__":
     test_image_routed_then_prose_reply()
     test_confirmation_gate()
     test_long_prose_is_a_reply()
+    test_typing_indicator_and_slow_ack()
     print("ALL W2 STUB TESTS PASSED")
