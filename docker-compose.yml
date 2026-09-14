@@ -61,6 +61,7 @@ services:
       interval: 2s
       timeout: 3s
       retries: 15
+      start_period: 15s
 
   cloudflared:
     # named tunnel from inside the compose network: origin is http://app:8080, so Docker Desktop's flaky host

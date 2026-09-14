@@ -29,7 +29,9 @@ async def generate(contents: list[dict], temperature: float = 0.0, model: str | 
     """One call with one retry; the retry switches to the fallback model (same prompt) —
     slow/hung generations tend to be per-model, so swapping beats waiting."""
     body = {"contents": contents, "generationConfig": {"temperature": temperature}}
-    models = [model or MODEL, FALLBACK]
+    # GEMMA_FALLBACK may be a comma list, e.g. "gemma-4-31b-it,gemini-2.5-flash" — the last entry is an outage-only
+    # escape hatch (tried only when every Gemma model failed); the turn log records which model answered.
+    models = [model or MODEL] + [m.strip() for m in FALLBACK.split(",") if m.strip() and m.strip() != (model or MODEL)]
     last = "unknown"
     async with httpx.AsyncClient(timeout=TIMEOUT_S) as c:
         for attempt, m in enumerate(models):
