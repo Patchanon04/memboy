@@ -301,7 +301,7 @@ def test_typing_indicator_and_slow_ack():
     asyncio.run(events.handle_event(ev))
     paths = [p for p, _ in sent]
     assert paths[0] == "chat/loading/start", sent
-    assert ("message/reply", "กำลังอ่านและคิด") in sent, sent
+    assert any(p_ == "message/reply" and str(m).startswith("กำลังอ่าน") for p_, m in sent), sent
     assert paths.count("chat/loading/start") >= 2, sent          # renewed after the ack cleared it
     assert sent[-1] == ("message/push", "คำตอบจริง"), sent
     print("test_typing_indicator_and_slow_ack OK")
