@@ -80,3 +80,34 @@ async def purge_old_data(ctx=None) -> dict:
         s.commit()
     log.info("purge_old_data %s", n)
     return n
+
+
+_probe_fails = 0
+
+
+async def tunnel_probe(ctx=None) -> dict:
+    """Every 10 min ask LINE itself to hit our webhook (its vantage point, not ours). Two failures in a row -> push a
+    warning to the admin's LINE (outbound still works while inbound is dead). The cloudflared container's own
+    healthcheck (scripts/tunnel_health.py) does the actual restart; this job only makes the outage visible."""
+    global _probe_fails
+    import os, httpx
+    from app import line_io
+    base, token, admin = line_io.base_url(), os.environ.get("LINE_CHANNEL_ACCESS_TOKEN", ""), os.environ.get("ADMIN_LINE_USER_ID", "")
+    try:
+        async with httpx.AsyncClient(timeout=40) as c:
+            r = await c.post("https://api.line.me/v2/bot/channel/webhook/test", headers={"Authorization": f"Bearer {token}"},
+                             json={"endpoint": f"{base}/webhook"})
+        ok = r.status_code == 200 and r.json().get("success") is True
+        detail = r.json().get("reason") if r.status_code == 200 else f"http {r.status_code}"
+    except Exception as e:
+        ok, detail = False, type(e).__name__
+    _probe_fails = 0 if ok else _probe_fails + 1
+    out = {"ok": ok, "detail": detail, "fails": _probe_fails}
+    if not ok and _probe_fails >= 2 and admin:
+        try:
+            await line_io.push(admin, [line_io.text(f"⚠️ MemBoy: LINE เข้าถึง webhook ไม่ได้ ({detail}) x{_probe_fails} — tunnel จะ restart ตัวเองภายใน ~10 นาที ถ้ายังไม่หาย docker compose restart cloudflared")])
+        except Exception:
+            pass
+        _probe_fails = 0
+    log.info("tunnel_probe %s", out)
+    return out

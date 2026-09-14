@@ -1,4 +1,5 @@
 """Event processing — runs inside the arq worker. Every LINE event becomes one agent turn."""
+import asyncio
 import collections
 import io
 import logging
@@ -13,6 +14,7 @@ from app.db import ProcessedEvent, session
 log = logging.getLogger("memboy")
 UPLOADS = Path("/data/uploads")
 UPLOADS.mkdir(parents=True, exist_ok=True)
+ACK_AFTER_S = 25   # seconds of silence before the 'still working' ack (tests lower it)
 CONFIRM_QUICK = ["ยืนยัน บันทึกเลย", "ขอแก้ไข", "ยกเลิก ไม่บันทึก"]
 RATE_LIMIT, RATE_WINDOW = 10, 60  # guardrail #7: max turns per user per minute (in-memory; worker is a single process)
 _hits: dict[str, collections.deque] = collections.defaultdict(collections.deque)
@@ -117,6 +119,16 @@ async def handle_event(ev: dict):
     else:
         return  # sticker/audio/etc: nothing to do, and don't mark processed for nothing
 
-    out = await agent.run_turn(uid, text=text, image_path=image_path)
+    # slow-turn ack: Gemma calls can take 60-80 s each; after ACK_AFTER_S with no answer, spend the reply token on
+    # "still working" so the user is not staring at silence, and deliver the real answer by push.
+    task = asyncio.ensure_future(agent.run_turn(uid, text=text, image_path=image_path))
+    done, _ = await asyncio.wait({task}, timeout=ACK_AFTER_S)
+    if not done and token:
+        try:
+            await line_io.send(token, uid, [line_io.text("กำลังอ่านและคิดอยู่ครับ ⏳ อีกสักครู่นะครับ")])
+        except Exception:
+            log.warning("slow-turn ack failed", exc_info=True)
+        token = None
+    out = await task
     await line_io.send(token, uid, _messages(out))
     mark_processed(mid)  # AFTER success — a failed event must stay retryable

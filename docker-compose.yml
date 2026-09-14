@@ -68,6 +68,13 @@ services:
     build: { context: ., dockerfile: Dockerfile.cloudflared }
     restart: unless-stopped
     command: tunnel --no-autoupdate --protocol http2 run --token ${TUNNEL_TOKEN}   # UDP/QUIC doesn't leave the Docker VM here
+    env_file: .env                # LINE token + PUBLIC_BASE_URL for the LINE-side healthcheck
+    healthcheck:                  # asks LINE to hit our webhook; 2 misses in a row -> the script kills cloudflared, restart policy revives it
+      test: ["CMD", "python", "/usr/local/bin/tunnel_health.py"]
+      interval: 5m
+      timeout: 55s
+      retries: 3
+      start_period: 60s
     depends_on: [app]
     networks: [default, retouch]   # also serves the sibling project's routes (retouch/healthcoach.ohmpire.dev)
 
