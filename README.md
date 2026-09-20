@@ -166,3 +166,21 @@ Backup: `sh scripts/backup.sh` (pg_dump, keeps 14) — a bind-mounted volume is 
 - **Worker log shows `httpx.ConnectTimeout` on every Gemini/LINE call after a Docker restart** — the container resolver
   returns AAAA first and IPv6 is blackholed on the dev host. `docker-compose.yml` now sets
   `net.ipv6.conf.all.disable_ipv6=1` on app/worker; if it recurs, check `docker compose exec worker python -c "import httpx;print(httpx.get('https://api.line.me/',timeout=8).status_code)"`.
+
+## รายงานสั่งได้ (generate_report)
+
+The agent turns what the user asks for into a small spec; `app/report.py` validates it against whitelists and does
+every sum in Python — the model never produces a number that reaches the PDF.
+
+| spec key | values |
+|---|---|
+| `sections` | `summary, chart, by_category, by_vendor, by_month, by_day, table, items, images, note, signature` (order = order in the PDF; default `chart,by_category,table,signature`) |
+| `columns` | `id, date, vendor, category, profile, doc_type, subtotal, discount, vat, total, reimbursed` |
+| `group_by` | `category, vendor, month, profile, reimbursed` — adds a subtotal row per group |
+| `sort` / `desc` | `date, total, vendor, category` / `true,false` |
+| filters | `date_from, date_to, profile, reimbursed, category, vendor, min_total, max_total` |
+| extras | `title`, `note`, `top_n` (rows in by_vendor) |
+
+Unknown values raise a ToolError listing the valid ones, so the agent corrects itself instead of failing the turn.
+Examples that work in LINE: "ขอรายงานสิงหา แยกตามหมวด มีสรุปกับกราฟ" · "เอาแค่ตาราง ไม่เอากราฟ คอลัมน์วันที่ ร้าน ยอด เรียงมากไปน้อย"
+· "แนบรูปใบเสร็จด้วย ตั้งชื่อว่า เบิกค่าเดินทาง ส.ค." · "เฉพาะหมวดอาหารที่ยังไม่เบิก ยอดเกิน 500"

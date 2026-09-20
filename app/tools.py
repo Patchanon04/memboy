@@ -34,6 +34,20 @@ def _num(x, name="ตัวเลข"):
         raise ToolError(f"{name} ต้องเป็นตัวเลข ได้รับ {x!r}")
 
 
+def _bool(x):
+    """The model sends JSON booleans or the strings the tool hints show ("true"/"false"); None = no filter."""
+    if x is None or isinstance(x, bool):
+        return x
+    v = str(x).strip().lower()
+    if v in ("true", "1", "yes", "เบิกแล้ว"):
+        return True
+    if v in ("false", "0", "no", "ยังไม่เบิก"):
+        return False
+    if v in ("", "none", "null", "all"):
+        return None
+    raise ToolError(f"ค่า true/false ไม่ถูกต้อง: {x!r}")
+
+
 def _date(x, name="วันที่"):
     if x in (None, ""):
         return None
@@ -96,6 +110,7 @@ def _inv_dict(iv: Invoice) -> dict:
 def _query(user, s, date_from=None, date_to=None, vendor=None, category=None, reimbursed=None, profile=None,
            status="confirmed"):
     q = select(Invoice).where(Invoice.profile_id.in_(_profile_ids(user, s, profile)), Invoice.deleted_at.is_(None))
+    reimbursed = _bool(reimbursed)
     if status:
         q = q.where(Invoice.status == status)
     if date_from:
@@ -495,30 +510,45 @@ def mark_reimbursed(user, s, invoice_ids=None, undo=False, **_):
 
 
 # ---------- 8,12. report / csv ----------
-def _report_rows(user, s, date_from, date_to, profile, reimbursed):
-    rows = list(s.scalars(_query(user, s, date_from, date_to, None, None, reimbursed, profile)))
+def _report_rows(user, s, date_from, date_to, profile, reimbursed, category=None, vendor=None):
+    rows = list(s.scalars(_query(user, s, date_from, date_to, vendor, category, reimbursed, profile)))
     if not rows:
         raise ToolError("ไม่มีบิลในช่วงที่ระบุ")
     return rows
 
 
-def generate_report(user, s, date_from=None, date_to=None, profile=None, reimbursed=None, **_):
-    rows = _report_rows(user, s, date_from, date_to, profile, reimbursed)
-    pname = profile if profile else _active_profile(user, s).name
-    t = _totals(rows)
-    ctx = {"profile": pname, "period": f"{date_from or '…'} ถึง {date_to or '…'}",
-           "generated_at": datetime.datetime.now().strftime("%d/%m/%Y %H:%M"),
-           "invoices": [{"date": iv.invoice_date, "vendor": iv.vendor, "category": iv.category or "-",
-                         "total": iv.total_thb or 0, "vat": iv.vat or 0, "reimbursed": iv.reimbursed_at is not None,
-                         "qr": iv.qr_status} for iv in rows],
-           "sum_total": t["total"], "sum_vat": t["vat"], "by_category": t["by_category"],
-           "chart": report.chart_png(t["by_category"], rows)}
+def generate_report(user, s, date_from=None, date_to=None, profile=None, reimbursed=None, category=None, vendor=None,
+                    min_total=None, max_total=None, title=None, sections=None, columns=None, group_by=None,
+                    sort=None, desc=None, top_n=None, note=None, **_):
+    """Report on demand: the agent maps what the user asked for onto this spec; report.build_context validates it
+    against whitelists and does every sum in Python."""
+    rows = _report_rows(user, s, date_from, date_to, profile, reimbursed, category, vendor)
+    lo, hi = _num(min_total, "min_total"), _num(max_total, "max_total")
+    rows = [iv for iv in rows if (lo is None or (iv.total_thb or 0) >= lo) and (hi is None or (iv.total_thb or 0) <= hi)]
+    if not rows:
+        raise ToolError("ไม่มีบิลที่ตรงเงื่อนไข")
+    names = {pr.id: pr.name for pr in s.scalars(select(Profile).where(Profile.user_id == user.id))}
+    data = [{"id": iv.id, "date": iv.invoice_date, "vendor": iv.vendor, "category": iv.category,
+             "profile": names.get(iv.profile_id, "-"), "doc_type": iv.doc_type, "subtotal": iv.subtotal,
+             "discount": iv.discount or 0, "vat": (iv.vat or 0) if iv.currency == "THB" else 0, "total": iv.total_thb or 0,
+             "reimbursed": iv.reimbursed_at is not None, "qr": iv.qr_status, "items": iv.items, "image": iv.image_path}
+            for iv in rows]
+    pname = "ทุกโปรไฟล์" if str(profile).lower() == "all" else (profile or _active_profile(user, s).name)
+    filt = " · ".join(x for x in (f"หมวด {category}" if category else "", f"ร้าน {vendor}" if vendor else "",
+                                  {True: "เฉพาะที่เบิกแล้ว", False: "เฉพาะที่ยังไม่เบิก"}.get(_bool(reimbursed), "")) if x)
+    try:
+        ctx = report.build_context(data, {"title": title, "sections": sections, "columns": columns, "group_by": group_by,
+                                          "sort": sort, "desc": desc, "top_n": top_n, "note": note},
+                                   profile=pname, period=f"{date_from or '…'} ถึง {date_to or '…'}" + (f" · {filt}" if filt else ""))
+    except ValueError as e:
+        raise ToolError(str(e))
     path = report.render_report(ctx)
-    return {"pdf_url": files.url("files", path.name), "_file": str(path), "count": len(rows), "total": t["total"]}
+    return {"pdf_url": files.url("files", path.name), "_file": str(path), "count": len(rows), "total": ctx["sum_total"],
+            "sections": ctx["sections"], "group_by": ctx["group_by"], "images_attached": len(ctx["images"])}
 
 
-def export_csv(user, s, date_from=None, date_to=None, profile=None, reimbursed=None, **_):
-    rows = _report_rows(user, s, date_from, date_to, profile, reimbursed)
+def export_csv(user, s, date_from=None, date_to=None, profile=None, reimbursed=None, category=None, vendor=None, **_):
+    rows = _report_rows(user, s, date_from, date_to, profile, reimbursed, category, vendor)
     path = REPORTS / f"{uuid.uuid4()}.csv"
     with open(path, "w", newline="", encoding="utf-8-sig") as f:  # BOM so Excel opens Thai correctly
         w = csv.writer(f)

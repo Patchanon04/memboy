@@ -69,15 +69,10 @@ async def startup():
     await _mcp_lifespan.__aenter__()
     app.state.queue = await create_pool(RedisSettings.from_dsn(os.environ.get("REDIS_URL", "redis://localhost:6379")))
     # W1 acceptance: Thai PDF must render from day one
-    report.render_report({
-        "profile": "ทดสอบระบบ", "period": "สิงหาคม 2569",
-        "generated_at": datetime.datetime.now().strftime("%d/%m/%Y %H:%M"),
-        "invoices": [
-            {"date": "2026-08-20", "vendor": "ครัวคุณยาย", "category": "อาหาร", "total": 470.0, "vat": 0.0, "reimbursed": False},
-            {"date": "2026-08-22", "vendor": "Bean There Café", "category": "อาหาร", "total": 300.0, "vat": 19.63, "reimbursed": True},
-        ],
-        "sum_total": 770.0, "sum_vat": 19.63,
-    }, name="test")
+    report.render_report(report.build_context([
+        {"id": 1, "date": "2026-08-20", "vendor": "ครัวคุณยาย", "category": "อาหาร", "total": 470.0, "vat": 0.0, "reimbursed": False},
+        {"id": 2, "date": "2026-08-22", "vendor": "Bean There Café", "category": "อาหาร", "total": 300.0, "vat": 19.63, "reimbursed": True},
+    ], {"sections": "summary,chart,by_category,table,signature"}, profile="ทดสอบระบบ", period="สิงหาคม 2569"), name="test")
     log.info("startup ok — /files/test.pdf ready, queue connected")
 
 

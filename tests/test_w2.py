@@ -4,6 +4,7 @@ Run: docker compose run -T --rm app python -m tests.test_w2
 import asyncio
 import json
 import uuid
+from pathlib import Path
 
 from app import agent, llm, tools
 from sqlalchemy import select
@@ -306,6 +307,42 @@ def test_typing_indicator_and_slow_ack():
     assert sent[-1] == ("message/push", "คำตอบจริง"), sent
     print("test_typing_indicator_and_slow_ack OK")
 
+def test_report_spec():
+    """Reports are built to order: the agent passes a spec, report.py validates it against whitelists and does the
+    arithmetic; unknown values come back as a ToolError listing the valid ones so the model can correct itself."""
+    from app import report
+    ext, uid = fresh_user("report")
+    with session() as s:
+        u = s.get(User, uid)
+        for v, cat, tot in (("ร้าน ก", "อาหาร", 100.0), ("ร้าน ข", "เดินทาง", 250.0), ("ร้าน ก", "อาหาร", 50.0)):
+            make_draft(u, s, vendor=v, category=cat, total=tot, subtotal=tot, vat=0.0, status="confirmed", invoice_date="2026-08-10")
+        out = tools.generate_report(u, s, date_from="2026-08-01", date_to="2026-08-31", title="รายงานทดสอบ",
+                                    sections=["summary", "by_vendor", "table"], columns="date,vendor,total",
+                                    group_by="category", sort="total", desc=True, note="หมายเหตุ")
+    assert out["count"] == 3 and out["total"] == 400.0, out
+    assert out["sections"] == ["summary", "by_vendor", "table", "note"], out["sections"]   # note appended, signature not forced
+    assert Path(out["_file"]).stat().st_size > 1000
+
+    rows = [{"date": "2026-08-10", "vendor": "ร้าน ก", "category": "อาหาร", "total": 100.0, "vat": 7.0, "reimbursed": False},
+            {"date": "2026-08-11", "vendor": "ร้าน ข", "category": "เดินทาง", "total": 250.0, "vat": 0.0, "reimbursed": True}]
+    ctx = report.build_context(rows, {"group_by": "category", "columns": "date,total"}, profile="ส่วนตัว", period="ส.ค.")
+    assert ctx["sum_total"] == 350.0 and ctx["sum_vat"] == 7.0
+    assert [g["key"] for g in ctx["groups"]] == ["อาหาร", "เดินทาง"], ctx["groups"]
+    assert [g["subtotal"] for g in ctx["groups"]] == [100.0, 250.0]
+    assert ctx["summary"]["pending"] == 100.0 and ctx["summary"]["reimbursed"] == 250.0
+    assert ctx["sections"] == ["chart", "by_category", "table", "signature"]   # defaults when not asked
+
+    with session() as s:
+        u = s.get(User, uid)
+        for bad in ({"sections": "pie3d"}, {"columns": "password"}, {"group_by": "weekday"}, {"sort": "random"}):
+            try:
+                tools.generate_report(u, s, date_from="2026-08-01", date_to="2026-08-31", **bad)
+                raise AssertionError(f"must reject {bad}")
+            except tools.ToolError as e:
+                assert "ใช้ได้" in str(e), e
+    print("test_report_spec OK")
+
+
 
 
 
@@ -324,4 +361,5 @@ if __name__ == "__main__":
     test_confirmation_gate()
     test_long_prose_is_a_reply()
     test_typing_indicator_and_slow_ack()
+    test_report_spec()
     print("ALL W2 STUB TESTS PASSED")

@@ -3,47 +3,108 @@
 <head>
 <meta charset="utf-8">
 <style>
-  @page { size: A4; margin: 2cm; }
-  body { font-family: "Laksaman", "Loma", "Garuda", sans-serif; font-size: 14px; color: #111; }
-  h1 { font-size: 22px; margin-bottom: 2px; }
-  .sub { color: #555; margin-bottom: 14px; }
-  table { width: 100%; border-collapse: collapse; margin: 10px 0; }
-  th, td { border: 1px solid #999; padding: 5px 8px; text-align: left; }
-  th { background: #eee; }
+  @page { size: A4; margin: 1.8cm; }
+  body { font-family: "Laksaman", "Loma", "Garuda", sans-serif; font-size: 13.5px; color: #111; }
+  h1 { font-size: 22px; margin: 0 0 2px; }
+  h2 { font-size: 15px; margin: 16px 0 4px; color: #1f3a5f; border-bottom: 1px solid #c9d3e0; padding-bottom: 2px; }
+  .sub { color: #555; margin-bottom: 12px; }
+  table { width: 100%; border-collapse: collapse; margin: 6px 0 10px; }
+  th, td { border: 1px solid #aaa; padding: 4px 7px; text-align: left; }
+  th { background: #eef1f5; }
   td.num, th.num { text-align: right; }
-  .total { font-weight: bold; }
-  .cats { margin: 6px 0 12px; color: #333; }
-  .cats span { display: inline-block; margin-right: 14px; }
-  img.chart { width: 100%; margin: 6px 0 10px; }
-  .sign { margin-top: 40px; display: flex; justify-content: space-between; }
+  tr.total td { font-weight: bold; background: #f6f7f9; }
+  tr.group td { background: #e3ebf5; font-weight: bold; }
+  tr.sub td { font-style: italic; background: #fafafa; }
+  .kpis { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 10px; }
+  .kpi { flex: 1 1 30%; border: 1px solid #c9d3e0; border-radius: 6px; padding: 6px 10px; }
+  .kpi b { display: block; font-size: 17px; color: #1f3a5f; }
+  .kpi span { color: #666; font-size: 11.5px; }
+  img.chart { width: 100%; margin: 4px 0 8px; }
+  .items { margin: 2px 0 8px 14px; color: #333; }
+  .shots { display: flex; flex-wrap: wrap; gap: 10px; }
+  .shot { width: 47%; page-break-inside: avoid; text-align: center; font-size: 11px; color: #555; }
+  .shot img { max-width: 100%; max-height: 330px; border: 1px solid #ccc; }
+  .note { border-left: 3px solid #1f3a5f; padding: 4px 10px; margin: 10px 0; white-space: pre-wrap; }
+  .sign { margin-top: 40px; display: flex; justify-content: space-between; page-break-inside: avoid; }
   .sign div { width: 40%; text-align: center; border-top: 1px dotted #333; padding-top: 6px; }
   .small { font-size: 11px; color: #777; }
 </style>
 </head>
 <body>
-<h1>รายงานค่าใช้จ่าย — {{ profile }}</h1>
-<div class="sub">ช่วงเวลา {{ period }} · สร้างเมื่อ {{ generated_at }} · {{ invoices|length }} รายการ</div>
+<h1>{{ title }}</h1>
+<div class="sub">{% if profile %}โปรไฟล์ {{ profile }} · {% endif %}ช่วงเวลา {{ period }} · สร้างเมื่อ {{ generated_at }} · {{ count }} รายการ</div>
 
-{% if chart %}<img class="chart" src="data:image/png;base64,{{ chart }}">{% endif %}
-{% if by_category %}
-<div class="cats">{% for c, v in by_category.items() %}<span>{{ c }}: <b>{{ "%.2f"|format(v) }}</b></span>{% endfor %}</div>
-{% endif %}
-
-<table>
-  <tr><th>วันที่</th><th>ร้านค้า</th><th>หมวด</th><th class="num">ยอด (บาท)</th><th class="num">VAT</th><th>เบิก</th></tr>
-  {% for iv in invoices %}
-  <tr>
-    <td>{{ iv.date }}</td><td>{{ iv.vendor }}{% if iv.qr == "verified" %} <span class="small">QR✓</span>{% endif %}</td><td>{{ iv.category }}</td>
-    <td class="num">{{ "%.2f"|format(iv.total) }}</td><td class="num">{{ "%.2f"|format(iv.vat) }}</td>
-    <td>{{ "✓" if iv.reimbursed else "—" }}</td>
-  </tr>
-  {% endfor %}
-  <tr class="total"><td colspan="3">รวมทั้งสิ้น</td><td class="num">{{ "%.2f"|format(sum_total) }}</td><td class="num">{{ "%.2f"|format(sum_vat) }}</td><td></td></tr>
-</table>
-
-<div class="sign">
-  <div>ผู้เบิก</div>
-  <div>ผู้อนุมัติ</div>
+{% for sec in sections %}
+{% if sec == "summary" %}
+<h2>สรุป</h2>
+<div class="kpis">
+  <div class="kpi"><b>{{ "{:,.2f}".format(summary.total) }}</b><span>ยอดรวม (บาท)</span></div>
+  <div class="kpi"><b>{{ summary.count }}</b><span>จำนวนบิล · เฉลี่ย {{ "{:,.2f}".format(summary.avg) }} / บิล</span></div>
+  <div class="kpi"><b>{{ "{:,.2f}".format(summary.vat) }}</b><span>VAT รวม{% if summary.discount %} · ส่วนลดรวม {{ "{:,.2f}".format(summary.discount) }}{% endif %}</span></div>
+  <div class="kpi"><b>{{ "{:,.2f}".format(summary.pending) }}</b><span>ยังไม่เบิก · เบิกแล้ว {{ "{:,.2f}".format(summary.reimbursed) }}</span></div>
+  <div class="kpi"><b style="font-size:13.5px">{{ summary.biggest }}</b><span>บิลที่สูงสุด</span></div>
+  <div class="kpi"><b style="font-size:13.5px">{{ summary.first }} → {{ summary.last }}</b><span>วันที่บิลแรก–สุดท้าย</span></div>
 </div>
+
+{% elif sec == "chart" and chart %}
+<img class="chart" src="data:image/png;base64,{{ chart }}">
+
+{% elif sec == "by_category" %}
+<h2>แยกตามหมวด</h2>
+<table><tr><th>หมวด</th><th class="num">ยอด (บาท)</th><th class="num">%</th></tr>
+{% for k, v, p in by_category %}<tr><td>{{ k }}</td><td class="num">{{ "{:,.2f}".format(v) }}</td><td class="num">{{ p }}</td></tr>{% endfor %}
+<tr class="total"><td>รวม</td><td class="num">{{ "{:,.2f}".format(sum_total) }}</td><td class="num">100</td></tr></table>
+
+{% elif sec == "by_vendor" %}
+<h2>ร้านที่จ่ายมากที่สุด</h2>
+<table><tr><th>ร้านค้า</th><th class="num">จำนวนบิล</th><th class="num">ยอด (บาท)</th></tr>
+{% for k, v, n in by_vendor %}<tr><td>{{ k }}</td><td class="num">{{ n }}</td><td class="num">{{ "{:,.2f}".format(v) }}</td></tr>{% endfor %}</table>
+
+{% elif sec == "by_month" %}
+<h2>ยอดรายเดือน</h2>
+<table><tr><th>เดือน</th><th class="num">ยอด (บาท)</th></tr>
+{% for k, v in by_month %}<tr><td>{{ k }}</td><td class="num">{{ "{:,.2f}".format(v) }}</td></tr>{% endfor %}</table>
+
+{% elif sec == "by_day" %}
+<h2>ยอดรายวัน</h2>
+<table><tr><th>วันที่</th><th class="num">ยอด (บาท)</th></tr>
+{% for k, v in by_day %}<tr><td>{{ k }}</td><td class="num">{{ "{:,.2f}".format(v) }}</td></tr>{% endfor %}</table>
+
+{% elif sec == "table" %}
+<h2>รายการบิล{% if group_by %} — จัดกลุ่มตาม{{ group_label }}{% endif %}</h2>
+<table>
+  <tr>{% for h, num in headings %}<th{% if num %} class="num"{% endif %}>{{ h }}</th>{% endfor %}</tr>
+  {% for g in groups %}
+  {% if g.key is not none %}<tr class="group"><td colspan="{{ headings|length }}">{{ g.key }} · {{ g.count }} รายการ</td></tr>{% endif %}
+  {% for cells in g.cells %}
+  <tr>{% for text, num, qr in cells %}<td{% if num %} class="num"{% endif %}>{{ text }}{% if qr %} <span class="small">QR✓</span>{% endif %}</td>{% endfor %}</tr>
+  {% endfor %}
+  {% if g.key is not none %}
+  <tr class="sub">{% for h, num in headings %}<td{% if num %} class="num"{% endif %}>{% if loop.index0 == total_col %}{{ "{:,.2f}".format(g.subtotal) }}{% elif loop.index0 == vat_col %}{{ "{:,.2f}".format(g.vat) }}{% elif loop.first %}รวม {{ g.key }}{% endif %}</td>{% endfor %}</tr>
+  {% endif %}
+  {% endfor %}
+  <tr class="total">{% for h, num in headings %}<td{% if num %} class="num"{% endif %}>{% if loop.index0 == total_col %}{{ "{:,.2f}".format(sum_total) }}{% elif loop.index0 == vat_col %}{{ "{:,.2f}".format(sum_vat) }}{% elif loop.first %}รวมทั้งสิ้น{% endif %}</td>{% endfor %}</tr>
+</table>
+{% if total_col is none %}<div class="small">ยอดรวมทั้งสิ้น {{ "{:,.2f}".format(sum_total) }} บาท</div>{% endif %}
+
+{% elif sec == "items" %}
+<h2>รายการสินค้าในบิล</h2>
+{% for b in items %}
+<div><b>{{ b.head }}</b></div>
+<div class="items">{% for it in b["items"] %}{{ it.name }}{% if it.qty %} ×{{ it.qty }}{% endif %}{% if it.price is not none %} — {{ it.price }}{% endif %}{% if not loop.last %}<br>{% endif %}{% endfor %}</div>
+{% else %}<div class="small">ไม่มีบิลที่มีรายการสินค้า</div>
+{% endfor %}
+
+{% elif sec == "images" %}
+<h2>รูปใบเสร็จ</h2>
+<div class="shots">{% for im in images %}<div class="shot"><img src="data:image/jpeg;base64,{{ im.b64 }}"><br>{{ im.caption }}</div>{% else %}<div class="small">ไม่มีรูปแนบ</div>{% endfor %}</div>
+
+{% elif sec == "note" and note %}
+<div class="note">{{ note }}</div>
+
+{% elif sec == "signature" %}
+<div class="sign"><div>ผู้เบิก</div><div>ผู้อนุมัติ</div></div>
+{% endif %}
+{% endfor %}
 </body>
 </html>
