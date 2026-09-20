@@ -25,18 +25,24 @@ SECTIONS = {
     "table": "ตารางบิลรายใบ (เลือก columns / group_by / sort ได้)",
     "items": "รายการสินค้าในแต่ละบิล",
     "images": "แนบรูปใบเสร็จท้ายรายงาน (สูงสุด 12 รูป)",
+    "vat": "สรุป VAT: ฐานภาษี · VAT · ยอดรวม · แยกบิลที่มี/ไม่มี VAT (ใช้ยื่นภาษีซื้อ)",
     "note": "ข้อความหมายเหตุของ user (ใส่ใน note)",
     "signature": "ช่องลงชื่อผู้เบิก/ผู้อนุมัติ",
 }
 COLUMNS = {  # key -> (heading, numeric)
     "id": ("#", False), "date": ("วันที่", False), "vendor": ("ร้านค้า", False), "category": ("หมวด", False),
     "profile": ("โปรไฟล์", False), "doc_type": ("ประเภท", False), "subtotal": ("ก่อนลด/VAT", True),
-    "discount": ("ส่วนลด", True), "vat": ("VAT", True), "total": ("ยอด (บาท)", True), "reimbursed": ("เบิก", False),
+    "discount": ("ส่วนลด", True), "net": ("ก่อน VAT", True), "vat": ("VAT", True), "total": ("ยอดรวม", True),
+    "reimbursed": ("เบิก", False),
 }
 DEFAULT_SECTIONS = ["chart", "by_category", "table", "signature"]
 DEFAULT_COLUMNS = ["date", "vendor", "category", "total", "vat", "reimbursed"]
 GROUP_BY = {"category": "หมวด", "vendor": "ร้านค้า", "month": "เดือน", "profile": "โปรไฟล์", "reimbursed": "สถานะเบิก"}
 SORT = {"date", "total", "vendor", "category"}
+# how VAT appears in the table — a shorthand so the user can say "แยก VAT" without listing columns
+VAT_MODE = {"separate": ["net", "vat", "total"],   # ฐานภาษี | VAT | ยอดรวม (ยื่นภาษีซื้อ)
+            "included": ["total"],                  # ยอดรวมอย่างเดียว (รวม VAT แล้ว)
+            "none": ["total"]}                      # เหมือน included แต่ตัดสรุป VAT ออกด้วย
 MAX_IMAGES = 12
 
 
@@ -111,6 +117,19 @@ def build_context(rows: list[dict], spec: dict | None = None, profile: str = "",
         top_n = max(1, min(30, int(spec.get("top_n") or 5)))
     except (TypeError, ValueError):
         raise ValueError("top_n ต้องเป็นจำนวนเต็ม 1-30")
+    vat_mode = str(spec.get("vat_mode") or "").strip().lower() or None
+    if vat_mode in ("", "null", "none_"):
+        vat_mode = None
+    if vat_mode and vat_mode not in VAT_MODE:
+        raise ValueError(f"vat_mode ไม่รู้จัก: {vat_mode!r} — ใช้ได้: {sorted(VAT_MODE)}")
+    if vat_mode:  # rebuild the money columns in the canonical order, keep the descriptive ones the user picked
+        keep = [c for c in columns if c not in ("subtotal", "net", "vat", "total")]
+        at = keep.index("reimbursed") if "reimbursed" in keep else len(keep)   # money columns before the ✓ column
+        columns = keep[:at] + VAT_MODE[vat_mode] + keep[at:]
+        if vat_mode == "separate" and "vat" not in sections:
+            sections.insert(len(sections) - 1 if sections and sections[-1] == "signature" else len(sections), "vat")
+        if vat_mode == "none":
+            sections = [s for s in sections if s != "vat"]
     note = str(spec.get("note") or "").strip()[:600]
     if note and "note" not in sections:
         sections.insert(len(sections) - 1 if sections[-1] == "signature" else len(sections), "note")
@@ -130,9 +149,9 @@ def build_context(rows: list[dict], spec: dict | None = None, profile: str = "",
     if group_by:
         for k in sorted({gkey(r) or "ไม่ระบุ" for r in rows}):
             g = [r for r in rows if (gkey(r) or "ไม่ระบุ") == k]
-            groups.append({"key": k, "rows": g, "subtotal": _sum(g), "vat": _sum(g, "vat"), "count": len(g)})
+            groups.append({"key": k, "rows": g, "subtotal": _sum(g), "vat": _sum(g, "vat"), "net": _sum(g, "net"), "count": len(g)})
     else:
-        groups.append({"key": None, "rows": rows, "subtotal": total, "vat": _sum(rows, "vat"), "count": len(rows)})
+        groups.append({"key": None, "rows": rows, "subtotal": total, "vat": _sum(rows, "vat"), "net": _sum(rows, "net"), "count": len(rows)})
     for g in groups:
         g["cells"] = [[(_cell(r, c), COLUMNS[c][1], r.get("qr") == "verified" and c == "vendor") for c in columns] for r in g["rows"]]
 
@@ -142,6 +161,12 @@ def build_context(rows: list[dict], spec: dict | None = None, profile: str = "",
         v = vendors.setdefault(r.get("vendor") or "ไม่ระบุ", [0.0, 0])
         v[0] = round(v[0] + (r.get("total") or 0), 2)
         v[1] += 1
+    with_vat = [r for r in rows if (r.get("vat") or 0) > 0]
+    no_vat = [r for r in rows if not (r.get("vat") or 0)]
+    vat_sum, net_sum = _sum(with_vat, "vat"), _sum(with_vat, "net")
+    vat_rows = [{"label": "มี VAT", "count": len(with_vat), "net": net_sum, "vat": vat_sum, "total": _sum(with_vat),
+                 "rate": f"{100 * vat_sum / net_sum:.1f}%" if net_sum else "-"},
+                {"label": "ไม่มี VAT", "count": len(no_vat), "net": _sum(no_vat, "net"), "vat": 0.0, "total": _sum(no_vat), "rate": "-"}]
     biggest = max(rows, key=lambda r: r.get("total") or 0) if rows else None
     dates = sorted(r["date"] for r in rows if r.get("date"))
     done = _sum([r for r in rows if r.get("reimbursed")])
@@ -160,12 +185,14 @@ def build_context(rows: list[dict], spec: dict | None = None, profile: str = "",
         "headings": [(COLUMNS[c][0], COLUMNS[c][1]) for c in columns],
         "total_col": columns.index("total") if "total" in columns else None,
         "vat_col": columns.index("vat") if "vat" in columns else None,
+        "net_col": columns.index("net") if "net" in columns else None,
         "groups": groups, "sum_total": total, "sum_vat": _sum(rows, "vat"),
         "summary": {"total": total, "count": len(rows), "avg": round(total / len(rows), 2) if rows else 0,
                     "vat": _sum(rows, "vat"), "discount": _sum(rows, "discount"),
                     "biggest": f"{biggest.get('vendor')} {(biggest.get('total') or 0):,.2f}" if biggest else "-",
                     "first": dates[0] if dates else "-", "last": dates[-1] if dates else "-",
                     "reimbursed": done, "pending": round(total - done, 2)},
+        "vat_mode": vat_mode, "vat_rows": vat_rows, "net_total": _sum(rows, "net"),
         "by_category": [(k, v, round(100 * v / total, 1) if total else 0) for k, v in by_category.items()],
         "by_vendor": [(k, v[0], v[1]) for k, v in sorted(vendors.items(), key=lambda kv: -kv[1][0])[:top_n]],
         "by_month": sorted(_bucket(rows, lambda r: (r.get("date") or "")[:7]).items()),

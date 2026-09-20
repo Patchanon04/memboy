@@ -519,7 +519,7 @@ def _report_rows(user, s, date_from, date_to, profile, reimbursed, category=None
 
 def generate_report(user, s, date_from=None, date_to=None, profile=None, reimbursed=None, category=None, vendor=None,
                     min_total=None, max_total=None, title=None, sections=None, columns=None, group_by=None,
-                    sort=None, desc=None, top_n=None, note=None, **_):
+                    sort=None, desc=None, top_n=None, note=None, vat_mode=None, **_):
     """Report on demand: the agent maps what the user asked for onto this spec; report.build_context validates it
     against whitelists and does every sum in Python."""
     rows = _report_rows(user, s, date_from, date_to, profile, reimbursed, category, vendor)
@@ -531,6 +531,7 @@ def generate_report(user, s, date_from=None, date_to=None, profile=None, reimbur
     data = [{"id": iv.id, "date": iv.invoice_date, "vendor": iv.vendor, "category": iv.category,
              "profile": names.get(iv.profile_id, "-"), "doc_type": iv.doc_type, "subtotal": iv.subtotal,
              "discount": iv.discount or 0, "vat": (iv.vat or 0) if iv.currency == "THB" else 0, "total": iv.total_thb or 0,
+             "net": round((iv.total_thb or 0) - ((iv.vat or 0) if iv.currency == "THB" else 0), 2),
              "reimbursed": iv.reimbursed_at is not None, "qr": iv.qr_status, "items": iv.items, "image": iv.image_path}
             for iv in rows]
     pname = "ทุกโปรไฟล์" if str(profile).lower() == "all" else (profile or _active_profile(user, s).name)
@@ -538,13 +539,14 @@ def generate_report(user, s, date_from=None, date_to=None, profile=None, reimbur
                                   {True: "เฉพาะที่เบิกแล้ว", False: "เฉพาะที่ยังไม่เบิก"}.get(_bool(reimbursed), "")) if x)
     try:
         ctx = report.build_context(data, {"title": title, "sections": sections, "columns": columns, "group_by": group_by,
-                                          "sort": sort, "desc": desc, "top_n": top_n, "note": note},
+                                          "sort": sort, "desc": desc, "top_n": top_n, "note": note, "vat_mode": vat_mode},
                                    profile=pname, period=f"{date_from or '…'} ถึง {date_to or '…'}" + (f" · {filt}" if filt else ""))
     except ValueError as e:
         raise ToolError(str(e))
     path = report.render_report(ctx)
     return {"pdf_url": files.url("files", path.name), "_file": str(path), "count": len(rows), "total": ctx["sum_total"],
-            "sections": ctx["sections"], "group_by": ctx["group_by"], "images_attached": len(ctx["images"])}
+            "sections": ctx["sections"], "group_by": ctx["group_by"], "images_attached": len(ctx["images"]),
+            "vat_total": ctx["sum_vat"], "net_total": ctx["net_total"]}
 
 
 def export_csv(user, s, date_from=None, date_to=None, profile=None, reimbursed=None, category=None, vendor=None, **_):

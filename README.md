@@ -179,8 +179,9 @@ every sum in Python — the model never produces a number that reaches the PDF.
 | `group_by` | `category, vendor, month, profile, reimbursed` — adds a subtotal row per group |
 | `sort` / `desc` | `date, total, vendor, category` / `true,false` |
 | filters | `date_from, date_to, profile, reimbursed, category, vendor, min_total, max_total` |
+| `vat_mode` | `separate` (ก่อน VAT / VAT / ยอดรวม + ตารางสรุป VAT), `included` (ยอดเดียวรวม VAT), `none` (ไม่มี VAT เลย) |
 | extras | `title`, `note`, `top_n` (rows in by_vendor) |
 
 Unknown values raise a ToolError listing the valid ones, so the agent corrects itself instead of failing the turn.
 Examples that work in LINE: "ขอรายงานสิงหา แยกตามหมวด มีสรุปกับกราฟ" · "เอาแค่ตาราง ไม่เอากราฟ คอลัมน์วันที่ ร้าน ยอด เรียงมากไปน้อย"
-· "แนบรูปใบเสร็จด้วย ตั้งชื่อว่า เบิกค่าเดินทาง ส.ค." · "เฉพาะหมวดอาหารที่ยังไม่เบิก ยอดเกิน 500"
+· "แนบรูปใบเสร็จด้วย ตั้งชื่อว่า เบิกค่าเดินทาง ส.ค." · "เฉพาะหมวดอาหารที่ยังไม่เบิก ยอดเกิน 500" · "แยก VAT ด้วย จะเอาไปยื่นภาษีซื้อ"

@@ -80,10 +80,10 @@
   <tr>{% for text, num, qr in cells %}<td{% if num %} class="num"{% endif %}>{{ text }}{% if qr %} <span class="small">QR✓</span>{% endif %}</td>{% endfor %}</tr>
   {% endfor %}
   {% if g.key is not none %}
-  <tr class="sub">{% for h, num in headings %}<td{% if num %} class="num"{% endif %}>{% if loop.index0 == total_col %}{{ "{:,.2f}".format(g.subtotal) }}{% elif loop.index0 == vat_col %}{{ "{:,.2f}".format(g.vat) }}{% elif loop.first %}รวม {{ g.key }}{% endif %}</td>{% endfor %}</tr>
+  <tr class="sub">{% for h, num in headings %}<td{% if num %} class="num"{% endif %}>{% if loop.index0 == total_col %}{{ "{:,.2f}".format(g.subtotal) }}{% elif loop.index0 == vat_col %}{{ "{:,.2f}".format(g.vat) }}{% elif loop.index0 == net_col %}{{ "{:,.2f}".format(g.net) }}{% elif loop.first %}รวม {{ g.key }}{% endif %}</td>{% endfor %}</tr>
   {% endif %}
   {% endfor %}
-  <tr class="total">{% for h, num in headings %}<td{% if num %} class="num"{% endif %}>{% if loop.index0 == total_col %}{{ "{:,.2f}".format(sum_total) }}{% elif loop.index0 == vat_col %}{{ "{:,.2f}".format(sum_vat) }}{% elif loop.first %}รวมทั้งสิ้น{% endif %}</td>{% endfor %}</tr>
+  <tr class="total">{% for h, num in headings %}<td{% if num %} class="num"{% endif %}>{% if loop.index0 == total_col %}{{ "{:,.2f}".format(sum_total) }}{% elif loop.index0 == vat_col %}{{ "{:,.2f}".format(sum_vat) }}{% elif loop.index0 == net_col %}{{ "{:,.2f}".format(net_total) }}{% elif loop.first %}รวมทั้งสิ้น{% endif %}</td>{% endfor %}</tr>
 </table>
 {% if total_col is none %}<div class="small">ยอดรวมทั้งสิ้น {{ "{:,.2f}".format(sum_total) }} บาท</div>{% endif %}
 
@@ -98,6 +98,13 @@
 {% elif sec == "images" %}
 <h2>รูปใบเสร็จ</h2>
 <div class="shots">{% for im in images %}<div class="shot"><img src="data:image/jpeg;base64,{{ im.b64 }}"><br>{{ im.caption }}</div>{% else %}<div class="small">ไม่มีรูปแนบ</div>{% endfor %}</div>
+
+{% elif sec == "vat" %}
+<h2>สรุปภาษีมูลค่าเพิ่ม</h2>
+<table><tr><th>กลุ่ม</th><th class="num">จำนวนบิล</th><th class="num">ฐานภาษี (ก่อน VAT)</th><th class="num">VAT</th><th class="num">ยอดรวม</th><th class="num">อัตรา</th></tr>
+{% for v in vat_rows %}<tr><td>{{ v.label }}</td><td class="num">{{ v.count }}</td><td class="num">{{ "{:,.2f}".format(v.net) }}</td><td class="num">{{ "{:,.2f}".format(v.vat) }}</td><td class="num">{{ "{:,.2f}".format(v.total) }}</td><td class="num">{{ v.rate }}</td></tr>{% endfor %}
+<tr class="total"><td>รวม</td><td class="num">{{ count }}</td><td class="num">{{ "{:,.2f}".format(net_total) }}</td><td class="num">{{ "{:,.2f}".format(sum_vat) }}</td><td class="num">{{ "{:,.2f}".format(sum_total) }}</td><td class="num"></td></tr></table>
+<div class="small">ฐานภาษี = ยอดรวม − VAT · ใช้ยอด VAT รวมนี้เป็นภาษีซื้อได้เฉพาะบิลที่เป็นใบกำกับภาษีเต็มรูป</div>
 
 {% elif sec == "note" and note %}
 <div class="note">{{ note }}</div>
