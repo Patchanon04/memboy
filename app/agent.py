@@ -148,6 +148,11 @@ def _store(s, user_id: int, role: str, content: dict):
     s.commit()
 
 
+def _clean_reply(s: str) -> str:
+    r"""Some models (the Flash fallback especially) escape newlines twice, so LINE shows a literal \n."""
+    return s.replace(r"\n", "\n").replace(r"\t", "\t") if r"\n" in s else s
+
+
 def _brief(result: dict) -> dict:
     """Turn log keeps what the evals need (which tool, did it work, ids, flags) — not the invoice contents."""
     keep = ("draft_id", "saved", "saved_all", "deleted", "updated", "count", "total", "warnings", "qr_status",
@@ -269,7 +274,7 @@ async def run_turn(external_id: str, text: str | None = None, image_path: str | 
 
             _store(s, user_id, "model", {"text": json.dumps(act, ensure_ascii=False)})
             if "reply" in act:
-                out["reply"] = str(act["reply"])
+                out["reply"] = _clean_reply(str(act["reply"]))
                 turn_log["steps"].append({"reply": out["reply"]})
                 break
 

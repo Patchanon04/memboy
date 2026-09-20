@@ -348,6 +348,17 @@ def test_report_spec():
 
 
 
+def test_escaped_newlines():
+    r"""A model that writes a literal \n inside the JSON reply string must not send that to LINE verbatim."""
+    ext, uid = fresh_user("esc")
+    stub_llm([json.dumps({"reply": "บรรทัดหนึ่ง" + "\\n" + "บรรทัดสอง"})])
+    out = asyncio.run(agent.run_turn(ext, text="ทดสอบ"))["reply"]
+    assert out == "บรรทัดหนึ่ง\nบรรทัดสอง", repr(out)
+    stub_llm([json.dumps({"reply": "ปกติ\nอยู่แล้ว"})])
+    assert asyncio.run(agent.run_turn(ext, text="ทดสอบ2"))["reply"] == "ปกติ\nอยู่แล้ว"
+    print("test_escaped_newlines OK")
+
+
 if __name__ == "__main__":
     init_db()
     test_tools()
@@ -362,4 +373,5 @@ if __name__ == "__main__":
     test_long_prose_is_a_reply()
     test_typing_indicator_and_slow_ack()
     test_report_spec()
+    test_escaped_newlines()
     print("ALL W2 STUB TESTS PASSED")
