@@ -185,3 +185,13 @@ every sum in Python — the model never produces a number that reaches the PDF.
 Unknown values raise a ToolError listing the valid ones, so the agent corrects itself instead of failing the turn.
 Examples that work in LINE: "ขอรายงานสิงหา แยกตามหมวด มีสรุปกับกราฟ" · "เอาแค่ตาราง ไม่เอากราฟ คอลัมน์วันที่ ร้าน ยอด เรียงมากไปน้อย"
 · "แนบรูปใบเสร็จด้วย ตั้งชื่อว่า เบิกค่าเดินทาง ส.ค." · "เฉพาะหมวดอาหารที่ยังไม่เบิก ยอดเกิน 500" · "แยก VAT ด้วย จะเอาไปยื่นภาษีซื้อ"
+
+### If LINE says REQUEST_TIMEOUT while `/health` is fine from here
+
+LINE reaches the tunnel from Japan; that edge-to-edge path flaps independently of your own latency (local curl can be
+150 ms while LINE times out). The webhook therefore does nothing but verify the signature and enqueue before answering
+200 — no outbound LINE call in that path — and the worker sends the acks (loading animation at once, text at 25 s).
+
+Turn on **Webhook redelivery** in the LINE Developers console (Messaging API → Webhook settings): LINE then retries an
+event it failed to deliver, and `processed_events` already makes the retry a no-op if the first attempt did land.
+`cron:tunnel_probe` records every check in the worker log and pushes an alert to `ADMIN_LINE_USER_ID` after two misses.

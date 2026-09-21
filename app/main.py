@@ -93,13 +93,9 @@ async def webhook(request: Request):
         log.warning("malformed webhook body ignored")
         return {"ok": True}
     for ev in events:
-        msg = ev.get("message") or {}
-        if ev.get("type") == "message" and msg.get("type") in ("image", "file") and ev.get("replyToken"):
-            try:  # instant ack while the token is fresh; the analysis follows as a push
-                await line_io.reply(ev["replyToken"], [line_io.text("📷 ได้รับแล้วครับ กำลังอ่านบิลให้สักครู่นะครับ…")])
-                ev["_acked"] = True
-            except Exception:
-                log.info("ack failed for %s; worker will reply instead", msg.get("id"))
+        # Nothing but verify + enqueue happens before the 200: LINE gives the webhook about a second, and this
+        # tunnel adds a variable 0.2-2 s, so an outbound LINE call here (the old instant ack) could blow the budget
+        # and the event would be dropped. The worker acks instead — loading animation at once, text ack at 25 s.
         await app.state.queue.enqueue_job("process_event", ev)
     return {"ok": True, "queued": len(events)}
 
