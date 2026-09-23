@@ -83,14 +83,17 @@ async def purge_old_data(ctx=None) -> dict:
 
 
 _probe_fails = 0
+_last_alert = 0.0
 
 
 async def tunnel_probe(ctx=None) -> dict:
-    """Every 10 min ask LINE itself to hit our webhook (its vantage point, not ours). Two failures in a row -> push a
-    warning to the admin's LINE (outbound still works while inbound is dead). The cloudflared container's own
-    healthcheck (scripts/tunnel_health.py) does the actual restart; this job only makes the outage visible."""
-    global _probe_fails
-    import os, httpx
+    """Every 10 min ask LINE itself to hit our webhook (its vantage point, not ours) and, when that fails, fetch the
+    same public URL ourselves. Both failing = our side is down and a restart is the fix. LINE failing while our own
+    request succeeds = the LINE->Cloudflare->here path is congested (it flaps on weekday evenings): restarting
+    anything is pointless, so say so instead — and at most one alert an hour, so a flaky evening is not an evening
+    of pings."""
+    global _probe_fails, _last_alert
+    import os, time, httpx
     from app import line_io
     base, token, admin = line_io.base_url(), os.environ.get("LINE_CHANNEL_ACCESS_TOKEN", ""), os.environ.get("ADMIN_LINE_USER_ID", "")
     try:
@@ -103,9 +106,28 @@ async def tunnel_probe(ctx=None) -> dict:
         ok, detail = False, type(e).__name__
     _probe_fails = 0 if ok else _probe_fails + 1
     out = {"ok": ok, "detail": detail, "fails": _probe_fails}
-    if not ok and _probe_fails >= 2 and admin:
+
+    if not ok:  # is it us, or only the path from LINE? ask our own public URL the way any client would
         try:
-            await line_io.push(admin, [line_io.text(f"⚠️ MemBoy: LINE เข้าถึง webhook ไม่ได้ ({detail}) x{_probe_fails} — tunnel จะ restart ตัวเองภายใน ~10 นาที ถ้ายังไม่หาย docker compose restart cloudflared")])
+            async with httpx.AsyncClient(timeout=20) as c:
+                h = await c.get(f"{base}/health")
+            out["self_ok"] = h.status_code == 200 and h.json().get("ok") is True
+        except Exception as e:
+            out["self_ok"] = False
+            out["self_err"] = type(e).__name__
+
+    if not ok and _probe_fails >= 3 and admin and time.time() - _last_alert > 3600:
+        if out.get("self_ok"):
+            msg = ("⚠️ MemBoy: LINE ส่งเข้ามาไม่ถึง 3 ครั้งติด แต่เซิร์ฟเวอร์เราตอบปกติ "
+                   f"({detail})\n\nแปลว่าเส้นทาง LINE → Cloudflare → เครื่องเราหนืด มักเป็นช่วงหัวค่ำ "
+                   "ไม่ต้อง restart อะไร เดี๋ยวกลับมาเอง\n\nข้อความที่ส่งช่วงนี้อาจไม่ถึง — "
+                   "เปิด Webhook redelivery ใน LINE console แล้ว LINE จะส่งซ้ำให้")
+        else:
+            msg = (f"🔴 MemBoy: เข้าถึงเซิร์ฟเวอร์จากข้างนอกไม่ได้เลย ({detail}) — ฝั่งเราเอง\n\n"
+                   "เช็ค: docker compose ps · docker compose restart cloudflared · ดู log ของ worker")
+        try:
+            await line_io.push(admin, [line_io.text(msg)])
+            _last_alert = time.time()
         except Exception:
             pass
         _probe_fails = 0
