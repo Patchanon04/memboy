@@ -1,4 +1,6 @@
 """MemBoy — W1: webhook -> Redis queue (arq), Thai PDF proof, DB init. Processing lives in app/worker.py."""
+import asyncio
+import inspect
 import datetime
 import json
 import logging
@@ -61,13 +63,27 @@ async def mcp_auth(request, call_next):
 _mcp_lifespan = None
 
 
+async def _wait_for(what: str, fn, tries: int = 45, delay: float = 2.0):
+    """Postgres replays its WAL after an unclean shutdown ("the database system is starting up") and that can outlast
+    the healthcheck that let us start. Waiting beats dying: uvicorn's reloader keeps the container Up when startup
+    raises, so `restart: unless-stopped` never fires and the bot is silently down until someone notices."""
+    for i in range(1, tries + 1):
+        try:
+            return await fn() if inspect.iscoroutinefunction(fn) else fn()
+        except Exception as e:
+            if i == tries:
+                raise
+            log.warning("%s not ready (%s/%s): %s", what, i, tries, str(e).splitlines()[0][:120])
+            await asyncio.sleep(delay)
+
+
 @app.on_event("startup")
 async def startup():
     global _mcp_lifespan
-    init_db()
+    await _wait_for("database", init_db)
     _mcp_lifespan = mcp_http.router.lifespan_context(mcp_http)  # mounted sub-apps don't get their lifespan run for them
     await _mcp_lifespan.__aenter__()
-    app.state.queue = await create_pool(RedisSettings.from_dsn(os.environ.get("REDIS_URL", "redis://localhost:6379")))
+    app.state.queue = await _wait_for("redis", lambda: create_pool(RedisSettings.from_dsn(os.environ.get("REDIS_URL", "redis://localhost:6379"))))
     # W1 acceptance: Thai PDF must render from day one
     report.render_report(report.build_context([
         {"id": 1, "date": "2026-08-20", "vendor": "ครัวคุณยาย", "category": "อาหาร", "total": 470.0, "vat": 0.0, "reimbursed": False},
