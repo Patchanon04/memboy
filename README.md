@@ -167,6 +167,28 @@ Backup: `sh scripts/backup.sh` (pg_dump, keeps 14) — a bind-mounted volume is 
   returns AAAA first and IPv6 is blackholed on the dev host. `docker-compose.yml` now sets
   `net.ipv6.conf.all.disable_ipv6=1` on app/worker; if it recurs, check `docker compose exec worker python -c "import httpx;print(httpx.get('https://api.line.me/',timeout=8).status_code)"`.
 
+## ทำไมต้องมี Redis (คิวจำเป็น แต่ Redis เป็นตัวเลือก)
+
+LINE ให้ webhook ประมาณ 1 วินาที ส่วนการอ่านใบเสร็จใช้ 20-70 วินาที — คิวจึงไม่ใช่ของตกแต่ง
+ถ้าประมวลผลในตัว handler เลย event จะถูก LINE ทิ้งทุกครั้ง `/webhook` จึงทำแค่เช็คลายเซ็นกับ enqueue แล้วตอบ 200 (~0.15 s)
+
+ทางเลือกที่พิจารณา:
+
+| ทาง | ได้ | เสีย |
+|---|---|---|
+| `asyncio.create_task()` ในโปรเซส app | ไม่ต้องมี service เพิ่ม | **restart/crash = งานที่ค้างหายเงียบ** · ไม่มี retry · ไม่มี cron |
+| Postgres เป็นคิว (`SELECT … FOR UPDATE SKIP LOCKED`) | เหลือ 4 service ใช้ DB ที่มีอยู่แล้ว | ต้องเขียน retry/backoff/dead-letter/cron/visibility-timeout เอง ~80 บรรทัด ในส่วนที่พลาดง่ายที่สุด |
+| **Redis + arq (ที่ใช้)** | retry 3 ครั้ง, dead-letter, cron 4 ตัว, AOF — ได้มาโดยไม่เขียนเอง | +1 container (~10 MB RSS) |
+
+ข้อแรกถูกตัดด้วยเหตุการณ์จริง: ตอน Docker Desktop ตายกลางการประมวลผล งานในคิวรอดเพราะ `--appendonly yes`
+และบิล 3 ใบของผู้ใช้อีกคนถูกรีเพลย์กลับมาครบเมื่อ worker กลับขึ้น — ถ้าเป็น `create_task` บิลพวกนั้นหายไปโดยไม่มีใครรู้ว่าหาย
+
+ข้อสองดีกว่าในแง่จำนวน service แต่แลกมาด้วยโค้ดคิวที่ต้องดูแลเอง ซึ่งไม่ใช่สิ่งที่โปรเจคนี้ตั้งใจพิสูจน์ (เป้าคือ agent loop)
+ถ้าจะย้ายขึ้น VPS ที่คิดค่าแรม ข้อสองคือทางที่ควรทบทวนก่อน
+
+Redis ไม่ได้ถูกใช้เป็น cache และไม่เก็บข้อมูลบิล (บิลอยู่ PostgreSQL) — หน้าที่เดียวคือส่งงานต่อ
+การเรียงลำดับต่อผู้ใช้ arq ไม่ได้ให้มา ต้องล็อกเองที่ `app/worker.py` (`_locks`) ไม่งั้นบิลที่ส่งรวดกันจะประมวลผลสลับลำดับ
+
 ## รายงานสั่งได้ (generate_report)
 
 The agent turns what the user asks for into a small spec; `app/report.py` validates it against whitelists and does
