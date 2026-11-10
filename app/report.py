@@ -11,6 +11,8 @@ from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 from weasyprint import HTML
 
+from app import ontology
+
 REPORTS = Path("/data/reports")
 REPORTS.mkdir(parents=True, exist_ok=True)
 env = Environment(loader=FileSystemLoader(Path(__file__).parent / "templates"), autoescape=True)
@@ -31,13 +33,14 @@ SECTIONS = {
 }
 COLUMNS = {  # key -> (heading, numeric)
     "id": ("#", False), "date": ("วันที่", False), "vendor": ("ร้านค้า", False), "category": ("หมวด", False),
+    "subcategory": ("หมวดย่อย", False),
     "profile": ("โปรไฟล์", False), "doc_type": ("ประเภท", False), "subtotal": ("ก่อนลด/VAT", True),
     "discount": ("ส่วนลด", True), "net": ("ก่อน VAT", True), "vat": ("VAT", True), "total": ("ยอดรวม", True),
     "reimbursed": ("เบิก", False),
 }
 DEFAULT_SECTIONS = ["chart", "by_category", "table", "signature"]
 DEFAULT_COLUMNS = ["date", "vendor", "category", "total", "vat", "reimbursed"]
-GROUP_BY = {"category": "หมวด", "vendor": "ร้านค้า", "month": "เดือน", "profile": "โปรไฟล์", "reimbursed": "สถานะเบิก"}
+GROUP_BY = {"category": "หมวด", "subcategory": "หมวดย่อย", "vendor": "ร้านค้า", "month": "เดือน", "profile": "โปรไฟล์", "reimbursed": "สถานะเบิก"}
 SORT = {"date", "total", "vendor", "category"}
 # how VAT appears in the table — a shorthand so the user can say "แยก VAT" without listing columns
 VAT_MODE = {"separate": ["net", "vat", "total"],   # ฐานภาษี | VAT | ยอดรวม (ยื่นภาษีซื้อ)
@@ -136,6 +139,8 @@ def build_context(rows: list[dict], spec: dict | None = None, profile: str = "",
     if group_by and "table" not in sections:
         sections.insert(0, "table")
 
+    for r in rows:  # derived along the ontology's is_a, never stored
+        r.setdefault("subcategory", ontology.sub_within(r.get("vendor"), r.get("category")))
     rows = sorted(rows, key=lambda r: ((r.get(sort) or 0) if sort == "total" else str(r.get(sort) or "")), reverse=desc)
     total = _sum(rows)
 
@@ -144,6 +149,8 @@ def build_context(rows: list[dict], spec: dict | None = None, profile: str = "",
             return (r.get("date") or "")[:7]
         if group_by == "reimbursed":
             return "เบิกแล้ว" if r.get("reimbursed") else "ยังไม่เบิก"
+        if group_by == "subcategory":
+            return f"{r.get('category') or 'ไม่ระบุ'} › {r.get('subcategory') or 'อื่นๆ'}"
         return r.get(group_by)
     groups = []
     if group_by:

@@ -11,7 +11,7 @@ from pathlib import Path
 
 from sqlalchemy import func, select
 
-from app import llm, report
+from app import llm, ontology, report
 from app import files
 from app.db import Category, Invoice, Note, Profile, User, VendorPref
 
@@ -119,12 +119,16 @@ def _query(user, s, date_from=None, date_to=None, vendor=None, category=None, re
         q = q.where(Invoice.invoice_date <= _date(date_to, "date_to"))
     if vendor:
         q = q.where(Invoice.vendor.ilike(f"%{vendor}%"))
+    hit = ontology.resolve(category) if category else None   # "ค่าน้ำมัน" → (เดินทาง, เชื้อเพลิง); custom names → None
     if category:
-        q = q.where(Invoice.category == category)
+        q = q.where(Invoice.category == (hit[0] if hit else category))
     if reimbursed is True:
         q = q.where(Invoice.reimbursed_at.is_not(None))
     elif reimbursed is False:
         q = q.where(Invoice.reimbursed_at.is_(None))
+    if hit and hit[1]:  # subcategory is derived from the vendor, not stored: narrow to the ids whose vendor is_a it
+        ids = [iv.id for iv in s.scalars(q) if ontology.sub_of(iv.vendor) == hit[1]]
+        q = q.where(Invoice.id.in_(ids))
     return q.order_by(Invoice.invoice_date, Invoice.id)
 
 
@@ -276,6 +280,9 @@ def _make_draft(user, s, d: dict, path: Path, qr_text: str | None) -> dict:
     pref = get_pref(user, s, d.get("vendor"))
     profile_id = _active_profile(user, s).id
     category = d.get("category") if d.get("category") in user_categories(user, s) else None
+    known = ontology.classify(d.get("vendor"))  # a vendor the ontology knows is classified by rule, not by the model's guess
+    if known and known[0] in user_categories(user, s):
+        category = known[0]
     if pref:  # agentic memory: the user corrected this vendor before — apply without being asked
         if pref.category and pref.category in user_categories(user, s):
             category = pref.category
@@ -293,7 +300,8 @@ def _make_draft(user, s, d: dict, path: Path, qr_text: str | None) -> dict:
     if currency != "THB":
         warnings.append(f"บิลสกุล {currency} — เรียก convert_currency(draft_id={iv.id}) เพื่อแปลงเป็นบาทก่อนบันทึก")
     return {"draft_id": iv.id, "doc_type": doc_type, "vendor": iv.vendor, "date": iv.invoice_date, "subtotal": subtotal,
-            "discount": discount, "vat": vat, "total": total, "currency": currency, "category": iv.category, "items": d.get("items"),
+            "discount": discount, "vat": vat, "total": total, "currency": currency, "category": iv.category,
+            "subcategory": ontology.sub_within(iv.vendor, iv.category), "items": d.get("items"),
             "transfer_ref": ref, "qr_status": qr_status, "warnings": warnings, "learned_from_past_corrections": learned}
 
 
@@ -434,8 +442,13 @@ def _totals(rows):
     by_cat = {}
     for iv in rows:
         by_cat[iv.category or "ไม่ระบุ"] = round(by_cat.get(iv.category or "ไม่ระบุ", 0) + (iv.total_thb or 0), 2)
+    by_sub = {}
+    for iv in rows:  # roll-down along is_a: "เดินทาง › เชื้อเพลิง"
+        k = f"{iv.category or 'ไม่ระบุ'} › {ontology.sub_within(iv.vendor, iv.category) or 'อื่นๆ'}"
+        by_sub[k] = round(by_sub.get(k, 0) + (iv.total_thb or 0), 2)
     return {"count": len(rows), "total": round(sum(iv.total_thb or 0 for iv in rows), 2),
-            "vat": round(sum(iv.vat or 0 for iv in rows if iv.currency == "THB"), 2), "by_category": by_cat}
+            "vat": round(sum(iv.vat or 0 for iv in rows if iv.currency == "THB"), 2), "by_category": by_cat,
+            "by_subcategory": by_sub}
 
 
 def summarize_expenses(user, s, date_from=None, date_to=None, category=None, reimbursed=None, profile=None,

@@ -52,6 +52,15 @@ def main():
                                       compare_to={"date_from": "2026-07-01", "date_to": "2026-07-31"})
         assert t2["compare_to"]["total"] == 180.0 and t2["compare_to"]["diff"] == 1735.0, t2
 
+        # ontology (app/ontology.py): alias → category, subcategory filter, roll-down, rule over the model's guess
+        assert tools.summarize_expenses(u, s, category="ค่าเดินทาง", profile="all")["total"] == 180.0
+        assert tools.find_invoices(u, s, category="เรียกรถ", profile="all")["count"] == 1      # แท็กซี่ is_a เรียกรถ
+        assert tools.find_invoices(u, s, category="ค่าน้ำมัน", profile="all")["count"] == 0
+        assert tools.summarize_expenses(u, s, profile="all")["by_subcategory"]["เดินทาง › เรียกรถ"] == 180.0
+        g = tools._make_draft(u, s, {"vendor": "Grab", "date": "2026-08-20", "total": 120, "vat": 0, "subtotal": 120,
+                                     "category": "อาหาร"}, Path("/tmp/none.png"), None)
+        assert g["category"] == "เดินทาง" and g["subcategory"] == "เรียกรถ", g        # model said อาหาร; the rule knows Grab
+
         # find by item / vendor / reimbursed
         assert tools.find_invoices(u, s, item="ลาเต้")["count"] == 1
         assert tools.find_invoices(u, s, vendor="กาแฟ")["count"] == 1
