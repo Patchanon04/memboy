@@ -11,6 +11,8 @@ from pathlib import Path
 from app import ontology
 
 SETS = {"tuning (dataset, 200)": Path("eval/dataset"), "held-out (dataset_test, 100)": Path("eval/dataset_test")}
+if Path("eval/dataset_blind/eval_results.json").exists():  # seed 31, made after the keywords were frozen; same vendor pool
+    SETS["fresh images (dataset_blind, 60)"] = Path("eval/dataset_blind")
 
 
 def run(folder: Path) -> dict:

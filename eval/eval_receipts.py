@@ -83,8 +83,16 @@ def score(pred, gold):
 
 async def run_model(model):
     sem = asyncio.Semaphore(3)
+    # RETRY_FAILED=1: keep the saved answers, re-ask only rows that died on an API error (http 5xx/timeout) —
+    # an outage is not a model mistake and must not be scored as one
+    prev = {}
+    if os.environ.get("RETRY_FAILED") and (DIR / "eval_results.json").exists():
+        prev = {r["file"]: r for r in json.loads((DIR / "eval_results.json").read_text(encoding="utf-8")).get(model, [])
+                if not str(r["pred"].get("_raw", "")).startswith(("http", "timeout", "gave up"))}
     async with httpx.AsyncClient(timeout=240) as client:
         async def one(lab):
+            if lab["file"] in prev:
+                return prev[lab["file"]]
             async with sem:
                 pred = await extract(client, model, DIR / lab["file"])
                 return {"file": lab["file"], "pred": pred, "ok": score(pred, lab)}

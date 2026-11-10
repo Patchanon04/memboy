@@ -4,6 +4,7 @@
 |---|---|---|---|---|
 | tuning (dataset, 200) | 194/200 | 194/194 | 198/200 | **200/200** |
 | held-out (dataset_test, 100) | 92/100 | 92/92 | 96/100 | **98/100** |
+| fresh images (dataset_blind, 60) | 58/60 | 58/58 | 58/60 | **58/60** |
 
 - tuning (dataset, 200) fixed: 026_th_camera.jpg: "สปาทำหม่อนคลาย" อาหาร→สุขภาพ
 - tuning (dataset, 200) fixed: 083_th_camera.jpg: "ร้านยี่สิบบาทของแท้" อาหาร→ของใช้
