@@ -68,8 +68,8 @@ docker compose run --rm app python -m tests.test_harness   # ตาราง 18 
 | Extraction — ชุดลายมือ (30 บิลเงินสดสังเคราะห์ `eval/handwritten`, ชุดยากแยก ไม่ใช่ input ที่รับรอง) | ถูกครบ 29/30 (date 97%) — **หมายเหตุ**: ลายมือจำลองจากฟอนต์ที่ทำให้สั่น/เอียงทีละตัวอักษร ไม่ใช่ลายมือคนจริง ตัวเลขนี้จึงเป็นขอบบน ของจริงคาดว่าต่ำกว่า |
 | Eval A/D tool-selection 54 เคส (รันซ้ำทั้งชุดหลังติดตั้ง gate) | gemma-4-26b-a4b-it **54/54** — รอบแรก 50/54: 1 เคส API ล่ม, 2 เคสเพราะ gate ("ถูกต้อง" ไม่อยู่ใน regex ยืนยัน / เคสคาดหวังข้อความหลังแก้ทันที) แก้ regex+เคสแล้วรัน 4 เคสซ้ำผ่านหมด |
 | Eval B end-to-end 11 scenario (assert DB, รันซ้ำภายใต้ confirmation gate) | **11/11** |
-| Eval C loop metrics (1,086 LLM calls) | JSON first-try 96.5%, loop-cap 0, chain ≥2 = 5%, ask-back 5% |
-| Latency / token ต่อเทิร์น | p50 17.5s · p90 76s (96% เป็นเวลา LLM) · token เข้า ~4.7k ออก ~154 |
+| Eval C loop metrics (1,747 LLM calls, 958 turns) | JSON first-try 94.3%, loop-cap 0, chain ≥2 = 4%, ask-back 6% · tool error 56 ครั้ง agent แก้ args เองสำเร็จ 4/54 (ที่เหลือถามผู้ใช้) |
+| Latency / token ต่อเทิร์น | p50 20.6s · p90 75s (91% เป็นเวลา LLM) · token เข้า ~5.2k ออก ~172 |
 | สลิปโอน 30 ใบ (6 layout, 5 QR mismatch) | doc_type/total/ref/qr_status 100%, mismatch detection 5/5 |
 
 ## ช่วงแรก AI ตอบไม่ตรงเพราะอะไร แล้วแก้ยังไง
