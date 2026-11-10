@@ -11,7 +11,7 @@ from pathlib import Path
 
 from sqlalchemy import select
 
-from app import gate, llm, tools
+from app import gate, llm, ontology, privacy, tools
 from app.db import Conversation, Note, User, session
 
 log = logging.getLogger("memboy")
@@ -32,16 +32,16 @@ TOOLS = {
     "restore_invoice": (tools.restore_invoice, "กู้คืนบิลที่เพิ่งลบ (undo)", {"invoice_id": "id"}),
     "check_duplicate": (tools.check_duplicate, "เช็คว่ามีบิลซ้ำหรือยัง", {"vendor": "ร้าน", "date": "YYYY-MM-DD", "total": "ยอด"}),
     "manage_profile": (tools.manage_profile, "โปรไฟล์ค่าใช้จ่าย (แยกบริษัท/ทริป)", {"action": "create|switch|list", "name": "ชื่อโปรไฟล์"}),
-    "find_invoices": (tools.find_invoices, "ค้นหาบิล (ทุก filter optional; profile='all' ค้นทุกโปรไฟล์; item ค้นชื่อสินค้าในบิล)", {"date_from": "YYYY-MM-DD", "date_to": "YYYY-MM-DD", "vendor": "คำค้นชื่อร้าน", "category": "หมวด", "reimbursed": "true|false", "profile": "ชื่อ|all", "item": "ชื่อสินค้า", "limit": 20}),
-    "summarize_expenses": (tools.summarize_expenses, "สรุปยอดรวม/แยกหมวด/VAT (เลขคำนวณจากฐานข้อมูล) เทียบช่วงก่อนได้ด้วย compare_to", {"date_from": "YYYY-MM-DD", "date_to": "YYYY-MM-DD", "category": "หมวด", "reimbursed": "true|false", "profile": "ชื่อ|all", "compare_to": "{\"date_from\":..,\"date_to\":..}"}),
+    "find_invoices": (tools.find_invoices, "ค้นหาบิล (ทุก filter optional; profile='all' ค้นทุกโปรไฟล์; item ค้นชื่อสินค้าในบิล)", {"date_from": "YYYY-MM-DD", "date_to": "YYYY-MM-DD", "vendor": "คำค้นชื่อร้าน", "category": "หมวด หรือหมวดย่อย/คำพ้อง เช่น ค่าน้ำมัน, เรียกรถ, ค่าเดินทาง", "reimbursed": "true|false", "profile": "ชื่อ|all", "item": "ชื่อสินค้า", "limit": 20}),
+    "summarize_expenses": (tools.summarize_expenses, "สรุปยอดรวม/แยกหมวด/แยกหมวดย่อย/VAT (เลขคำนวณจากฐานข้อมูล) เทียบช่วงก่อนได้ด้วย compare_to", {"date_from": "YYYY-MM-DD", "date_to": "YYYY-MM-DD", "category": "หมวด หรือหมวดย่อย/คำพ้อง เช่น ค่าน้ำมัน, เรียกรถ, ค่าเดินทาง", "reimbursed": "true|false", "profile": "ชื่อ|all", "compare_to": "{\"date_from\":..,\"date_to\":..}"}),
     "analyze_trends": (tools.analyze_trends, "แนวโน้มรายเดือน, หมวดที่โต, ร้านที่จ่ายบ่อย", {"months": 6, "profile": "ชื่อ|all"}),
     "generate_report": (tools.generate_report, "สร้างรายงาน PDF ตามที่ user สั่ง คืนลิงก์ — เลือกได้ว่าจะมีอะไรบ้าง (sections) คอลัมน์ไหน จัดกลุ่ม/เรียงยังไง ตั้งชื่อและใส่หมายเหตุได้; ไม่ระบุ = แบบมาตรฐาน (chart,by_category,table,signature)",
                         {"date_from": "YYYY-MM-DD", "date_to": "YYYY-MM-DD", "profile": "ชื่อ|all", "reimbursed": "true|false เช่น false=เฉพาะที่ยังไม่เบิก",
-                         "category": "เฉพาะหมวดนี้", "vendor": "เฉพาะร้านที่ชื่อมีคำนี้", "min_total": "ยอดขั้นต่ำ", "max_total": "ยอดสูงสุด",
+                         "category": "เฉพาะหมวด/หมวดย่อยนี้ (รับคำพ้องได้)", "vendor": "เฉพาะร้านที่ชื่อมีคำนี้", "min_total": "ยอดขั้นต่ำ", "max_total": "ยอดสูงสุด",
                          "title": "หัวรายงาน", "sections": "[เรียงตามที่อยากให้ปรากฏ] เลือกจาก summary,chart,by_category,by_vendor,by_month,by_day,table,items,images,note,signature",
-                         "columns": "[คอลัมน์ของ table] เลือกจาก id,date,vendor,category,profile,doc_type,subtotal,discount,net,vat,total,reimbursed",
+                         "columns": "[คอลัมน์ของ table] เลือกจาก id,date,vendor,category,subcategory,profile,doc_type,subtotal,discount,net,vat,total,reimbursed",
                          "vat_mode": "separate=แยก VAT (ก่อน VAT|VAT|ยอดรวม + ตารางสรุป VAT) · included=รวม VAT ในยอดเดียว · none=ไม่เอา VAT เลย",
-                         "group_by": "category|vendor|month|profile|reimbursed (มียอดรวมย่อยต่อกลุ่ม)", "sort": "date|total|vendor|category", "desc": "true|false",
+                         "group_by": "category|subcategory|vendor|month|profile|reimbursed (มียอดรวมย่อยต่อกลุ่ม)", "sort": "date|total|vendor|category", "desc": "true|false",
                          "top_n": "จำนวนร้านใน by_vendor (1-30)", "note": "ข้อความหมายเหตุท้ายรายงาน"}),
     "export_csv": (tools.export_csv, "ส่งออก CSV รายบิล คืนลิงก์", {"date_from": "YYYY-MM-DD", "date_to": "YYYY-MM-DD", "profile": "ชื่อ", "reimbursed": "true|false"}),
     "remember_note": (tools.remember_note, "จำข้อมูลระยะยาวของ user (ชื่อเล่น งบต่อเดือน กติกาเบิก)", {"action": "save|list|delete", "text": "ข้อความ", "note_id": "id (delete)"}),
@@ -63,6 +63,7 @@ def system_prompt(user: User, s) -> str:
     return f"""คุณคือ MemBoy ผู้ช่วยจัดการใบเสร็จและค่าใช้จ่ายใน LINE พูดไทยสุภาพ กระชับ
 วันนี้คือ {now.strftime("%Y-%m-%d")} ({now.strftime("%A")}) เวลา {now.strftime("%H:%M")} เวลาไทย — ใช้คำนวณ "เดือนนี้/เมื่อวาน/สัปดาห์ก่อน" เป็นช่วงวันที่เอง
 โปรไฟล์ที่ใช้อยู่: {prof} | หมวดหมู่ที่มี: {cats}
+หมวดย่อย (ontology — ระบบจัดให้จากชื่อร้านเอง ใช้กรองได้ทันที): {ontology.describe()}
 สิ่งที่ user เคยให้จำไว้: {notes if notes else "(ยังไม่มี)"}
 
 เครื่องมือที่มี:
@@ -166,7 +167,7 @@ async def run_turn(external_id: str, text: str | None = None, image_path: str | 
     user_id = get_user(external_id)
     t_turn = time.monotonic()
     usage_token = llm.USAGE.set({"calls": 0, "llm_s": 0.0, "in_tok": 0, "out_tok": 0, "models": []})
-    turn_log = {"ts": datetime.datetime.now().isoformat(timespec="seconds"), "user": external_id,
+    turn_log = {"ts": datetime.datetime.now().isoformat(timespec="seconds"), "user": privacy.pseudonym(external_id),  # never the LINE id itself
                 "in": {"text": text, "image": image_path}, "steps": []}
     out = {"reply": "", "images": [], "files": [], "draft": False}
     with session() as s:

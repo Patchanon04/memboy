@@ -15,7 +15,7 @@ from pathlib import Path
 import httpx
 from sqlalchemy import select
 
-from app import agent, events, line_io, llm, tools, worker
+from app import agent, events, line_io, llm, privacy, tools, worker
 from app.db import Conversation, Invoice, ProcessedEvent, User, init_db, session
 
 RESULTS = []
@@ -265,8 +265,9 @@ def d5():
     _stub([json.dumps({"reply": "ok"})])
     asyncio.run(agent.run_turn(ext, text="ทดสอบ log"))
     last = json.loads(Path("/data/logs/turns.jsonl").read_text(encoding="utf-8").strip().splitlines()[-1])
-    assert last["user"] == ext and last["steps"] and "out" in last
-    return f"เทิร์นล่าสุดถูกบันทึกครบ: user/in/steps/out ({len(last['steps'])} step)"
+    assert last["user"] == privacy.pseudonym(ext) and last["steps"] and "out" in last
+    assert ext not in json.dumps(last, ensure_ascii=False), "raw user id leaked into the turn log"
+    return f"เทิร์นล่าสุดถูกบันทึกครบ: user(pseudonym)/in/steps/out ({len(last['steps'])} step), ไม่มี id จริงใน log"
 
 
 @check("D6", "Pin รุ่นโมเดล (ไม่ใช้ alias ลอยๆ)", "unit")
@@ -330,7 +331,7 @@ def x1():
     if not log.exists():
         raise NotImplementedError("ยังไม่มี turn log")
     rows = [json.loads(l) for l in log.read_text(encoding="utf-8").splitlines() if l.strip()]
-    line = [r for r in rows if r["user"].startswith("U") and not r["user"].startswith(("U-", "U_"))]
+    line = [r for r in rows if r["user"].startswith("line:")]  # pseudonymized LINE users (app/privacy.py)
     if not line:
         raise NotImplementedError("ยังไม่เคยมีข้อความจาก LINE จริงเข้ามา — รัน scripts/setup_line.py แล้วทักบอท")
     imgs = [r for r in line if r["in"].get("image")]

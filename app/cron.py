@@ -9,7 +9,7 @@ import os
 
 from sqlalchemy import select
 
-from app import agent, line_io
+from app import agent, line_io, privacy
 from app.db import User, session
 from app.events import _messages
 
@@ -32,12 +32,12 @@ async def _run_goal(goal: str, only_user: str | None = None):
         try:
             out = await agent.run_turn(uid, text=goal)
         except Exception:
-            log.exception("proactive goal failed for %s", uid)
+            log.exception("proactive goal failed for %s", privacy.pseudonym(uid))
             continue
         if "NO_SUMMARY" in out["reply"]:
             continue
         await line_io.push(uid, _messages(out))
-        log.info("proactive -> %s: %s", uid, out["reply"][:80])
+        log.info("proactive -> %s: %s", privacy.pseudonym(uid), out["reply"][:80])
 
 
 async def weekly_summary(ctx, only_user: str | None = None):
