@@ -22,7 +22,7 @@ from mcp.server.stdio import stdio_server
 from mcp.server.transport_security import TransportSecuritySettings
 from mcp.types import CallToolResult, ImageContent, ListToolsResult, TextContent, Tool, ToolAnnotations
 
-from app import agent, tools
+from app import agent, gate, tools
 from app.db import User, init_db, session
 from app.line_io import base_url
 
@@ -31,6 +31,7 @@ USER_EXT = os.environ.get("MEMBOY_MCP_USER", "mcp:local")
 UPLOADS = Path("/data/uploads")
 READ_ONLY = {"check_duplicate", "find_invoices", "summarize_expenses", "analyze_trends", "get_invoice_image", "split_bill", "convert_currency"}
 ANY = ["string", "number", "boolean", "object", "array", "null"]
+CONFIRM_HINT = "ใส่ true ได้เฉพาะหลังผู้ใช้เห็น preview จากการเรียกครั้งก่อนแล้วยืนยัน (args อื่นต้องเหมือนเดิม ภายใน 10 นาที)"
 
 
 def _schema(params: dict) -> dict:
@@ -50,6 +51,8 @@ UPLOAD_TOOL = Tool(
 async def list_tools(ctx, params) -> ListToolsResult:
     out = [UPLOAD_TOOL]
     for name, (fn, desc, hints) in agent.TOOLS.items():
+        if name in gate.GATED:  # the same confirmation gate as LINE: first call previews, a second call with confirm runs
+            hints = {**hints, "confirm": CONFIRM_HINT}
         out.append(Tool(name=f"memboy_{name}", description=desc, input_schema=_schema(hints),
                         annotations=ToolAnnotations(read_only_hint=name in READ_ONLY,
                                                     destructive_hint=name == "delete_invoice",
@@ -94,8 +97,20 @@ async def call_tool(ctx, params) -> CallToolResult:
             result = _upload(args)
         elif key in agent.TOOLS:
             fn = agent.TOOLS[key][0]
+            confirm = args.pop("confirm", None) in (True, "true", "True")
             with session() as s:
                 user = s.get(User, agent.get_user(_user_ext(ctx)))
+                if gate.needs_gate(user, s, key, args):
+                    # an MCP client sees no LINE chat, so consent is a second call naming the exact action it previewed;
+                    # confirm on a first call (nothing parked, or other args) only previews again
+                    if not (confirm and gate.peek(user) == {"tool": key, "args": args}):
+                        pv = gate.preview(user, s, key, args)
+                        gate.park(user, s, key, args)
+                        body = {"needs_confirmation": True, "action": key, "args": args, "preview": pv,
+                                "note": "ยังไม่ได้ทำ แสดง preview นี้ให้ผู้ใช้ เมื่อผู้ใช้ยืนยันแล้ว เรียก tool เดิมด้วย args เดิมพร้อม confirm=true ภายใน 10 นาที"}
+                        return CallToolResult(content=[TextContent(type="text", text=json.dumps(body, ensure_ascii=False, default=str))],
+                                              structured_content=json.loads(json.dumps(body, default=str)))
+                    gate.clear(user, s)  # consent is spent on the action the user saw
                 result = await fn(user, s, **args) if inspect.iscoroutinefunction(fn) else fn(user, s, **args)
         else:
             return _error(f"ไม่มี tool {params.name}; ใช้ tools/list ดูรายชื่อ")

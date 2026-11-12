@@ -17,6 +17,7 @@ from app import agent, tools
 from app.db import Invoice, User, init_db, session
 
 ME, OTHER = f"test:mcp:{uuid.uuid4().hex[:6]}", f"test:mcp:{uuid.uuid4().hex[:6]}"
+MEX = [ME]  # the user exercise() acts as
 HTTP = "http://127.0.0.1:8080/mcp"
 TOKEN = os.environ.get("MCP_TOKEN", "")
 
@@ -52,6 +53,24 @@ async def exercise(cs: ClientSession, other_id: int):
 
     res = await cs.call_tool("memboy_transfer_money", {})
     assert res.is_error, res
+
+    # gate: delete previews first; confirm without a parked preview only previews again; then confirm runs it
+    with session() as s:
+        me = s.get(User, agent.get_user(MEX[0]))
+        mine = Invoice(profile_id=tools._active_profile(me, s).id, vendor="ร้านทดสอบ gate", invoice_date="2026-08-02",
+                       subtotal=50, vat=0, total=50, total_thb=50, category="อาหาร", status="confirmed")
+        s.add(mine); s.commit(); mine_id = mine.id
+        s.refresh(me); me.pending_action = None; me.pending_at = None; s.commit()
+    res = await cs.call_tool("memboy_delete_invoice", {"invoice_id": mine_id, "confirm": True})
+    assert not res.is_error and text(res)["needs_confirmation"], text(res)          # no preview yet -> just a preview
+    res = await cs.call_tool("memboy_delete_invoice", {"invoice_id": mine_id})
+    assert text(res)["needs_confirmation"] and text(res)["preview"]["vendor"] == "ร้านทดสอบ gate", text(res)
+    with session() as s:
+        assert s.get(Invoice, mine_id).deleted_at is None                             # still there after the preview
+    res = await cs.call_tool("memboy_delete_invoice", {"invoice_id": mine_id, "confirm": True})
+    assert not res.is_error and "needs_confirmation" not in text(res), text(res)
+    with session() as s:
+        assert s.get(Invoice, mine_id).deleted_at is not None                         # deleted only after confirm
 
 
 async def main():
