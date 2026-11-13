@@ -33,7 +33,7 @@ TOOLS = {
     "check_duplicate": (tools.check_duplicate, "เช็คว่ามีบิลซ้ำหรือยัง", {"vendor": "ร้าน", "date": "YYYY-MM-DD", "total": "ยอด"}),
     "manage_profile": (tools.manage_profile, "โปรไฟล์ค่าใช้จ่าย (แยกบริษัท/ทริป)", {"action": "create|switch|list", "name": "ชื่อโปรไฟล์"}),
     "find_invoices": (tools.find_invoices, "ค้นหาบิล (ทุก filter optional; profile='all' ค้นทุกโปรไฟล์; item ค้นชื่อสินค้าในบิล)", {"date_from": "YYYY-MM-DD", "date_to": "YYYY-MM-DD", "vendor": "คำค้นชื่อร้าน", "category": "หมวด หรือหมวดย่อย/คำพ้อง เช่น ค่าน้ำมัน, เรียกรถ, ค่าเดินทาง", "reimbursed": "true|false", "profile": "ชื่อ|all", "item": "ชื่อสินค้า", "limit": 20}),
-    "summarize_expenses": (tools.summarize_expenses, "สรุปยอดรวม/แยกหมวด/แยกหมวดย่อย/VAT (เลขคำนวณจากฐานข้อมูล) เทียบช่วงก่อนได้ด้วย compare_to", {"date_from": "YYYY-MM-DD", "date_to": "YYYY-MM-DD", "category": "หมวด หรือหมวดย่อย/คำพ้อง เช่น ค่าน้ำมัน, เรียกรถ, ค่าเดินทาง", "reimbursed": "true|false", "profile": "ชื่อ|all", "compare_to": "{\"date_from\":..,\"date_to\":..}"}),
+    "summarize_expenses": (tools.summarize_expenses, "สรุปยอดรวม/แยกหมวด/แยกหมวดย่อย/VAT (เลขคำนวณจากฐานข้อมูล) เทียบช่วงก่อนได้ด้วย compare_to", {"vendor": "คำค้นชื่อร้าน", "date_from": "YYYY-MM-DD", "date_to": "YYYY-MM-DD", "category": "หมวด หรือหมวดย่อย/คำพ้อง เช่น ค่าน้ำมัน, เรียกรถ, ค่าเดินทาง", "reimbursed": "true|false", "profile": "ชื่อ|all", "compare_to": "{\"date_from\":..,\"date_to\":..}"}),
     "analyze_trends": (tools.analyze_trends, "แนวโน้มรายเดือน, หมวดที่โต, ร้านที่จ่ายบ่อย", {"months": 6, "profile": "ชื่อ|all"}),
     "generate_report": (tools.generate_report, "สร้างรายงาน PDF ตามที่ user สั่ง คืนลิงก์ — เลือกได้ว่าจะมีอะไรบ้าง (sections) คอลัมน์ไหน จัดกลุ่ม/เรียงยังไง ตั้งชื่อและใส่หมายเหตุได้; ไม่ระบุ = แบบมาตรฐาน (chart,by_category,table,signature)",
                         {"date_from": "YYYY-MM-DD", "date_to": "YYYY-MM-DD", "profile": "ชื่อ|all", "reimbursed": "true|false เช่น false=เฉพาะที่ยังไม่เบิก",
@@ -144,6 +144,16 @@ def _parse(text: str) -> dict:
     return out
 
 
+def check_args(name: str, args: dict):
+    """A tool must not silently drop an argument it doesn't take (Eval F: vendor/sort were ignored -> wrong totals).
+    Unknown names come back as a ToolError listing the valid ones, so the model can retry."""
+    params = inspect.signature(TOOLS[name][0]).parameters
+    ok = [p for p, v in params.items() if p not in ("user", "s") and v.kind is not inspect.Parameter.VAR_KEYWORD]
+    bad = sorted(set(args) - set(ok))
+    if bad:
+        raise tools.ToolError(f"{name} ไม่รับ argument {bad} — ใช้ได้: {ok}")
+
+
 def _store(s, user_id: int, role: str, content: dict):
     s.add(Conversation(user_id=user_id, role=role, content=content))
     s.commit()
@@ -189,6 +199,7 @@ async def run_turn(external_id: str, text: str | None = None, image_path: str | 
             step = {"tool": act["tool"], "args": args, **({"routed": True} if act.get("_routed") else {}),
                     **({"confirmed": True} if act.get("_confirmed") or confirmed else {})}
             try:
+                check_args(act["tool"], args)
                 needs = gate.needs_gate(user, s, act["tool"], args)
                 if act["tool"] in gate.GATED and not needs:
                     step["gate"] = "exempt"   # editing a draft: part of the preview loop, the save is still gated

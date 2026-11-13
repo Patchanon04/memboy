@@ -98,6 +98,7 @@ async def call_tool(ctx, params) -> CallToolResult:
         elif key in agent.TOOLS:
             fn = agent.TOOLS[key][0]
             confirm = args.pop("confirm", None) in (True, "true", "True")
+            agent.check_args(key, args)
             with session() as s:
                 user = s.get(User, agent.get_user(_user_ext(ctx)))
                 if gate.needs_gate(user, s, key, args):

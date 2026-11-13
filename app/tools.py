@@ -435,7 +435,8 @@ def find_invoices(user, s, date_from=None, date_to=None, vendor=None, category=N
     if item:
         for o, iv in zip(out, rows[-int(limit):]):
             o["matched_items"] = [it for it in (iv.items or []) if item.lower() in str(it.get("name", "")).lower()]
-    return {"count": len(rows), "invoices": out}
+    # the sum comes from code: without it the model adds up the list itself (Eval F found 2 such answers)
+    return {"count": len(rows), "total": round(sum(iv.total_thb or 0 for iv in rows), 2), "invoices": out}
 
 
 def _totals(rows):
@@ -452,8 +453,8 @@ def _totals(rows):
 
 
 def summarize_expenses(user, s, date_from=None, date_to=None, category=None, reimbursed=None, profile=None,
-                       compare_to=None, **_):
-    rows = list(s.scalars(_query(user, s, date_from, date_to, None, category, reimbursed, profile)))
+                       compare_to=None, vendor=None, **_):
+    rows = list(s.scalars(_query(user, s, date_from, date_to, vendor, category, reimbursed, profile)))
     out = _totals(rows)
     out["period"] = {"from": date_from, "to": date_to}
     if compare_to:
@@ -464,7 +465,7 @@ def summarize_expenses(user, s, date_from=None, date_to=None, category=None, rei
                 raise ToolError('compare_to ต้องเป็น object {"date_from": "YYYY-MM-DD", "date_to": "YYYY-MM-DD"}')
         if not isinstance(compare_to, dict):
             raise ToolError('compare_to ต้องเป็น object {"date_from": ..., "date_to": ...}')
-        prev = list(s.scalars(_query(user, s, compare_to.get("date_from"), compare_to.get("date_to"), None, category,
+        prev = list(s.scalars(_query(user, s, compare_to.get("date_from"), compare_to.get("date_to"), vendor, category,
                                      reimbursed, profile)))
         pt = _totals(prev)
         out["compare_to"] = {"period": compare_to, **pt,

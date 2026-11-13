@@ -36,6 +36,15 @@ def main():
         assert [p["name"] for p in tools.manage_profile(u, s, action="list")["profiles"] if p["active"]] == ["ทริปหัวหิน"]
         assert tools.find_invoices(u, s)["count"] == 0                       # new profile is empty
         assert tools.find_invoices(u, s, profile="all")["count"] == 3
+        assert tools.find_invoices(u, s, profile="all")["total"] == tools.summarize_expenses(u, s, profile="all")["total"]  # sum from code, not the model
+        assert tools.summarize_expenses(u, s, vendor="กาแฟ", profile="all")["total"] == 65.0     # vendor filter is honoured
+        for bad in (("summarize_expenses", {"sort": "total"}), ("find_invoices", {"desc": False})):
+            try:
+                agent.check_args(*bad)
+                raise AssertionError(f"unknown arg accepted: {bad}")
+            except tools.ToolError as e:
+                assert "ใช้ได้" in str(e)
+        agent.check_args("summarize_expenses", {"vendor": "x", "date_from": "2026-08-01"})   # valid args pass
         tools.update_invoice(u, s, invoice_id=b, fields={"profile": "ทริปหัวหิน"})
         assert tools.find_invoices(u, s)["count"] == 1
         tools.manage_profile(u, s, action="switch", name="ส่วนตัว")
