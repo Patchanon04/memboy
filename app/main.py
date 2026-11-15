@@ -69,7 +69,8 @@ async def _wait_for(what: str, fn, tries: int = 45, delay: float = 2.0):
     raises, so `restart: unless-stopped` never fires and the bot is silently down until someone notices."""
     for i in range(1, tries + 1):
         try:
-            return await fn() if inspect.iscoroutinefunction(fn) else fn()
+            res = fn()
+            return await res if inspect.isawaitable(res) else res  # a lambda returning a coroutine must be awaited too
         except Exception as e:
             if i == tries:
                 raise
@@ -94,7 +95,7 @@ async def startup():
 
 @app.get("/health")
 async def health():
-    return {"ok": True, "queue": bool(app.state.queue)}
+    return {"ok": True, "queue": hasattr(app.state.queue, "enqueue_job")}  # bool() of an un-awaited coroutine is True
 
 
 @app.post("/webhook")
