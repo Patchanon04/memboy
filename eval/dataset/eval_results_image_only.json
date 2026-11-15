@@ -1,0 +1,3594 @@
+{
+ "gemma4:12b": [
+  {
+   "file": "001_th_clean.png",
+   "pred": {
+    "vendor": "สปาเท้าอ่อนคลาย",
+    "date_raw": "4/5/69 14:16",
+    "total": 1580.0,
+    "vat": 0,
+    "category": "สุขภาพ",
+    "date": "2026-05-04"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "002_th_photo.jpg",
+   "pred": {
+    "vendor": "ห้างหุ้นส่วน อะไหล่รุ่งเจริญ",
+    "date_raw": "14/02/2026",
+    "total": 407.0,
+    "vat": 26.63,
+    "category": "อุปกรณ์",
+    "date": "2026-02-14"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "003_en_clean.jpg",
+   "pred": {
+    "vendor": "Pizza Piazza",
+    "date_raw": "18/05/2026",
+    "total": 1757.0,
+    "vat": 0,
+    "category": "อาหาร",
+    "date": "2026-05-18"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "004_en_camera.png",
+   "pred": {
+    "vendor": "City Center Hotel",
+    "date_raw": "17/08/2020",
+    "total": 1400.0,
+    "vat": 11.99,
+    "category": "ที่พัก",
+    "date": "2020-08-17"
+   },
+   "ok": {
+    "vendor": true,
+    "date": false,
+    "total": true,
+    "vat": false,
+    "category": true
+   }
+  },
+  {
+   "file": "005_en_camera.png",
+   "pred": {
+    "vendor": "Metro Fuel Station",
+    "date_raw": "14/03/2026",
+    "total": 1510.0,
+    "vat": 0,
+    "category": "เดินทาง",
+    "date": "2026-03-14"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "006_en_clean.pdf",
+   "pred": {
+    "vendor": "Cozy Hostel Bangkok",
+    "date_raw": "3 Jul 2026",
+    "total": 10350.0,
+    "vat": 677.1,
+    "category": "ที่พัก",
+    "date": "2026-07-03"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "007_th_clean.png",
+   "pred": {
+    "vendor": "ครัวป้าแลง",
+    "date_raw": "04/08/2026",
+    "total": 370.0,
+    "vat": 24.21,
+    "category": "อาหาร",
+    "date": "2026-08-04"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "008_en_photo.png",
+   "pred": {
+    "vendor": "City Cab Co., Ltd.",
+    "date_raw": "1 Mar 2026",
+    "total": 2540.0,
+    "vat": 0,
+    "category": "เดินทาง",
+    "date": "2026-03-01"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "009_th_camera.png",
+   "pred": {
+    "vendor": "ร้านอาหารจันทร์เพ็ญ",
+    "date_raw": "03/05/63",
+    "total": 490.0,
+    "vat": 31.4,
+    "category": "อาหาร",
+    "date": "2020-05-03"
+   },
+   "ok": {
+    "vendor": false,
+    "date": false,
+    "total": false,
+    "vat": true,
+    "category": false
+   }
+  },
+  {
+   "file": "010_en_photo.png",
+   "pred": {
+    "vendor": "PrintPro Center",
+    "date_raw": "26 May 2026",
+    "total": 3420.0,
+    "vat": 233.74,
+    "category": "อุปกรณ์",
+    "date": "2026-05-26"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": false,
+    "category": true
+   }
+  },
+  {
+   "file": "011_en_photo.pdf",
+   "pred": {
+    "vendor": "Office Supply Depot",
+    "date_raw": "04/11/2026",
+    "total": 1340.0,
+    "vat": 87.66,
+    "category": "อุปกรณ์",
+    "date": "2026-11-04"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "012_th_clean.png",
+   "pred": {
+    "vendor": "ร้านถ่ายเอกสารหนามอ",
+    "date_raw": "10/12/69",
+    "total": 825.0,
+    "vat": 0,
+    "category": "อุปกรณ์",
+    "date": "2026-12-10"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "013_th_camera.png",
+   "pred": {
+    "vendor": "ร้านอาหาร",
+    "date_raw": "20/06/2566",
+    "total": 630.0,
+    "vat": 0,
+    "category": "อาหาร",
+    "date": "2023-06-20"
+   },
+   "ok": {
+    "vendor": false,
+    "date": false,
+    "total": true,
+    "vat": false,
+    "category": false
+   }
+  },
+  {
+   "file": "014_th_photo.pdf",
+   "pred": {
+    "vendor": "ห้างหุ้นส่วน เอเจไพ่สุ่งเจริญ",
+    "date_raw": "11 Nov 2016",
+    "total": 576.0,
+    "vat": 0,
+    "category": "อุปกรณ์",
+    "date": "2016-11-11"
+   },
+   "ok": {
+    "vendor": true,
+    "date": false,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "015_th_photo.jpg",
+   "pred": {
+    "vendor": "บริษัทได๋",
+    "date_raw": "02/11/2569",
+    "total": 427.0,
+    "vat": 27.93,
+    "category": "อาหาร",
+    "date": "2026-11-02"
+   },
+   "ok": {
+    "vendor": false,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": false
+   }
+  },
+  {
+   "file": "016_en_camera.jpg",
+   "pred": {
+    "vendor": "Daily Grind Coffee",
+    "date_raw": "19 Nov 2016",
+    "total": 490.0,
+    "vat": 0,
+    "category": "อาหาร",
+    "date": "2016-11-19"
+   },
+   "ok": {
+    "vendor": true,
+    "date": false,
+    "total": false,
+    "vat": false,
+    "category": true
+   }
+  },
+  {
+   "file": "017_th_clean.jpg",
+   "pred": {
+    "vendor": "คลินิกหมอสมศรี",
+    "date_raw": "23/11/69",
+    "total": 970.0,
+    "vat": 0,
+    "category": "สุขภาพ",
+    "date": "2026-11-23"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "018_th_camera.jpg",
+   "pred": {
+    "vendor": "ร้านเครื่องเขียนศึกษาภัณฑ์",
+    "date_raw": "19/6/69 09:51",
+    "total": 1248.0,
+    "vat": 0,
+    "category": "อุปกรณ์",
+    "date": "2026-06-19"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "019_th_photo.jpg",
+   "pred": {
+    "vendor": "แก๊งค์ฮีเมอร์",
+    "date_raw": "5 Aug 2026",
+    "total": 5300.0,
+    "vat": 346.73,
+    "category": "อาหาร",
+    "date": "2026-08-05"
+   },
+   "ok": {
+    "vendor": false,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": false
+   }
+  },
+  {
+   "file": "020_th_photo.png",
+   "pred": {
+    "vendor": "ห้างหุ้นส่วน อะไหล่ส่งเจริญ",
+    "date_raw": "24/3/69 12:09",
+    "total": 1390.0,
+    "vat": 0,
+    "category": "อุปกรณ์",
+    "date": "2026-03-24"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "021_en_camera.png",
+   "pred": {
+    "vendor": "Cozy Hostel Bangkok",
+    "date_raw": "8 Aug 2026",
+    "total": 3450.0,
+    "vat": 225.7,
+    "category": "ที่พัก",
+    "date": "2026-08-08"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "022_th_photo.jpg",
+   "pred": {
+    "vendor": "เรือด่วนเจ้าพระยา",
+    "date_raw": "11/5/69 21:48",
+    "total": 4270.0,
+    "vat": 279.35,
+    "category": "เดินทาง",
+    "date": "2026-05-11"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "023_en_clean.pdf",
+   "pred": {
+    "vendor": "Office Supply Depot",
+    "date_raw": "12 Mar 2026",
+    "total": 2200.0,
+    "vat": 0,
+    "category": "อุปกรณ์",
+    "date": "2026-03-12"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "024_th_camera.jpg",
+   "pred": {
+    "vendor": "เทอร์ฟิวเจอร์",
+    "date_raw": "22/06/25",
+    "total": 1870.0,
+    "vat": 174.66,
+    "category": "อาหาร",
+    "date": "2025-06-22"
+   },
+   "ok": {
+    "vendor": false,
+    "date": false,
+    "total": true,
+    "vat": false,
+    "category": false
+   }
+  },
+  {
+   "file": "025_th_photo.jpg",
+   "pred": {
+    "vendor": "ชำรวยอินบิวท์เฟ่ต์",
+    "date_raw": "23/01/2569 16:01",
+    "total": 235.0,
+    "vat": 15.37,
+    "category": "อาหาร",
+    "date": "2026-01-23"
+   },
+   "ok": {
+    "vendor": false,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "026_th_camera.jpg",
+   "pred": {
+    "vendor": "สำอางเนรมิต",
+    "date_raw": "11/03/66",
+    "total": 1220.0,
+    "vat": 0,
+    "category": "อุปกรณ์",
+    "date": "2023-03-11"
+   },
+   "ok": {
+    "vendor": false,
+    "date": false,
+    "total": true,
+    "vat": true,
+    "category": false
+   }
+  },
+  {
+   "file": "027_en_photo.pdf",
+   "pred": {
+    "vendor": "Burger Barn",
+    "date_raw": "4 Mar 2026",
+    "total": 1005.0,
+    "vat": 0,
+    "category": "อาหาร",
+    "date": "2026-03-04"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "028_th_camera.pdf",
+   "pred": {
+    "vendor": "สปาน้ำร้อนบอนลาย",
+    "date_raw": "27 Sep 2026 12:02",
+    "total": 1640.0,
+    "vat": 1532.71,
+    "category": "สุขภาพ",
+    "date": "2026-09-27"
+   },
+   "ok": {
+    "vendor": false,
+    "date": true,
+    "total": true,
+    "vat": false,
+    "category": true
+   }
+  },
+  {
+   "file": "029_en_clean.jpg",
+   "pred": {
+    "vendor": "Cozy Hostel Bangkok",
+    "date_raw": "03/02/2026",
+    "total": 1450.0,
+    "vat": 94.86,
+    "category": "ที่พัก",
+    "date": "2026-02-03"
+   },
+   "ok": {
+    "vendor": true,
+    "date": false,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "030_en_photo.pdf",
+   "pred": {
+    "vendor": "Cozy Hostel Bangkok",
+    "date_raw": "16 Apr 2016",
+    "total": 4450.0,
+    "vat": 291.12,
+    "category": "ที่พัก",
+    "date": "2016-04-16"
+   },
+   "ok": {
+    "vendor": true,
+    "date": false,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "031_th_camera.jpg",
+   "pred": {
+    "vendor": "ไอทีซิตี้ สาขาเพชรบุรี",
+    "date_raw": "04/06 10:33",
+    "total": 1166.0,
+    "vat": 0,
+    "category": "อุปกรณ์",
+    "date": null
+   },
+   "ok": {
+    "vendor": true,
+    "date": false,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "032_th_camera.jpg",
+   "pred": {
+    "vendor": "ข้าวแกงใต้ต้นดีก",
+    "date_raw": "9/4/69 08:30",
+    "total": 290.0,
+    "vat": 0,
+    "category": "อาหาร",
+    "date": "2026-04-09"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "033_th_clean.png",
+   "pred": {
+    "vendor": "ใบกำกับภาษี",
+    "date_raw": "3 Aug 2026",
+    "total": 1360.0,
+    "vat": 88.97,
+    "category": "อาหาร",
+    "date": "2026-08-03"
+   },
+   "ok": {
+    "vendor": false,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": false
+   }
+  },
+  {
+   "file": "034_en_camera.png",
+   "pred": {
+    "vendor": "Metro Fuel Station",
+    "date_raw": "05/01/2026",
+    "total": 2150.0,
+    "vat": 0,
+    "category": "เดินทาง",
+    "date": "2026-01-05"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "035_th_camera.png",
+   "pred": {
+    "_raw": "```json\n{\n  \"vendor\": \"ห้างสรรพสินค้าเซ็นทรัล\",\n  \"date_raw\": \"04/04/2016\",\n  \"total\": 3,416.00,\n  \"vat\": 309.60,\n  \"category\": \"อาหาร\"\n}\n```"
+   },
+   "ok": {
+    "vendor": false,
+    "date": false,
+    "total": false,
+    "vat": false,
+    "category": false
+   }
+  },
+  {
+   "file": "036_th_clean.png",
+   "pred": {
+    "vendor": "ไอทีซิตี้ สาขาแฟชั่น",
+    "date_raw": "09/08/2026",
+    "total": 962.0,
+    "vat": 0,
+    "category": "อุปกรณ์",
+    "date": "2026-08-09"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "037_en_clean.pdf",
+   "pred": {
+    "vendor": "Sunrise Beach Resort",
+    "date_raw": "13/04/2026",
+    "total": 5900.0,
+    "vat": 0,
+    "category": "ที่พัก",
+    "date": "2026-04-13"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "038_th_camera.pdf",
+   "pred": {
+    "vendor": "ร้านอาหารจันทร์ 12",
+    "date_raw": "30/07/2560 21:39",
+    "total": 499.0,
+    "vat": 0,
+    "category": "อาหาร",
+    "date": "2017-07-30"
+   },
+   "ok": {
+    "vendor": false,
+    "date": false,
+    "total": true,
+    "vat": true,
+    "category": false
+   }
+  },
+  {
+   "file": "039_en_photo.jpg",
+   "pred": {
+    "vendor": "Airport Rail Link",
+    "date_raw": "13 Aug 2026",
+    "total": 1330.0,
+    "vat": 90.99,
+    "category": "เดินทาง",
+    "date": "2026-08-13"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": false,
+    "category": true
+   }
+  },
+  {
+   "file": "040_th_photo.png",
+   "pred": {
+    "vendor": "ก๋วยเตี๋ยวเรื่องเรื่อง",
+    "date_raw": "21/02/2569",
+    "total": 250.0,
+    "vat": 16.36,
+    "category": "อาหาร",
+    "date": "2026-02-21"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "041_th_photo.jpg",
+   "pred": {
+    "vendor": "ซุปเปอร์มาร์เก็ต",
+    "date_raw": "18/09/2569",
+    "total": 269.0,
+    "vat": 17.6,
+    "category": "อาหาร",
+    "date": "2026-09-18"
+   },
+   "ok": {
+    "vendor": false,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": false
+   }
+  },
+  {
+   "file": "042_en_photo.png",
+   "pred": {
+    "vendor": "Office Supply Depot",
+    "date_raw": "10/07/2026",
+    "total": 5020.0,
+    "vat": 350.84,
+    "category": "อุปกรณ์",
+    "date": "2026-07-10"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": false,
+    "category": true
+   }
+  },
+  {
+   "file": "043_th_camera.png",
+   "pred": {
+    "vendor": "ชำระเงินได้ที่ศูนย์",
+    "date_raw": "13/09/69",
+    "total": 397.1,
+    "vat": 360.0,
+    "category": "อาหาร",
+    "date": "2026-09-13"
+   },
+   "ok": {
+    "vendor": false,
+    "date": false,
+    "total": false,
+    "vat": false,
+    "category": true
+   }
+  },
+  {
+   "file": "044_th_clean.png",
+   "pred": {
+    "vendor": "ห้างหุ้นส่วน อะไหล่รุ่งเจริญ",
+    "date_raw": "23 Jun 2026",
+    "total": 451.0,
+    "vat": 29.5,
+    "category": "อุปกรณ์",
+    "date": "2026-06-23"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "045_th_camera.jpg",
+   "pred": {
+    "vendor": "มินิมาร์ทบ๋าเลาว",
+    "date_raw": "27/08/2569",
+    "total": 260.0,
+    "vat": 0,
+    "category": "ของใช้",
+    "date": "2026-08-27"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "046_en_camera.png",
+   "pred": {
+    "vendor": "TechHub Gadget Store",
+    "date_raw": "7 Jun 2026",
+    "total": 2150.0,
+    "vat": 0,
+    "category": "อุปกรณ์",
+    "date": "2026-06-07"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "047_th_camera.png",
+   "pred": {
+    "vendor": "ข้าวมันไก่หมูเส้น",
+    "date_raw": "22/02/2566 16:23",
+    "total": 305.0,
+    "vat": 0,
+    "category": "อาหาร",
+    "date": "2023-02-22"
+   },
+   "ok": {
+    "vendor": false,
+    "date": false,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "048_en_clean.jpg",
+   "pred": {
+    "vendor": "Pizza Piazza",
+    "date_raw": "26 Dec 2026",
+    "total": 1297.0,
+    "vat": 84.85,
+    "category": "อาหาร",
+    "date": "2026-12-26"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "049_en_camera.jpg",
+   "pred": {
+    "vendor": "Daily Grind Coffee",
+    "date_raw": "18 Dec 2026",
+    "total": 1696.0,
+    "vat": 0,
+    "category": "อาหาร",
+    "date": "2026-12-18"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "050_th_clean.jpg",
+   "pred": {
+    "vendor": "ครัวบ้านแดง",
+    "date_raw": "28/06/63",
+    "total": 420.0,
+    "vat": 0,
+    "category": "อาหาร",
+    "date": "2020-06-28"
+   },
+   "ok": {
+    "vendor": true,
+    "date": false,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "051_th_photo.jpg",
+   "pred": {
+    "vendor": "แท็กซี่มิเตอร์",
+    "date_raw": "03/07/2026",
+    "total": 5420.0,
+    "vat": 354.58,
+    "category": "เดินทาง",
+    "date": "2026-07-03"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "052_en_camera.pdf",
+   "pred": {
+    "vendor": "City Cab Co., Ltd.",
+    "date_raw": "15/01/2026",
+    "total": 2810.0,
+    "vat": 183.83,
+    "category": "เดินทาง",
+    "date": "2026-01-15"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "053_th_photo.jpg",
+   "pred": {
+    "vendor": "ห้างหุ้นส่วน อะไหล่งซ์เซ่งเจริญ",
+    "date_raw": "28/03/2566",
+    "total": 18.0,
+    "vat": 1.18,
+    "category": "อุปกรณ์",
+    "date": "2023-03-28"
+   },
+   "ok": {
+    "vendor": true,
+    "date": false,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "054_en_photo.png",
+   "pred": {
+    "vendor": "Pizza Piazza",
+    "date_raw": "20/06/2026",
+    "total": 565.0,
+    "vat": 0,
+    "category": "อาหาร",
+    "date": "2026-06-20"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "055_en_camera.png",
+   "pred": {
+    "vendor": "Airport Rail Link",
+    "date_raw": "2 Apr 2026",
+    "total": 1180.0,
+    "vat": 72.2,
+    "category": "เดินทาง",
+    "date": "2026-04-02"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": false,
+    "category": true
+   }
+  },
+  {
+   "file": "056_th_photo.png",
+   "pred": {
+    "vendor": "ร้านเครื่องเขียนดีนาคัฟเตอร์",
+    "date_raw": "02/01/26",
+    "total": 50.0,
+    "vat": 3.27,
+    "category": "อุปกรณ์",
+    "date": "2026-01-02"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "057_en_photo.png",
+   "pred": {
+    "_raw": "```json\n{\"vendor\": \"Metro Fuel Station\", \"date_raw\": \"11 Aug 2016\", \"total\": 2,650.00, \"vat\": 185.79, \"category\": \"เดินทาง\"}\n```"
+   },
+   "ok": {
+    "vendor": false,
+    "date": false,
+    "total": false,
+    "vat": false,
+    "category": false
+   }
+  },
+  {
+   "file": "058_th_camera.png",
+   "pred": {
+    "vendor": "ส้มตำไบ้เวอร์เด้",
+    "date_raw": "13/04/26",
+    "total": 550.0,
+    "vat": 51.2,
+    "category": "อาหาร",
+    "date": "2026-04-13"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": false,
+    "category": true
+   }
+  },
+  {
+   "file": "059_en_photo.jpg",
+   "pred": {
+    "vendor": "City Center Hotel",
+    "date_raw": "26 Mar 2026",
+    "total": 2550.0,
+    "vat": 0,
+    "category": "ที่พัก",
+    "date": "2026-03-26"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "060_en_photo.jpg",
+   "pred": {
+    "vendor": "TechHub Gadget Store",
+    "date_raw": "2 Feb 2026 10:21",
+    "total": 4025.0,
+    "vat": 0,
+    "category": "อุปกรณ์",
+    "date": "2026-02-02"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "061_th_photo.png",
+   "pred": {
+    "vendor": "ร้านยาฟาร์มาซีพลัส",
+    "date_raw": "01/03/2569",
+    "total": 1700.0,
+    "vat": 111.21,
+    "category": "สุขภาพ",
+    "date": "2026-03-01"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "062_th_camera.jpg",
+   "pred": {
+    "vendor": "ร้านเครื่องเขียนศึกษาภัณฑ์",
+    "date_raw": "24/6/69",
+    "total": 105.0,
+    "vat": 0,
+    "category": "อุปกรณ์",
+    "date": "2026-06-24"
+   },
+   "ok": {
+    "vendor": true,
+    "date": false,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "063_en_photo.pdf",
+   "pred": {
+    "vendor": "Daily Grind Coffee",
+    "date_raw": "05/03/2026",
+    "total": 1256.0,
+    "vat": 0,
+    "category": "อาหาร",
+    "date": "2026-03-05"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "064_th_photo.jpg",
+   "pred": {
+    "vendor": "เรือด่วนเจ้าพระยา",
+    "date_raw": "05/03/2569",
+    "total": 4460.0,
+    "vat": 0,
+    "category": "เดินทาง",
+    "date": "2026-03-05"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "065_en_photo.png",
+   "pred": {
+    "vendor": "TechHub Gadget Store",
+    "date_raw": "02/05/2026",
+    "total": 5930.0,
+    "vat": 387.94,
+    "category": "อุปกรณ์",
+    "date": "2026-05-02"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "066_th_camera.png",
+   "pred": {
+    "vendor": "ศรีวิลัย",
+    "date_raw": "09/06/2566",
+    "total": 1330.0,
+    "vat": 87.01,
+    "category": "อาหาร",
+    "date": "2023-06-09"
+   },
+   "ok": {
+    "vendor": false,
+    "date": false,
+    "total": true,
+    "vat": true,
+    "category": false
+   }
+  },
+  {
+   "file": "067_th_camera.pdf",
+   "pred": {
+    "vendor": "หมูยอเต็กซ์",
+    "date_raw": "16 Sep 2026 20:11",
+    "total": 180.0,
+    "vat": 11.78,
+    "category": "อาหาร",
+    "date": "2026-09-16"
+   },
+   "ok": {
+    "vendor": false,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "068_en_clean.jpg",
+   "pred": {
+    "vendor": "Daily Grind Coffee",
+    "date_raw": "14 Nov 2026",
+    "total": 987.0,
+    "vat": 0,
+    "category": "อาหาร",
+    "date": "2026-11-14"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "069_th_photo.jpg",
+   "pred": {
+    "vendor": "ตลาดสดตลาดองเชย แถง 12",
+    "date_raw": "9/4/69 12:27",
+    "total": 127.0,
+    "vat": 8.31,
+    "category": "อาหาร",
+    "date": "2026-04-09"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": false
+   }
+  },
+  {
+   "file": "070_en_camera.png",
+   "pred": {
+    "vendor": "Office Supply Depot",
+    "date_raw": "7 Apr 2020",
+    "total": 5605.0,
+    "vat": 500.0,
+    "category": "อุปกรณ์",
+    "date": "2020-04-07"
+   },
+   "ok": {
+    "vendor": true,
+    "date": false,
+    "total": true,
+    "vat": false,
+    "category": true
+   }
+  },
+  {
+   "file": "071_th_photo.png",
+   "pred": {
+    "vendor": "มินิมาร์ทน้ำอ้วน",
+    "date_raw": "02/08/26 15:36",
+    "total": 347.0,
+    "vat": 0,
+    "category": "อาหาร",
+    "date": "2026-08-02"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": false
+   }
+  },
+  {
+   "file": "072_th_clean.png",
+   "pred": {
+    "vendor": "ใบเสร็จเครื่องดื่ม",
+    "date_raw": "11/12/69",
+    "total": 440.0,
+    "vat": 28.79,
+    "category": "อาหาร",
+    "date": "2026-12-11"
+   },
+   "ok": {
+    "vendor": false,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "073_en_photo.jpg",
+   "pred": {
+    "vendor": "Sunrise Beach Resort",
+    "date_raw": "20/06/2026",
+    "total": 5800.0,
+    "vat": 0,
+    "category": "ที่พัก",
+    "date": "2026-06-20"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "074_th_photo.jpg",
+   "pred": {
+    "vendor": "วินมอเตอร์ไซค์ปากซอย",
+    "date_raw": "2 Nov 2026 21:04",
+    "total": 5200.0,
+    "vat": 0,
+    "category": "เดินทาง",
+    "date": "2026-11-02"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "075_th_clean.png",
+   "pred": {
+    "vendor": "ซุปเปอร์มาร์เก็ต",
+    "date_raw": "10/06/63",
+    "total": 448.0,
+    "vat": 29.31,
+    "category": "อาหาร",
+    "date": "2020-06-10"
+   },
+   "ok": {
+    "vendor": false,
+    "date": false,
+    "total": true,
+    "vat": true,
+    "category": false
+   }
+  },
+  {
+   "file": "076_en_clean.jpg",
+   "pred": {
+    "vendor": "Pizza Piazza",
+    "date_raw": "01/07/2023",
+    "total": 1157.0,
+    "vat": 0,
+    "category": "อาหาร",
+    "date": "2023-07-01"
+   },
+   "ok": {
+    "vendor": true,
+    "date": false,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "077_th_camera.pdf",
+   "pred": {
+    "vendor": "ตลาดสดคลองเตย แผง 12",
+    "date_raw": "27/04/26",
+    "total": 517.0,
+    "vat": 0,
+    "category": "อาหาร",
+    "date": "2026-04-27"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": false
+   }
+  },
+  {
+   "file": "078_en_camera.png",
+   "pred": {
+    "vendor": "Pizza Piazza",
+    "date_raw": "4 Aug 2020",
+    "total": 350.0,
+    "vat": 35.0,
+    "category": "อาหาร",
+    "date": "2020-08-04"
+   },
+   "ok": {
+    "vendor": true,
+    "date": false,
+    "total": false,
+    "vat": false,
+    "category": true
+   }
+  },
+  {
+   "file": "079_en_camera.png",
+   "pred": {
+    "vendor": "Burger Barn",
+    "date_raw": "12/05/2026",
+    "total": 1523.0,
+    "vat": 99.64,
+    "category": "อาหาร",
+    "date": "2026-05-12"
+   },
+   "ok": {
+    "vendor": true,
+    "date": false,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "080_th_camera.png",
+   "pred": {
+    "vendor": "บริษัทมงคลเวิร์คไชน์",
+    "date_raw": "10/06/2565",
+    "total": 163.0,
+    "vat": 10.06,
+    "category": "อาหาร",
+    "date": "2022-06-10"
+   },
+   "ok": {
+    "vendor": false,
+    "date": false,
+    "total": true,
+    "vat": false,
+    "category": false
+   }
+  },
+  {
+   "file": "081_th_photo.jpg",
+   "pred": {
+    "vendor": "หมู่ทอดเจ็ดจู",
+    "date_raw": "17/01/2026",
+    "total": 350.0,
+    "vat": 22.9,
+    "category": "อาหาร",
+    "date": "2026-01-17"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "082_th_photo.jpg",
+   "pred": {
+    "vendor": "ร้านเบียร์บางแฮ่",
+    "date_raw": "21/09/2026",
+    "total": 270.0,
+    "vat": 17.66,
+    "category": "อาหาร",
+    "date": "2026-09-21"
+   },
+   "ok": {
+    "vendor": false,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": false
+   }
+  },
+  {
+   "file": "083_th_camera.jpg",
+   "pred": {
+    "vendor": "ร้านสีบัวทอง",
+    "date_raw": "10/08/66",
+    "total": 334.0,
+    "vat": 31.26,
+    "category": "อาหาร",
+    "date": "2023-08-10"
+   },
+   "ok": {
+    "vendor": false,
+    "date": false,
+    "total": true,
+    "vat": false,
+    "category": false
+   }
+  },
+  {
+   "file": "084_en_camera.jpg",
+   "pred": {
+    "vendor": "Office Supply Depot",
+    "date_raw": "15 Feb 2016",
+    "total": 1400.0,
+    "vat": 0,
+    "category": "อุปกรณ์",
+    "date": "2016-02-15"
+   },
+   "ok": {
+    "vendor": true,
+    "date": false,
+    "total": false,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "085_en_clean.pdf",
+   "pred": {
+    "vendor": "PrintPro Center",
+    "date_raw": "12/03/2026 12:27",
+    "total": 2380.0,
+    "vat": 0,
+    "category": "อุปกรณ์",
+    "date": "2026-03-12"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "086_en_clean.pdf",
+   "pred": {
+    "vendor": "Sunrise Beach Resort",
+    "date_raw": "7 May 2026",
+    "total": 3350.0,
+    "vat": 0,
+    "category": "ที่พัก",
+    "date": "2026-05-07"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "087_th_clean.pdf",
+   "pred": {
+    "vendor": "ร้านเครื่องเขียนศึกษาภัณฑ์",
+    "date_raw": "08/05/26 09:38",
+    "total": 1175.0,
+    "vat": 0,
+    "category": "อุปกรณ์",
+    "date": "2026-05-08"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "088_th_photo.jpg",
+   "pred": {
+    "vendor": "คลินิกหมอสมศรี",
+    "date_raw": "23/09/2026",
+    "total": 1390.0,
+    "vat": 0,
+    "category": "สุขภาพ",
+    "date": "2026-09-23"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "089_th_clean.pdf",
+   "pred": {
+    "vendor": "ส้มตำนำเด้อ",
+    "date_raw": "02/12/2026",
+    "total": 300.0,
+    "vat": 19.63,
+    "category": "อาหาร",
+    "date": "2026-12-02"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "090_th_photo.pdf",
+   "pred": {
+    "vendor": "คลินิกหมอสมศรี",
+    "date_raw": "6/7/69",
+    "total": 1380.0,
+    "vat": 90.28,
+    "category": "สุขภาพ",
+    "date": "2026-07-06"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "091_th_clean.jpg",
+   "pred": {
+    "vendor": "มินิมาร์ทป้าอ้วน",
+    "date_raw": "19/10/69",
+    "total": 315.0,
+    "vat": 0,
+    "category": "ของใช้",
+    "date": "2026-10-19"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": false,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "092_en_clean.jpg",
+   "pred": {
+    "vendor": "Office Supply Depot",
+    "date_raw": "15/12/2026",
+    "total": 6205.0,
+    "vat": 439.93,
+    "category": "อุปกรณ์",
+    "date": "2026-12-15"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": false,
+    "category": true
+   }
+  },
+  {
+   "file": "093_en_photo.png",
+   "pred": {
+    "vendor": "Office Supply Depot",
+    "date_raw": "10 Nov 2026",
+    "total": 5105.0,
+    "vat": 333.97,
+    "category": "อุปกรณ์",
+    "date": "2026-11-10"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "094_th_photo.jpg",
+   "pred": {
+    "vendor": "ริมเตอร์ไชน์คลับปากซอย",
+    "date_raw": "4 Jul 2026",
+    "total": 1810.0,
+    "vat": 118.41,
+    "category": "อาหาร",
+    "date": "2026-07-04"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": false
+   }
+  },
+  {
+   "file": "095_th_photo.jpg",
+   "pred": {
+    "vendor": "ห้างหุ้นส่วน อ.ไชย์ครึ่งเจริญ",
+    "date_raw": "3/3/69 15:38",
+    "total": 1222.0,
+    "vat": 79.94,
+    "category": "อุปกรณ์",
+    "date": "2026-03-03"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "096_th_photo.jpg",
+   "pred": {
+    "vendor": "สปาเท้าอ่อนคลาย",
+    "date_raw": "24 Aug 2026",
+    "total": 1260.0,
+    "vat": 82.43,
+    "category": "สุขภาพ",
+    "date": "2026-08-24"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "097_th_photo.png",
+   "pred": {
+    "vendor": "ร้านเครื่องเขียนศึกษาภัณฑ์",
+    "date_raw": "19/69 13:13",
+    "total": 670.0,
+    "vat": 43.83,
+    "category": "อุปกรณ์",
+    "date": null
+   },
+   "ok": {
+    "vendor": true,
+    "date": false,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "098_th_camera.pdf",
+   "pred": {
+    "vendor": "ห้างหุ้นส่วน อะไหล่รุ่งเจริญ",
+    "date_raw": "26/11/69 16:46",
+    "total": 673.0,
+    "vat": 0,
+    "category": "อุปกรณ์",
+    "date": "2026-11-26"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "099_en_photo.pdf",
+   "pred": {
+    "vendor": "TechHub Gadget Store",
+    "date_raw": "03/10/2026 12:12",
+    "total": 2535.0,
+    "vat": 0,
+    "category": "อุปกรณ์",
+    "date": "2026-10-03"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "100_en_camera.pdf",
+   "pred": {
+    "vendor": "Sunrise Beach Resort",
+    "date_raw": "11/08/2020",
+    "total": 6750.0,
+    "vat": 461.59,
+    "category": "ที่พัก",
+    "date": "2020-08-11"
+   },
+   "ok": {
+    "vendor": true,
+    "date": false,
+    "total": true,
+    "vat": false,
+    "category": true
+   }
+  },
+  {
+   "file": "101_th_clean.jpg",
+   "pred": {
+    "vendor": "บริษัท เอ็นจิเนียริ่ง จำกัด",
+    "date_raw": "04/01/2560",
+    "total": 1336.0,
+    "vat": 87.4,
+    "category": "อุปกรณ์",
+    "date": "2017-01-04"
+   },
+   "ok": {
+    "vendor": false,
+    "date": false,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "102_th_clean.jpg",
+   "pred": {
+    "vendor": "สปาเท้าอ่อนคลาย",
+    "date_raw": "3/7/69",
+    "total": 670.0,
+    "vat": 0,
+    "category": "สุขภาพ",
+    "date": "2026-07-03"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "103_th_camera.png",
+   "pred": {
+    "vendor": "มินิมาร์ทหาลั่น",
+    "date_raw": "18/03/26",
+    "total": 335.0,
+    "vat": 0,
+    "category": "อาหาร",
+    "date": "2026-03-18"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": false
+   }
+  },
+  {
+   "file": "104_en_clean.png",
+   "pred": {
+    "vendor": "Daily Grind Coffee",
+    "date_raw": "25 Sep 2026",
+    "total": 783.0,
+    "vat": 0,
+    "category": "อาหาร",
+    "date": "2026-09-25"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "105_th_clean.pdf",
+   "pred": {
+    "vendor": "คลินิกหมอสมศรี",
+    "date_raw": "11/08/2026",
+    "total": 790.0,
+    "vat": 0,
+    "category": "สุขภาพ",
+    "date": "2026-08-11"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "106_th_clean.pdf",
+   "pred": {
+    "vendor": "ข้าวแกงใต้ต้นดีก",
+    "date_raw": "05/09/26",
+    "total": 175.0,
+    "vat": 11.45,
+    "category": "อาหาร",
+    "date": "2026-09-05"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "107_en_clean.jpg",
+   "pred": {
+    "vendor": "Cozy Hostel Bangkok",
+    "date_raw": "21/02/2026",
+    "total": 5700.0,
+    "vat": 0,
+    "category": "ที่พัก",
+    "date": "2026-02-21"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "108_th_camera.pdf",
+   "pred": {
+    "vendor": "ครัวบ้านแดง",
+    "date_raw": "28/5/69",
+    "total": 625.0,
+    "vat": 40.89,
+    "category": "อาหาร",
+    "date": "2026-05-28"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "109_en_clean.png",
+   "pred": {
+    "vendor": "TechHub Gadget Store",
+    "date_raw": "9 Mar 2026",
+    "total": 2900.0,
+    "vat": 189.22,
+    "category": "อุปกรณ์",
+    "date": "2026-03-09"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": false,
+    "category": true
+   }
+  },
+  {
+   "file": "110_th_photo.jpg",
+   "pred": {
+    "vendor": "วินมอเตอร์ไซค์ปากทอย",
+    "date_raw": "11/4/69 20:44",
+    "total": 3600.0,
+    "vat": 0,
+    "category": "เดินทาง",
+    "date": "2026-04-11"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": false,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "111_th_camera.jpg",
+   "pred": {
+    "vendor": "ร้านถ่ายเอกสารน้ำเม่ย",
+    "date_raw": "19/1/69 08:40",
+    "total": 918.0,
+    "vat": 60.06,
+    "category": "อุปกรณ์",
+    "date": "2026-01-19"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "112_en_camera.pdf",
+   "pred": {
+    "vendor": "Burger Barn",
+    "date_raw": "22/11/2020",
+    "total": 1020.0,
+    "vat": 0,
+    "category": "อาหาร",
+    "date": "2020-11-22"
+   },
+   "ok": {
+    "vendor": true,
+    "date": false,
+    "total": false,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "113_th_clean.png",
+   "pred": {
+    "vendor": "ห้างหุ้นส่วน อะไหล่ส่งเสริม",
+    "date_raw": "09/10/2569",
+    "total": 528.0,
+    "vat": 34.5,
+    "category": "อุปกรณ์",
+    "date": "2026-10-09"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": false,
+    "category": true
+   }
+  },
+  {
+   "file": "114_th_photo.jpg",
+   "pred": {
+    "vendor": "ข้าวแกงได้ทุนดีก",
+    "date_raw": "18/11/69",
+    "total": 365.0,
+    "vat": 23.88,
+    "category": "อาหาร",
+    "date": "2026-11-18"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "115_en_clean.jpg",
+   "pred": {
+    "vendor": "City Cab Co., Ltd.",
+    "date_raw": "21/02/2026",
+    "total": 2180.0,
+    "vat": 0,
+    "category": "เดินทาง",
+    "date": "2026-02-21"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "116_en_clean.png",
+   "pred": {
+    "vendor": "City Center Hotel",
+    "date_raw": "14/09/2026",
+    "total": 1950.0,
+    "vat": 127.57,
+    "category": "ที่พัก",
+    "date": "2026-09-14"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "117_en_camera.jpg",
+   "pred": {
+    "vendor": "Cozy Hostel Bangkok",
+    "date_raw": "23/10/2020",
+    "total": 4350.0,
+    "vat": 0,
+    "category": "ที่พัก",
+    "date": "2020-10-23"
+   },
+   "ok": {
+    "vendor": true,
+    "date": false,
+    "total": false,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "118_th_clean.png",
+   "pred": {
+    "vendor": "แท็กซ์มีเทอร์",
+    "date_raw": "7/2/69 17:00",
+    "total": 3410.0,
+    "vat": 0,
+    "category": "เดินทาง",
+    "date": "2026-02-07"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "119_th_photo.jpg",
+   "pred": {
+    "vendor": "รถด่วนบอนสวาร์วิจ",
+    "date_raw": "09/11/2026 08:23",
+    "total": 2550.0,
+    "vat": 106.82,
+    "category": "เดินทาง",
+    "date": "2026-11-09"
+   },
+   "ok": {
+    "vendor": false,
+    "date": true,
+    "total": true,
+    "vat": false,
+    "category": true
+   }
+  },
+  {
+   "file": "120_th_clean.png",
+   "pred": {
+    "vendor": "ร้านยาฟาร์มาซีพลัส",
+    "date_raw": "10/10/2569",
+    "total": 1280.0,
+    "vat": 83.74,
+    "category": "สุขภาพ",
+    "date": "2026-10-10"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "121_th_clean.png",
+   "pred": {
+    "vendor": "ห้างหุ้นส่วน ละมุ่งเจริญ",
+    "date_raw": "24/02/2569",
+    "total": 1568.0,
+    "vat": 102.58,
+    "category": "อุปกรณ์",
+    "date": "2026-02-24"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "122_en_clean.pdf",
+   "pred": {
+    "vendor": "Daily Grind Coffee",
+    "date_raw": "10 Feb 2026",
+    "total": 2002.0,
+    "vat": 130.97,
+    "category": "อาหาร",
+    "date": "2026-02-10"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "123_en_photo.png",
+   "pred": {
+    "vendor": "City Center Hotel",
+    "date_raw": "24 Dec 2026",
+    "total": 5300.0,
+    "vat": 300.0,
+    "category": "ที่พัก",
+    "date": "2026-12-24"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": false,
+    "category": true
+   }
+  },
+  {
+   "file": "124_th_camera.png",
+   "pred": {
+    "vendor": "บริษัทเอจีไซด์มาร์เก็ตติ้ง",
+    "date_raw": "04/03/26",
+    "total": 4550.0,
+    "vat": 425.34,
+    "category": "อาหาร",
+    "date": "2026-03-04"
+   },
+   "ok": {
+    "vendor": false,
+    "date": true,
+    "total": true,
+    "vat": false,
+    "category": false
+   }
+  },
+  {
+   "file": "125_th_clean.jpg",
+   "pred": {
+    "vendor": "ซูเปอร์มาร์เก็ต",
+    "date_raw": "21 Jul 2026 17:47",
+    "total": 185.0,
+    "vat": 0,
+    "category": "ของใช้",
+    "date": "2026-07-21"
+   },
+   "ok": {
+    "vendor": false,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "126_th_photo.pdf",
+   "pred": {
+    "vendor": "ร้านถ่ายเอกสารห้างแมง",
+    "date_raw": "7 May 2026",
+    "total": 1313.0,
+    "vat": 85.9,
+    "category": "อุปกรณ์",
+    "date": "2026-05-07"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "127_th_clean.pdf",
+   "pred": {
+    "vendor": "ห้างหุ้นส่วน อะไหล่งซ์เร่งเจริญ",
+    "date_raw": "15/05/2569",
+    "total": 125.0,
+    "vat": 8.18,
+    "category": "อุปกรณ์",
+    "date": "2026-05-15"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "128_th_photo.png",
+   "pred": {
+    "vendor": "ส้มตำนัวเด้อ",
+    "date_raw": "21 Nov 2016",
+    "total": 560.0,
+    "vat": 36.64,
+    "category": "อาหาร",
+    "date": "2016-11-21"
+   },
+   "ok": {
+    "vendor": true,
+    "date": false,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "129_th_photo.png",
+   "pred": {
+    "vendor": "เรือด่วนเจ้าพระยา",
+    "date_raw": "3/8/69",
+    "total": 850.0,
+    "vat": 55.61,
+    "category": "เดินทาง",
+    "date": "2026-08-03"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "130_en_clean.png",
+   "pred": {
+    "vendor": "Metro Fuel Station",
+    "date_raw": "10/02/2026",
+    "total": 510.0,
+    "vat": 0,
+    "category": "เดินทาง",
+    "date": "2026-02-10"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "131_en_camera.png",
+   "pred": {
+    "vendor": "Cozy Hostel Bangkok",
+    "date_raw": "16/08/2020",
+    "total": 2350.0,
+    "vat": 169.26,
+    "category": "ที่พัก",
+    "date": "2020-08-16"
+   },
+   "ok": {
+    "vendor": true,
+    "date": false,
+    "total": true,
+    "vat": false,
+    "category": true
+   }
+  },
+  {
+   "file": "132_th_clean.png",
+   "pred": {
+    "vendor": "ซาบุอิมมูฟเฟด",
+    "date_raw": "14 Jan 2026 21:42",
+    "total": 130.0,
+    "vat": 0,
+    "category": "อาหาร",
+    "date": "2026-01-14"
+   },
+   "ok": {
+    "vendor": false,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "133_en_photo.jpg",
+   "pred": {
+    "vendor": "TechHub Gadget Store",
+    "date_raw": "6 Jan 2026",
+    "total": 2505.0,
+    "vat": 163.88,
+    "category": "อุปกรณ์",
+    "date": "2026-01-06"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "134_th_clean.pdf",
+   "pred": {
+    "vendor": "เรือด่วนเจ้าพระยา",
+    "date_raw": "27/02/2569",
+    "total": 4800.0,
+    "vat": 314.02,
+    "category": "เดินทาง",
+    "date": "2026-02-27"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "135_en_camera.pdf",
+   "pred": {
+    "vendor": "TechHub Gadget Store",
+    "date_raw": "10/06/2019",
+    "total": 3760.0,
+    "vat": 0,
+    "category": "อุปกรณ์",
+    "date": "2019-06-10"
+   },
+   "ok": {
+    "vendor": true,
+    "date": false,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "136_th_clean.png",
+   "pred": {
+    "vendor": "ร้านฮีลสิบพาของแท้",
+    "date_raw": "9/7/69 17:44",
+    "total": 317.0,
+    "vat": 20.74,
+    "category": "อุปกรณ์",
+    "date": "2026-07-09"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": false
+   }
+  },
+  {
+   "file": "137_th_clean.png",
+   "pred": {
+    "vendor": "ห้างหุ้นส่วน อเจริญเจริญ",
+    "date_raw": "03/12/2026",
+    "total": 781.0,
+    "vat": 51.09,
+    "category": "อุปกรณ์",
+    "date": "2026-12-03"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "138_th_clean.jpg",
+   "pred": {
+    "vendor": "ชาบูอิมบิพเฟ่ต์",
+    "date_raw": "03/07/26",
+    "total": 335.0,
+    "vat": 21.92,
+    "category": "อาหาร",
+    "date": "2026-07-03"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "139_th_clean.pdf",
+   "pred": {
+    "vendor": "ไอทีซิตี้ สาขาแฟชั่น",
+    "date_raw": "4/5/69 10:40",
+    "total": 556.0,
+    "vat": 0,
+    "category": "อุปกรณ์",
+    "date": "2026-05-04"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "140_th_clean.jpg",
+   "pred": {
+    "vendor": "แท็กซี่มิเตอร์",
+    "date_raw": "13/12/69 10:01",
+    "total": 6160.0,
+    "vat": 40.99,
+    "category": "เดินทาง",
+    "date": "2026-12-13"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": false,
+    "category": true
+   }
+  },
+  {
+   "file": "141_th_clean.jpg",
+   "pred": {
+    "vendor": "ร้านถ่ายเอกสารหนามอ",
+    "date_raw": "06/12/2569",
+    "total": 828.0,
+    "vat": 54.19,
+    "category": "อุปกรณ์",
+    "date": "2026-12-06"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": false,
+    "category": true
+   }
+  },
+  {
+   "file": "142_en_clean.jpg",
+   "pred": {
+    "vendor": "City Cab Co., Ltd.",
+    "date_raw": "27 Nov 2026",
+    "total": 1660.0,
+    "vat": 0,
+    "category": "เดินทาง",
+    "date": "2026-11-27"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "143_en_photo.jpg",
+   "pred": {
+    "vendor": "Sunrise Beach Resort",
+    "date_raw": "14 Dec 2026",
+    "total": 8900.0,
+    "vat": 0,
+    "category": "ที่พัก",
+    "date": "2026-12-14"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "144_en_clean.jpg",
+   "pred": {
+    "vendor": "Sunrise Beach Resort",
+    "date_raw": "25/09/2026",
+    "total": 2100.0,
+    "vat": 0,
+    "category": "ที่พัก",
+    "date": "2026-09-25"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "145_en_photo.png",
+   "pred": {
+    "vendor": "Airport Rail Link",
+    "date_raw": "17 Apr 2026",
+    "total": 2840.0,
+    "vat": 185.79,
+    "category": "เดินทาง",
+    "date": "2026-04-17"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "146_en_photo.pdf",
+   "pred": {
+    "vendor": "Pizza Piazza",
+    "date_raw": "16/11/2026",
+    "total": 917.0,
+    "vat": 59.99,
+    "category": "อาหาร",
+    "date": "2026-11-16"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "147_en_photo.pdf",
+   "pred": {
+    "vendor": "Metro Fuel Station",
+    "date_raw": "27/03/2026",
+    "total": 1630.0,
+    "vat": 0,
+    "category": "เดินทาง",
+    "date": "2026-03-27"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "148_th_photo.png",
+   "pred": {
+    "vendor": "สปาทำอ่อนคลาย",
+    "date_raw": "28/01/2569 19:02",
+    "total": 840.0,
+    "vat": 0,
+    "category": "สุขภาพ",
+    "date": "2026-01-28"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "149_en_camera.png",
+   "pred": {
+    "vendor": "City Center Hotel",
+    "date_raw": "3 Sep 2016",
+    "total": 8550.0,
+    "vat": 0,
+    "category": "ที่พัก",
+    "date": "2016-09-03"
+   },
+   "ok": {
+    "vendor": true,
+    "date": false,
+    "total": false,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "150_th_clean.png",
+   "pred": {
+    "vendor": "ร้านยาฟาร์มาซีพลัส",
+    "date_raw": "18/07/2569 13:13",
+    "total": 540.0,
+    "vat": 35.93,
+    "category": "สุขภาพ",
+    "date": "2026-07-18"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": false,
+    "category": true
+   }
+  },
+  {
+   "file": "151_th_clean.png",
+   "pred": {
+    "vendor": "กาแฟบ้านสวน",
+    "date_raw": "24/12/66",
+    "total": 370.0,
+    "vat": 0,
+    "category": "อาหาร",
+    "date": "2023-12-24"
+   },
+   "ok": {
+    "vendor": true,
+    "date": false,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "152_en_camera.jpg",
+   "pred": {
+    "vendor": "PrintPro Center",
+    "date_raw": "27 May 2026",
+    "total": 1580.0,
+    "vat": 139.36,
+    "category": "อุปกรณ์",
+    "date": "2026-05-27"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": false,
+    "category": true
+   }
+  },
+  {
+   "file": "153_th_photo.jpg",
+   "pred": {
+    "vendor": "ข้าวแกงใต้ตูนดีก",
+    "date_raw": "10 Jan 2026 08:45",
+    "total": 115.0,
+    "vat": 7.52,
+    "category": "อาหาร",
+    "date": "2026-01-10"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "154_th_camera.pdf",
+   "pred": {
+    "vendor": "ซูเปอร์มาร์เก็ต",
+    "date_raw": "12/03/2026",
+    "total": 373.0,
+    "vat": 24.4,
+    "category": "อาหาร",
+    "date": "2026-03-12"
+   },
+   "ok": {
+    "vendor": false,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": false
+   }
+  },
+  {
+   "file": "155_en_photo.pdf",
+   "pred": {
+    "vendor": "PrintPro Center",
+    "date_raw": "24/03/2026",
+    "total": 3865.0,
+    "vat": 252.85,
+    "category": "อุปกรณ์",
+    "date": "2026-03-24"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "156_en_camera.png",
+   "pred": {
+    "vendor": "Noodle House 88",
+    "date_raw": "06/08/2026",
+    "total": 1077.0,
+    "vat": 70.46,
+    "category": "อาหาร",
+    "date": "2026-08-06"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "157_th_photo.png",
+   "pred": {
+    "vendor": "แท็กซ์บิ้ลเดอร์",
+    "date_raw": "23/06/26",
+    "total": 3360.0,
+    "vat": 219.81,
+    "category": "เดินทาง",
+    "date": "2026-06-23"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "158_en_photo.jpg",
+   "pred": {
+    "vendor": "Office Supply Depot",
+    "date_raw": "28 Oct 2026",
+    "total": 2745.0,
+    "vat": 0,
+    "category": "อุปกรณ์",
+    "date": "2026-10-28"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "159_en_clean.png",
+   "pred": {
+    "vendor": "Daily Grind Coffee",
+    "date_raw": "27 Aug 2026",
+    "total": 1118.0,
+    "vat": 73.14,
+    "category": "อาหาร",
+    "date": "2026-08-27"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "160_en_camera.jpg",
+   "pred": {
+    "vendor": "Office Supply Depot",
+    "date_raw": "2 Apr 2020",
+    "total": 305.0,
+    "vat": 19.05,
+    "category": "อุปกรณ์",
+    "date": "2020-04-02"
+   },
+   "ok": {
+    "vendor": true,
+    "date": false,
+    "total": true,
+    "vat": false,
+    "category": true
+   }
+  },
+  {
+   "file": "161_en_camera.jpg",
+   "pred": {
+    "vendor": "Sunrise Beach Resort",
+    "date_raw": "20 Jul 2026",
+    "total": 2100.0,
+    "vat": 0,
+    "category": "ที่พัก",
+    "date": "2026-07-20"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": false,
+    "category": true
+   }
+  },
+  {
+   "file": "162_th_clean.pdf",
+   "pred": {
+    "vendor": "ซุปเปอร์มาร์เชตวัดใต้",
+    "date_raw": "14/11/2569",
+    "total": 332.0,
+    "vat": 21.72,
+    "category": "ของใช้",
+    "date": "2026-11-14"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "163_en_camera.jpg",
+   "pred": {
+    "vendor": "Airport Rail Link",
+    "date_raw": "22/09/2020",
+    "total": 2480.0,
+    "vat": 180.0,
+    "category": "เดินทาง",
+    "date": "2020-09-22"
+   },
+   "ok": {
+    "vendor": true,
+    "date": false,
+    "total": true,
+    "vat": false,
+    "category": true
+   }
+  },
+  {
+   "file": "164_en_photo.jpg",
+   "pred": {
+    "vendor": "Metro Fuel Station",
+    "date_raw": "17/11/2026",
+    "total": 1660.0,
+    "vat": 0,
+    "category": "เดินทาง",
+    "date": "2026-11-17"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "165_th_photo.pdf",
+   "pred": {
+    "vendor": "ห้างหุ้นส่วน อะไหล่รุ่งเจริญ",
+    "date_raw": "02/01/2026",
+    "total": 1186.0,
+    "vat": 0,
+    "category": "อุปกรณ์",
+    "date": "2026-01-02"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "166_th_camera.png",
+   "pred": {
+    "vendor": "คลินิกหมออมรศรี",
+    "date_raw": "13/02/2026",
+    "total": 840.0,
+    "vat": 54.95,
+    "category": "สุขภาพ",
+    "date": "2026-02-13"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "167_th_camera.jpg",
+   "pred": {
+    "vendor": "ซุปเปอร์มาร์เก็ต",
+    "date_raw": "28/12/2026",
+    "total": 273.0,
+    "vat": 17.86,
+    "category": "อาหาร",
+    "date": "2026-12-28"
+   },
+   "ok": {
+    "vendor": false,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": false
+   }
+  },
+  {
+   "file": "168_en_camera.png",
+   "pred": {
+    "vendor": "City Center Hotel",
+    "date_raw": "11/04/2006",
+    "total": 4500.0,
+    "vat": 409.09,
+    "category": "ที่พัก",
+    "date": "2006-04-11"
+   },
+   "ok": {
+    "vendor": true,
+    "date": false,
+    "total": true,
+    "vat": false,
+    "category": true
+   }
+  },
+  {
+   "file": "169_en_camera.png",
+   "pred": {
+    "vendor": "Office Supply Depot",
+    "date_raw": "7 Apr 2020",
+    "total": 4135.0,
+    "vat": 0,
+    "category": "อุปกรณ์",
+    "date": "2020-04-07"
+   },
+   "ok": {
+    "vendor": true,
+    "date": false,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "170_th_photo.jpg",
+   "pred": {
+    "vendor": "สปาเท้าอ่อนคลาย",
+    "date_raw": "24 Sep 2026 14:29",
+    "total": 1330.0,
+    "vat": 0,
+    "category": "สุขภาพ",
+    "date": "2026-09-24"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "171_th_camera.pdf",
+   "pred": {
+    "vendor": "รถตุ๊กตุ๊กอนุสาวรีย์",
+    "date_raw": "27/12/16",
+    "total": 1810.0,
+    "vat": 0,
+    "category": "เดินทาง",
+    "date": "2016-12-27"
+   },
+   "ok": {
+    "vendor": true,
+    "date": false,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "172_en_clean.jpg",
+   "pred": {
+    "vendor": "City Cab Co., Ltd.",
+    "date_raw": "14/07/2025",
+    "total": 510.0,
+    "vat": 0,
+    "category": "เดินทาง",
+    "date": "2025-07-14"
+   },
+   "ok": {
+    "vendor": true,
+    "date": false,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "173_th_camera.jpg",
+   "pred": {
+    "vendor": "แท็กซี่มีเตอร์",
+    "date_raw": "28/09/2569",
+    "total": 3700.0,
+    "vat": 240.06,
+    "category": "เดินทาง",
+    "date": "2026-09-28"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": false,
+    "category": true
+   }
+  },
+  {
+   "file": "174_en_photo.pdf",
+   "pred": {
+    "vendor": "Cozy Hostel Bangkok",
+    "date_raw": "04/06/2026",
+    "total": 11000.0,
+    "vat": 0,
+    "category": "ที่พัก",
+    "date": "2026-06-04"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "175_th_camera.jpg",
+   "pred": {
+    "vendor": "ชำรวยมินิมาร์ท",
+    "date_raw": "27 Mar 2026 13:29",
+    "total": 470.0,
+    "vat": 30.75,
+    "category": "อาหาร",
+    "date": "2026-03-27"
+   },
+   "ok": {
+    "vendor": false,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "176_th_camera.png",
+   "pred": {
+    "vendor": "รักกองป่าม",
+    "date_raw": "21/09/2026",
+    "total": 230.0,
+    "vat": 0,
+    "category": "อาหาร",
+    "date": "2026-09-21"
+   },
+   "ok": {
+    "vendor": false,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "177_th_camera.png",
+   "pred": {
+    "vendor": "ใบเดียวเครื่องเรื่อง",
+    "date_raw": "02/05/2569 18:27",
+    "total": 210.0,
+    "vat": 0,
+    "category": "เดินทาง",
+    "date": "2026-05-02"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": false
+   }
+  },
+  {
+   "file": "178_en_camera.png",
+   "pred": {
+    "vendor": "Cozy Hostel Bangkok",
+    "date_raw": "25/01/2020",
+    "total": 4250.0,
+    "vat": 0,
+    "category": "ที่พัก",
+    "date": "2020-01-25"
+   },
+   "ok": {
+    "vendor": true,
+    "date": false,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "179_th_photo.jpg",
+   "pred": {
+    "vendor": "ร้านยาฟาร์มาซีพลัส",
+    "date_raw": "14/12/66",
+    "total": 850.0,
+    "vat": 0,
+    "category": "สุขภาพ",
+    "date": "2023-12-14"
+   },
+   "ok": {
+    "vendor": true,
+    "date": false,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "180_en_camera.png",
+   "pred": {
+    "vendor": "PrintPro Center",
+    "date_raw": "11 Jul 2026",
+    "total": 4190.0,
+    "vat": 209.22,
+    "category": "อุปกรณ์",
+    "date": "2026-07-11"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": false,
+    "category": true
+   }
+  },
+  {
+   "file": "181_en_photo.pdf",
+   "pred": {
+    "vendor": "Airport Rail Link",
+    "date_raw": "10 Nov 2026",
+    "total": 2810.0,
+    "vat": 0,
+    "category": "เดินทาง",
+    "date": "2026-11-10"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "182_en_camera.jpg",
+   "pred": {
+    "vendor": "TechHub Gadget Store",
+    "date_raw": "20/10/2026",
+    "total": 3015.0,
+    "vat": 0,
+    "category": "อุปกรณ์",
+    "date": "2026-10-20"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "183_en_camera.jpg",
+   "pred": {
+    "vendor": "TechHub Gadget Store",
+    "date_raw": "2 Feb 2020 17:52",
+    "total": 4350.0,
+    "vat": 289.58,
+    "category": "อุปกรณ์",
+    "date": "2020-02-02"
+   },
+   "ok": {
+    "vendor": true,
+    "date": false,
+    "total": true,
+    "vat": false,
+    "category": true
+   }
+  },
+  {
+   "file": "184_th_photo.jpg",
+   "pred": {
+    "vendor": "ร้านถ่ายเอกสารหน้ามอ",
+    "date_raw": "14/04/2569",
+    "total": 92.0,
+    "vat": 6.02,
+    "category": "อุปกรณ์",
+    "date": "2026-04-14"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "185_en_photo.jpg",
+   "pred": {
+    "vendor": "PrintPro Center",
+    "date_raw": "09/04/2026",
+    "total": 1905.0,
+    "vat": 130.63,
+    "category": "อุปกรณ์",
+    "date": "2026-04-09"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": false,
+    "category": true
+   }
+  },
+  {
+   "file": "186_th_clean.png",
+   "pred": {
+    "vendor": "ณิธารพัชร์",
+    "date_raw": "10/11/66",
+    "total": 300.0,
+    "vat": 19.63,
+    "category": "อาหาร",
+    "date": "2023-11-10"
+   },
+   "ok": {
+    "vendor": false,
+    "date": false,
+    "total": true,
+    "vat": true,
+    "category": false
+   }
+  },
+  {
+   "file": "187_th_clean.png",
+   "pred": {
+    "vendor": "สปาเท้าผ่อนคลาย",
+    "date_raw": "2 May 2026 17:37",
+    "total": 1230.0,
+    "vat": 0,
+    "category": "สุขภาพ",
+    "date": "2026-05-02"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "188_th_clean.jpg",
+   "pred": {
+    "vendor": "มินิมาร์ทป้าอ้วน",
+    "date_raw": "25/11/69",
+    "total": 105.0,
+    "vat": 6.87,
+    "category": "ของใช้",
+    "date": "2026-11-25"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "189_en_camera.png",
+   "pred": {
+    "vendor": "Airport Rail Link",
+    "date_raw": "3 Aug 2020",
+    "total": 1150.0,
+    "vat": 0,
+    "category": "เดินทาง",
+    "date": "2020-08-03"
+   },
+   "ok": {
+    "vendor": true,
+    "date": false,
+    "total": false,
+    "vat": false,
+    "category": true
+   }
+  },
+  {
+   "file": "190_th_photo.jpg",
+   "pred": {
+    "vendor": "ร้านเครื่องเขียนศึกษาภัณฑ์",
+    "date_raw": "12/05/2569 09:46",
+    "total": 811.0,
+    "vat": 53.06,
+    "category": "อุปกรณ์",
+    "date": "2026-05-12"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "191_en_photo.jpg",
+   "pred": {
+    "vendor": "TechHub Gadget Store",
+    "date_raw": "16/12/2026",
+    "total": 4610.0,
+    "vat": 310.59,
+    "category": "อุปกรณ์",
+    "date": "2026-12-16"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": false,
+    "category": true
+   }
+  },
+  {
+   "file": "192_th_photo.png",
+   "pred": {
+    "vendor": "ร้านเครื่องเขียนศึกษาภัณฑ์",
+    "date_raw": "12/03/2026",
+    "total": 226.0,
+    "vat": 0,
+    "category": "อุปกรณ์",
+    "date": "2026-03-12"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "193_th_photo.png",
+   "pred": {
+    "vendor": "ร้านเครื่องเขียนสิริยาภัณฑ์",
+    "date_raw": "02/12/26",
+    "total": 362.0,
+    "vat": 23.66,
+    "category": "อุปกรณ์",
+    "date": "2026-12-02"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": false,
+    "category": true
+   }
+  },
+  {
+   "file": "194_th_clean.jpg",
+   "pred": {
+    "vendor": "หมู่ทอดเจ็ด",
+    "date_raw": "10/1/69 20:06",
+    "total": 70.0,
+    "vat": 4.58,
+    "category": "อาหาร",
+    "date": "2026-01-10"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "195_th_camera.png",
+   "pred": {
+    "vendor": "กาแฟบ้านสวน",
+    "date_raw": "11/8/69 13:01",
+    "total": 320.0,
+    "vat": 0,
+    "category": "อาหาร",
+    "date": "2026-08-11"
+   },
+   "ok": {
+    "vendor": true,
+    "date": false,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "196_en_camera.jpg",
+   "pred": {
+    "vendor": "City Cab Co., Ltd.",
+    "date_raw": "23 Feb 2026",
+    "total": 3510.0,
+    "vat": 236.0,
+    "category": "เดินทาง",
+    "date": "2026-02-23"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": false,
+    "category": true
+   }
+  },
+  {
+   "file": "197_en_clean.png",
+   "pred": {
+    "vendor": "Sunrise Beach Resort",
+    "date_raw": "19 Jan 2026",
+    "total": 3000.0,
+    "vat": 190.0,
+    "category": "ที่พัก",
+    "date": "2026-01-19"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": false,
+    "category": true
+   }
+  },
+  {
+   "file": "198_en_photo.png",
+   "pred": {
+    "vendor": "Metro Fuel Station",
+    "date_raw": "08/11/2026",
+    "total": 2450.0,
+    "vat": 160.28,
+    "category": "เดินทาง",
+    "date": "2026-11-08"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "199_th_camera.png",
+   "pred": {
+    "vendor": "สปาห้างทองนภาลัย",
+    "date_raw": "12/02/2560 17:38",
+    "total": 660.0,
+    "vat": 0,
+    "category": "สุขภาพ",
+    "date": "2017-02-12"
+   },
+   "ok": {
+    "vendor": false,
+    "date": false,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  },
+  {
+   "file": "200_en_camera.png",
+   "pred": {
+    "vendor": "City Cab Co., Ltd.",
+    "date_raw": "16/01/2026",
+    "total": 1180.0,
+    "vat": 0,
+    "category": "เดินทาง",
+    "date": "2026-01-16"
+   },
+   "ok": {
+    "vendor": true,
+    "date": true,
+    "total": true,
+    "vat": true,
+    "category": true
+   }
+  }
+ ]
+}

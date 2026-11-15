@@ -3,7 +3,7 @@
   {
    "file": "001_th_camera.png",
    "pred": {
-    "vendor": "การตลาดแกล้า",
+    "vendor": "ร้านอาหาร",
     "date_raw": "20/01/2566",
     "total": 2390.0,
     "vat": 217.5,
@@ -21,34 +21,34 @@
   {
    "file": "002_th_photo.jpg",
    "pred": {
-    "vendor": "ศุภสิริอนันต์สาร์วีร์",
-    "date_raw": "6 Feb 2026 18:34",
+    "vendor": "รถตู้สายอนุสาวรีย์",
+    "date_raw": "6 Feb 2026",
     "total": 2680.0,
     "vat": 0,
-    "category": "อุปกรณ์",
+    "category": "เดินทาง",
     "date": "2026-02-06"
    },
    "ok": {
-    "vendor": false,
+    "vendor": true,
     "date": true,
     "total": true,
     "vat": true,
-    "category": false
+    "category": true
    }
   },
   {
    "file": "003_en_clean.jpg",
    "pred": {
     "vendor": "PrintPro Center",
-    "date_raw": "16 Jul 2016",
+    "date_raw": "16 Jul 2026 13:44",
     "total": 1270.0,
     "vat": 83.08,
     "category": "อุปกรณ์",
-    "date": "2016-07-16"
+    "date": "2026-07-16"
    },
    "ok": {
     "vendor": true,
-    "date": false,
+    "date": true,
     "total": true,
     "vat": true,
     "category": true
@@ -77,7 +77,7 @@
    "pred": {
     "vendor": "City Cab Co., Ltd.",
     "date_raw": "27 OCT 2006",
-    "total": 600.0,
+    "total": 690.0,
     "vat": 0,
     "category": "เดินทาง",
     "date": "2006-10-27"
@@ -85,7 +85,7 @@
    "ok": {
     "vendor": true,
     "date": false,
-    "total": false,
+    "total": true,
     "vat": false,
     "category": true
    }
@@ -111,7 +111,7 @@
   {
    "file": "007_th_camera.png",
    "pred": {
-    "vendor": "ร้านถ่ายเอกสารหนามอ",
+    "vendor": "ร้านถ่ายเอกสารหน้ามอ",
     "date_raw": "24/05/2026 11:33",
     "total": 1012.0,
     "vat": 0,
@@ -129,7 +129,7 @@
   {
    "file": "008_th_photo.pdf",
    "pred": {
-    "vendor": "รถตู้สายอนาสวีร์",
+    "vendor": "รถตู้สายอนุสาวรีย์",
     "date_raw": "25/04/2569 11:12",
     "total": 3650.0,
     "vat": 0,
@@ -150,7 +150,7 @@
     "vendor": "TechHub Gadget Store",
     "date_raw": "20/01/2026",
     "total": 1310.0,
-    "vat": 75.7,
+    "vat": 85.7,
     "category": "อุปกรณ์",
     "date": "2026-01-20"
    },
@@ -158,7 +158,7 @@
     "vendor": true,
     "date": true,
     "total": true,
-    "vat": false,
+    "vat": true,
     "category": true
    }
   },
@@ -183,18 +183,18 @@
   {
    "file": "011_th_camera.pdf",
    "pred": {
-    "vendor": "ปั๊มน้ำมัน สารสินเม็ด",
-    "date_raw": "06/10/2566",
+    "vendor": "ปั๊มน้ำมัน สาหรำมเม็ด",
+    "date_raw": "06/10/26",
     "total": 1660.0,
-    "vat": 108.6,
+    "vat": 108.8,
     "category": "เดินทาง",
-    "date": "2023-10-06"
+    "date": "2026-10-06"
    },
    "ok": {
     "vendor": false,
     "date": false,
     "total": true,
-    "vat": true,
+    "vat": false,
     "category": true
    }
   },
@@ -237,7 +237,7 @@
   {
    "file": "014_th_camera.png",
    "pred": {
-    "vendor": "บีมบานจก สาขาร่มเกล้า",
+    "vendor": "ปิ่มบางจาก สาขามรมเกล้า",
     "date_raw": "05/12/69",
     "total": 1650.0,
     "vat": 0,
@@ -256,7 +256,7 @@
    "file": "015_th_photo.jpg",
    "pred": {
     "vendor": "ร้านเครื่องเขียนศึกษาภัณฑ์",
-    "date_raw": "10/9/69",
+    "date_raw": "10/9/69 20:14",
     "total": 896.0,
     "vat": 58.62,
     "category": "อุปกรณ์",
@@ -294,7 +294,7 @@
     "vendor": "TechHub Gadget Store",
     "date_raw": "17 Nov 2026",
     "total": 2370.0,
-    "vat": 165.0,
+    "vat": 155.05,
     "category": "อุปกรณ์",
     "date": "2026-11-17"
    },
@@ -302,7 +302,7 @@
     "vendor": true,
     "date": true,
     "total": true,
-    "vat": false,
+    "vat": true,
     "category": true
    }
   },
@@ -345,12 +345,12 @@
   {
    "file": "020_th_camera.jpg",
    "pred": {
-    "vendor": "T.M.M.D.M.R.U.",
-    "date_raw": "17 Mar 2019",
-    "total": 244.0,
+    "vendor": "Tannmead/mu",
+    "date_raw": "17 Nov 2009",
+    "total": 1400.0,
     "vat": 0,
     "category": "อาหาร",
-    "date": "2019-03-17"
+    "date": "2009-11-17"
    },
    "ok": {
     "vendor": false,
@@ -399,10 +399,10 @@
   {
    "file": "023_th_photo.jpg",
    "pred": {
-    "vendor": "ร้านเครื่องเขียนเสี่ยยาการ์เด้",
+    "vendor": "ร้านเครื่องเขียนศึกษาภัณฑ์",
     "date_raw": "15 Feb 2026",
     "total": 1307.0,
-    "vat": 93.0,
+    "vat": 90.0,
     "category": "อุปกรณ์",
     "date": "2026-02-15"
    },
@@ -435,15 +435,15 @@
   {
    "file": "025_th_clean.jpg",
    "pred": {
-    "vendor": "ซุปเปอร์มาร์เก็ต",
-    "date_raw": "9 Jul 2026",
+    "vendor": "ซุปเปอร์ชุมชนวัดใต้",
+    "date_raw": "9 Jul 2026 08:51",
     "total": 392.0,
     "vat": 25.64,
     "category": "ของใช้",
     "date": "2026-07-09"
    },
    "ok": {
-    "vendor": false,
+    "vendor": true,
     "date": true,
     "total": true,
     "vat": true,
@@ -471,11 +471,11 @@
   {
    "file": "027_th_photo.jpg",
    "pred": {
-    "vendor": "ตลาดสดคลองแฮง แถง 12",
+    "vendor": "ตลาดสดคลองเตย แผง 12",
     "date_raw": "08/06/26",
     "total": 317.0,
     "vat": 20.74,
-    "category": "อาหาร",
+    "category": "ของใช้",
     "date": "2026-06-08"
    },
    "ok": {
@@ -483,7 +483,7 @@
     "date": true,
     "total": true,
     "vat": true,
-    "category": false
+    "category": true
    }
   },
   {
@@ -525,7 +525,7 @@
   {
    "file": "030_th_camera.png",
    "pred": {
-    "vendor": "ร้านดีบีบาวาทองเทอร์",
+    "vendor": "ร้านดีบีบาวทาวน์",
     "date_raw": "20/12/20",
     "total": 109.0,
     "vat": 0,
@@ -533,7 +533,7 @@
     "date": "2020-12-20"
    },
    "ok": {
-    "vendor": true,
+    "vendor": false,
     "date": false,
     "total": false,
     "vat": true,
@@ -561,7 +561,7 @@
   {
    "file": "032_th_photo.jpg",
    "pred": {
-    "vendor": "ร้านเครื่องเขียนสินธากำเนิด",
+    "vendor": "ร้านเครื่องเขียนศึกษาภัณฑ์",
     "date_raw": "17/12/2026",
     "total": 36.0,
     "vat": 0,
@@ -597,8 +597,8 @@
   {
    "file": "034_th_photo.png",
    "pred": {
-    "vendor": "วินมอเตอร์ไซค์",
-    "date_raw": "11/05/26",
+    "vendor": "วินมอเตอร์ไซค์ปากซอย",
+    "date_raw": "11/05/26 17:58",
     "total": 3530.0,
     "vat": 0,
     "category": "เดินทาง",
@@ -672,7 +672,7 @@
     "vendor": "ร้านเครื่องเขียนศึกษาภัณฑ์",
     "date_raw": "02/06/26",
     "total": 495.0,
-    "vat": 32.88,
+    "vat": 32.38,
     "category": "อุปกรณ์",
     "date": "2026-06-02"
    },
@@ -680,18 +680,18 @@
     "vendor": true,
     "date": true,
     "total": true,
-    "vat": false,
+    "vat": true,
     "category": true
    }
   },
   {
    "file": "039_th_clean.pdf",
    "pred": {
-    "vendor": "ตลาดสดคลองเอย แผง 12",
+    "vendor": "ตลาดสดคลองเตย แผง 12",
     "date_raw": "12/07/2026",
     "total": 448.0,
     "vat": 0,
-    "category": "อาหาร",
+    "category": "ของใช้",
     "date": "2026-07-12"
    },
    "ok": {
@@ -699,14 +699,14 @@
     "date": true,
     "total": true,
     "vat": true,
-    "category": false
+    "category": true
    }
   },
   {
    "file": "040_th_photo.pdf",
    "pred": {
-    "vendor": "ห้างหุ้นส่วน อะไหล่งุ่งเจริญ",
-    "date_raw": "13 Feb 2026 10:09",
+    "vendor": "ห้างหุ้นส่วน อะไหล่รุ่งเจริญ",
+    "date_raw": "13 Feb 2026",
     "total": 480.0,
     "vat": 0,
     "category": "อุปกรณ์",
@@ -759,15 +759,15 @@
   {
    "file": "043_th_clean.pdf",
    "pred": {
-    "vendor": "สั่งเต้าหู้เด๋อ",
-    "date_raw": "21/3/69 16:05",
+    "vendor": "สั่งตำนัวเด้อ",
+    "date_raw": "21/3/69",
     "total": 365.0,
     "vat": 23.88,
     "category": "อาหาร",
     "date": "2026-03-21"
    },
    "ok": {
-    "vendor": false,
+    "vendor": true,
     "date": true,
     "total": true,
     "vat": true,
@@ -780,7 +780,7 @@
     "vendor": "Burger Barn",
     "date_raw": "12/10/2020",
     "total": 1299.0,
-    "vat": 100.98,
+    "vat": 98.0,
     "category": "อาหาร",
     "date": "2020-10-12"
    },
@@ -795,11 +795,11 @@
   {
    "file": "045_th_photo.pdf",
    "pred": {
-    "vendor": "บีมบีงจาก สาขาริ่มแก้ว",
+    "vendor": "ปั๊มบางจาก สาขาร่มเกล้า",
     "date_raw": "26/5/69",
     "total": 2500.0,
     "vat": 163.55,
-    "category": "อาหาร",
+    "category": "เดินทาง",
     "date": "2026-05-26"
    },
    "ok": {
@@ -807,7 +807,7 @@
     "date": true,
     "total": true,
     "vat": true,
-    "category": false
+    "category": true
    }
   },
   {
@@ -831,8 +831,8 @@
   {
    "file": "047_th_photo.jpg",
    "pred": {
-    "vendor": "ข้าวแกงใต้ดิ้นดิก",
-    "date_raw": "7 Jun 2026",
+    "vendor": "ข้าวแกงใต้ถุนดึก",
+    "date_raw": "7 Jun 2026 19:09",
     "total": 335.0,
     "vat": 0,
     "category": "อาหาร",
@@ -849,7 +849,7 @@
   {
    "file": "048_th_clean.jpg",
    "pred": {
-    "vendor": "สปาห้าโมงคลาย",
+    "vendor": "สปาเท้าผ่อนคลาย",
     "date_raw": "06/04/2569",
     "total": 720.0,
     "vat": 47.1,
@@ -921,7 +921,7 @@
   {
    "file": "052_th_photo.pdf",
    "pred": {
-    "vendor": "ก๋วยเตี๋ยวเรือสุ่งเรื่อง",
+    "vendor": "ก๋วยเตี๋ยวเรือรุ่งเรือง",
     "date_raw": "28/11/69",
     "total": 210.0,
     "vat": 13.74,
@@ -975,8 +975,8 @@
   {
    "file": "055_th_camera.jpg",
    "pred": {
-    "vendor": "สปาเท้ายอนลอว์",
-    "date_raw": "27 ส.ค. 2026",
+    "vendor": "สปาเท้าผ่อนคลาย",
+    "date_raw": "27 Aug 2026",
     "total": 990.0,
     "vat": 64.77,
     "category": "สุขภาพ",
@@ -993,7 +993,7 @@
   {
    "file": "056_th_clean.pdf",
    "pred": {
-    "vendor": "แท็กซี่มีเดล",
+    "vendor": "แท็กซิมิเตอร์",
     "date_raw": "24/02/2569",
     "total": 3370.0,
     "vat": 0,
@@ -1011,8 +1011,8 @@
   {
    "file": "057_th_photo.jpg",
    "pred": {
-    "vendor": "เจ้าพะระยา",
-    "date_raw": "8 Jul 2026 18:46",
+    "vendor": "เรือด่วนเจ้าพระยา",
+    "date_raw": "8 Jul 2026",
     "total": 5080.0,
     "vat": 332.34,
     "category": "เดินทาง",
@@ -1084,15 +1084,15 @@
    "file": "061_en_camera.jpg",
    "pred": {
     "vendor": "TechHub Gadget Store",
-    "date_raw": "05/03/2026",
+    "date_raw": "05/05/2026",
     "total": 3985.0,
     "vat": 0,
     "category": "อุปกรณ์",
-    "date": "2026-03-05"
+    "date": "2026-05-05"
    },
    "ok": {
     "vendor": true,
-    "date": false,
+    "date": true,
     "total": true,
     "vat": true,
     "category": true
@@ -1101,11 +1101,11 @@
   {
    "file": "062_th_clean.jpg",
    "pred": {
-    "vendor": "ร้านสีสบาของแท้",
-    "date_raw": "3 Nov 2026",
+    "vendor": "ร้านยีสิบบาทของแท้",
+    "date_raw": "3 Nov 2026 16:05",
     "total": 282.0,
     "vat": 0,
-    "category": "อาหาร",
+    "category": "ของใช้",
     "date": "2026-11-03"
    },
    "ok": {
@@ -1113,17 +1113,17 @@
     "date": true,
     "total": true,
     "vat": true,
-    "category": false
+    "category": true
    }
   },
   {
    "file": "063_th_photo.png",
    "pred": {
-    "vendor": "ตลาดสดคลองเอย แผง 12",
+    "vendor": "ตลาดสดคลองเตย แผง 12",
     "date_raw": "10/08/26",
     "total": 463.0,
     "vat": 30.29,
-    "category": "อาหาร",
+    "category": "ของใช้",
     "date": "2026-08-10"
    },
    "ok": {
@@ -1131,36 +1131,36 @@
     "date": true,
     "total": true,
     "vat": true,
-    "category": false
+    "category": true
    }
   },
   {
    "file": "064_th_camera.jpg",
    "pred": {
-    "vendor": "ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร",
-    "date_raw": "07/06/2566",
-    "total": 2600.0,
+    "vendor": "รถรับส่งผู้โดยสารวิ่ง",
+    "date_raw": "07/06/2020",
+    "total": 2000.0,
     "vat": 0,
-    "category": "อุปกรณ์",
-    "date": "2023-06-07"
+    "category": "เดินทาง",
+    "date": "2020-06-07"
    },
    "ok": {
     "vendor": false,
     "date": false,
     "total": false,
     "vat": true,
-    "category": false
+    "category": true
    }
   },
   {
    "file": "065_th_camera.jpg",
    "pred": {
     "vendor": "ร้านอาหาร",
-    "date_raw": "18/10/63 11:52",
+    "date_raw": "16/10/69",
     "total": 420.0,
     "vat": 0,
     "category": "อาหาร",
-    "date": "2020-10-18"
+    "date": "2026-10-16"
    },
    "ok": {
     "vendor": false,
@@ -1174,9 +1174,9 @@
    "file": "066_th_photo.jpg",
    "pred": {
     "vendor": "กาแฟบ้านสวน",
-    "date_raw": "2/7/69 20:19",
+    "date_raw": "2/7/69",
     "total": 160.0,
-    "vat": 149.53,
+    "vat": 10.47,
     "category": "อาหาร",
     "date": "2026-07-02"
    },
@@ -1184,15 +1184,15 @@
     "vendor": true,
     "date": true,
     "total": true,
-    "vat": false,
+    "vat": true,
     "category": true
    }
   },
   {
    "file": "067_th_clean.png",
    "pred": {
-    "vendor": "โรงกองปราม",
-    "date_raw": "03/11/2026 16:00",
+    "vendor": "โร้กกองปราบ",
+    "date_raw": "03/11/2026 18:00",
     "total": 515.0,
     "vat": 33.69,
     "category": "อาหาร",
@@ -1209,16 +1209,16 @@
   {
    "file": "068_th_photo.png",
    "pred": {
-    "vendor": "ไอทีซิตี้ สาขาแฟชั่น",
-    "date_raw": "15/11/66 08:03",
+    "vendor": "ไอทีซิตี สาขาแฟชั่น",
+    "date_raw": "15/11/26",
     "total": 1730.0,
     "vat": 0,
     "category": "อุปกรณ์",
-    "date": "2023-11-15"
+    "date": "2026-11-15"
    },
    "ok": {
     "vendor": true,
-    "date": false,
+    "date": true,
     "total": true,
     "vat": true,
     "category": true
@@ -1230,7 +1230,7 @@
     "vendor": "City Center Hotel",
     "date_raw": "25/08/2026",
     "total": 7300.0,
-    "vat": 477.57,
+    "vat": 700.0,
     "category": "ที่พัก",
     "date": "2026-08-25"
    },
@@ -1238,7 +1238,7 @@
     "vendor": true,
     "date": true,
     "total": true,
-    "vat": true,
+    "vat": false,
     "category": true
    }
   },
@@ -1246,11 +1246,11 @@
    "file": "070_th_camera.jpg",
    "pred": {
     "vendor": "บุญมีเฟิร์นฟาร์มสเตย์",
-    "date_raw": "15/03/2566",
+    "date_raw": "09/08/2565",
     "total": 469.0,
     "vat": 0,
     "category": "ที่พัก",
-    "date": "2023-03-15"
+    "date": "2022-08-09"
    },
    "ok": {
     "vendor": false,
@@ -1266,7 +1266,7 @@
     "vendor": "Metro Fuel Station",
     "date_raw": "9 Oct 2026",
     "total": 3300.0,
-    "vat": 216.89,
+    "vat": 215.89,
     "category": "เดินทาง",
     "date": "2026-10-09"
    },
@@ -1274,15 +1274,15 @@
     "vendor": true,
     "date": true,
     "total": true,
-    "vat": false,
+    "vat": true,
     "category": true
    }
   },
   {
    "file": "072_th_camera.png",
    "pred": {
-    "vendor": "ห้างหุ้นส่วน อ.ไชยไชยเจริญ",
-    "date_raw": "12 May 2026 17:36",
+    "vendor": "ห้างหุ้นส่วน อะไหล่รุ่งเจริญ",
+    "date_raw": "12 May 2026",
     "total": 1136.0,
     "vat": 0,
     "category": "อุปกรณ์",
@@ -1299,8 +1299,8 @@
   {
    "file": "073_th_camera.pdf",
    "pred": {
-    "vendor": "บีบีพาร์ค สารสินณล้ำ",
-    "date_raw": "23/08/2016",
+    "vendor": "บีบีพาร์ค สาขาสารสินลอ",
+    "date_raw": "23/08/2016 18:25",
     "total": 3660.0,
     "vat": 339.44,
     "category": "อาหาร",
@@ -1317,11 +1317,11 @@
   {
    "file": "074_th_clean.jpg",
    "pred": {
-    "vendor": "สาขาร่มเกล้า",
+    "vendor": "ปั๊มบางจาก สาขาร่มเกล้า",
     "date_raw": "9/6/69",
     "total": 210.0,
     "vat": 13.74,
-    "category": "อาหาร",
+    "category": "เดินทาง",
     "date": "2026-06-09"
    },
    "ok": {
@@ -1329,18 +1329,18 @@
     "date": true,
     "total": true,
     "vat": true,
-    "category": false
+    "category": true
    }
   },
   {
    "file": "075_en_camera.png",
    "pred": {
     "vendor": "PrintPro Center",
-    "date_raw": "8 Mar 2020",
+    "date_raw": "8 Mar 2023",
     "total": 4300.0,
     "vat": 300.0,
     "category": "อุปกรณ์",
-    "date": "2020-03-08"
+    "date": "2023-03-08"
    },
    "ok": {
     "vendor": true,
@@ -1353,7 +1353,7 @@
   {
    "file": "076_th_photo.png",
    "pred": {
-    "vendor": "โก้กงบาร่า",
+    "vendor": "โจ้กกองปราบ",
     "date_raw": "16/02/26",
     "total": 130.0,
     "vat": 0,
@@ -1361,7 +1361,7 @@
     "date": "2026-02-16"
    },
    "ok": {
-    "vendor": false,
+    "vendor": true,
     "date": true,
     "total": true,
     "vat": true,
@@ -1392,7 +1392,7 @@
     "vendor": "PrintPro Center",
     "date_raw": "14/04/2026",
     "total": 2570.0,
-    "vat": 180.13,
+    "vat": 168.13,
     "category": "อุปกรณ์",
     "date": "2026-04-14"
    },
@@ -1400,7 +1400,7 @@
     "vendor": true,
     "date": true,
     "total": true,
-    "vat": false,
+    "vat": true,
     "category": true
    }
   },
@@ -1426,15 +1426,15 @@
    "file": "080_th_clean.png",
    "pred": {
     "vendor": "ร้านเครื่องเขียนศึกษาภัณฑ์",
-    "date_raw": "28 Jul 2025",
+    "date_raw": "28 Jul 2026",
     "total": 1515.0,
     "vat": 0,
     "category": "อุปกรณ์",
-    "date": "2025-07-28"
+    "date": "2026-07-28"
    },
    "ok": {
     "vendor": true,
-    "date": false,
+    "date": true,
     "total": true,
     "vat": true,
     "category": true
@@ -1461,7 +1461,7 @@
   {
    "file": "082_th_photo.pdf",
    "pred": {
-    "vendor": "โก้กงปลาบ",
+    "vendor": "โจ๊กกองปราบ",
     "date_raw": "13/3/69 17:53",
     "total": 245.0,
     "vat": 16.03,
@@ -1479,7 +1479,7 @@
   {
    "file": "083_th_camera.jpg",
    "pred": {
-    "vendor": "มีมี่กาแฟบ้าน",
+    "vendor": "มาร์ทห้างต้าชิ้น",
     "date_raw": "17/3/69",
     "total": 335.0,
     "vat": 21.92,
@@ -1497,7 +1497,7 @@
   {
    "file": "084_th_photo.png",
    "pred": {
-    "vendor": "ก๋วยเตี๋ยวเรือเจริญเรื่อง",
+    "vendor": "ก๋วยเตี๋ยวเรือรุ่งเรือง",
     "date_raw": "21/3/69 16:57",
     "total": 260.0,
     "vat": 17.01,
@@ -1516,7 +1516,7 @@
    "file": "085_th_photo.jpg",
    "pred": {
     "vendor": "ร้านยาฟาร์มาซีพลัส",
-    "date_raw": "18 May 2022",
+    "date_raw": "18 May 2022 11:21",
     "total": 1170.0,
     "vat": 76.54,
     "category": "สุขภาพ",
@@ -1551,11 +1551,11 @@
   {
    "file": "087_th_photo.jpg",
    "pred": {
-    "vendor": "ร้านลิลลี่บาททองแท้",
+    "vendor": "ร้านสิบบาททองแท้",
     "date_raw": "13/10/2569",
     "total": 350.0,
     "vat": 22.9,
-    "category": "อุปกรณ์",
+    "category": "ของใช้",
     "date": "2026-10-13"
    },
    "ok": {
@@ -1563,7 +1563,7 @@
     "date": true,
     "total": true,
     "vat": true,
-    "category": false
+    "category": true
    }
   },
   {
@@ -1587,8 +1587,8 @@
   {
    "file": "089_th_photo.pdf",
    "pred": {
-    "vendor": "ร้านมาฟาร์มมาอัพพิลล์ส",
-    "date_raw": "15/1/69 14:41",
+    "vendor": "ร้านฟาร์มาซี่พลัส",
+    "date_raw": "15/1/69",
     "total": 1700.0,
     "vat": 0,
     "category": "สุขภาพ",
@@ -1605,18 +1605,18 @@
   {
    "file": "090_th_camera.pdf",
    "pred": {
-    "vendor": "ร้านถ่ายเอกสารนิวแมว",
-    "date_raw": "10/12/65",
+    "vendor": "ร้านถ่ายเอกสารหน้ามอ",
+    "date_raw": "10/12/26",
     "total": 121.0,
-    "vat": 0,
+    "vat": 1.0,
     "category": "อุปกรณ์",
-    "date": "2022-12-10"
+    "date": "2026-12-10"
    },
    "ok": {
     "vendor": true,
-    "date": false,
+    "date": true,
     "total": true,
-    "vat": true,
+    "vat": false,
     "category": true
    }
   },
@@ -1659,52 +1659,52 @@
   {
    "file": "093_th_clean.jpg",
    "pred": {
-    "vendor": "บริษัท สารสริญเกล้า",
-    "date_raw": "08/04/2560",
+    "vendor": "บัมบางจาก สาขาร่มเกล้า",
+    "date_raw": "08/04/2569",
     "total": 4230.0,
-    "vat": 276.0,
-    "category": "อุปกรณ์",
-    "date": "2017-04-08"
+    "vat": 276.73,
+    "category": "เดินทาง",
+    "date": "2026-04-08"
    },
    "ok": {
-    "vendor": false,
-    "date": false,
+    "vendor": true,
+    "date": true,
     "total": true,
-    "vat": false,
-    "category": false
+    "vat": true,
+    "category": true
    }
   },
   {
    "file": "094_th_photo.png",
    "pred": {
-    "vendor": "ห้างหุ้นส่วน อ.ไพโรจน์เจริญ",
-    "date_raw": "12/02/66",
+    "vendor": "ห้างหุ้นส่วน อะไหล่รุ่งเจริญ",
+    "date_raw": "12/02/26",
     "total": 537.0,
-    "vat": 36.13,
+    "vat": 35.13,
     "category": "อุปกรณ์",
-    "date": "2023-02-12"
+    "date": "2026-02-12"
    },
    "ok": {
     "vendor": true,
-    "date": false,
+    "date": true,
     "total": true,
-    "vat": false,
+    "vat": true,
     "category": true
    }
   },
   {
    "file": "095_th_camera.jpg",
    "pred": {
-    "vendor": "กก.ที่สำเภาสิน",
-    "date_raw": "13 Jul 2026",
+    "vendor": "กก.ที่ทำการตำบลสาวิมบ์",
+    "date_raw": "13 Jul 2020",
     "total": 3570.0,
     "vat": 0,
     "category": "อาหาร",
-    "date": "2026-07-13"
+    "date": "2020-07-13"
    },
    "ok": {
     "vendor": false,
-    "date": true,
+    "date": false,
     "total": false,
     "vat": false,
     "category": false
@@ -1714,15 +1714,15 @@
    "file": "096_th_clean.png",
    "pred": {
     "vendor": "คลินิกหมอสมศรี",
-    "date_raw": "09/12/2066",
+    "date_raw": "09/12/2026",
     "total": 1020.0,
     "vat": 66.73,
     "category": "สุขภาพ",
-    "date": "2066-12-09"
+    "date": "2026-12-09"
    },
    "ok": {
     "vendor": true,
-    "date": false,
+    "date": true,
     "total": true,
     "vat": true,
     "category": true
@@ -1731,8 +1731,8 @@
   {
    "file": "097_th_camera.png",
    "pred": {
-    "vendor": "ก๋วยเตี๋ยวเรือเฮงเฮง",
-    "date_raw": "13/08/2569",
+    "vendor": "ก๋วยเตี๋ยวเรือรุ่งเรือง",
+    "date_raw": "13/08/2569 14:01",
     "total": 495.0,
     "vat": 32.38,
     "category": "อาหาร",
@@ -1752,7 +1752,7 @@
     "vendor": "Airport Rail Link",
     "date_raw": "25 May 2026",
     "total": 3180.0,
-    "vat": 206.04,
+    "vat": 208.04,
     "category": "เดินทาง",
     "date": "2026-05-25"
    },
@@ -1760,23 +1760,23 @@
     "vendor": true,
     "date": true,
     "total": true,
-    "vat": false,
+    "vat": true,
     "category": true
    }
   },
   {
    "file": "099_th_photo.png",
    "pred": {
-    "vendor": "ก๋วยเตี๋ยวเรือจริงๆ",
-    "date_raw": "12/2/69",
+    "vendor": "ก๋วยเตี๋ยวเรือรุ่งเรือง",
+    "date_raw": "12/12/69 14:47",
     "total": 250.0,
     "vat": 0,
     "category": "อาหาร",
-    "date": "2026-02-12"
+    "date": "2026-12-12"
    },
    "ok": {
     "vendor": true,
-    "date": false,
+    "date": true,
     "total": true,
     "vat": true,
     "category": true

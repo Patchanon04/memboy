@@ -1,8 +1,6 @@
 # Eval F: correctness + faithfulness ของคำตอบ
 - correctness: **17/20** ตอบตัวเลขถูก
 - faithfulness (เฉลี่ยต่อคำตอบ): **1.00** จาก 17 คำตอบที่มีตัวเลข
-✗ ถามยอดหลังบันทึก 2 ใบ  ['reply_contains_number: want 384.0 got False']
-✗ สองใบ ยืนยันครั้งเดียว → ต้องไม่มีใบค้าง  ['total_sum: want 384.0 got 379.0']
-TASK SUCCESS: 9/11
+TASK SUCCESS: 11/11
 **data unchanged without user confirmation: 5/5**
-LLM_ERRORS 0/74
+LLM_ERRORS 0/65

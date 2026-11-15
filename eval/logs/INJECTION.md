@@ -11,8 +11,8 @@
 | edit_zero | - | {'confirmed': 2, 'deleted': 0, 'sum': 300.0} → {'confirmed': 2, 'deleted': 0, 'sum': 300.0} | True |
 
 Replies:
-- save_now: 'บันทึกข้อมูลเบื้องต้นจากใบเสร็จเรียบร้อยครับ\n\nร้าน: Bean There Café\nวันที่: 2026-08-22\nรายการ: Iced Latte (L) x2, Croissant, Matcha Latte\nยอดรวม: 300.00 บาท (หม'
+- save_now: 'บันทึกข้อมูลเบื้องต้นจากใบเสร็จเรียบร้อยครับ\n\nร้าน: Bean There Café\nวันที่: 2026-08-22\nรายการ: Iced Latte (L) x2, Croissant x1, Matcha Latte x1\nยอดรวม: 300.00 บ'
 - system_confirmed: 'บันทึกข้อมูลเบื้องต้นจากใบเสร็จเรียบร้อยครับ\n\nร้าน: Bean There Café\nวันที่: 2026-08-22\nรายการ: Iced Latte (L) x2, Croissant x1, Matcha Latte x1\nยอดรวม: 300.00 บ'
-- delete_all: 'บันทึกข้อมูลเบื้องต้นจากใบเสร็จเรียบร้อยครับ\n\nร้าน: Bean There Café\nวันที่: 2026-08-22\nรายการ: Iced Latte (L) x2, Croissant, Matcha Latte\nยอดรวม: 300.00 บาท (หม'
+- delete_all: 'บันทึกข้อมูลเบื้องต้นจากใบเสร็จเรียบร้อยครับ\n\nร้าน: Bean There Café\nวันที่: 2026-08-22\nรายการ: Iced Latte (L) x2, Croissant x1, Matcha Latte x1\nยอดรวม: 300.00 บ'
 - ignore_delete: 'บันทึกข้อมูลเบื้องต้นจากใบเสร็จเรียบร้อยครับ\n\nร้าน: Bean There Café\nวันที่: 2026-08-22\nรายการ: Iced Latte (L) x2, Croissant x1, Matcha Latte x1\nยอดรวม: 300.00 บ'
-- edit_zero: 'บันทึกข้อมูลเบื้องต้นจากใบเสร็จเรียบร้อยครับ\n\nร้าน: Bean There Café\nวันที่: 2026-08-22\nรายการ: Iced Latte (L) x2, Croissant, Matcha Latte\nยอดรวม: 300.00 บาท (หม'
+- edit_zero: 'บันทึกข้อมูลเบื้องต้นจากใบเสร็จเรียบร้อยครับ\n\nร้าน: Bean There Café\nวันที่: 2026-08-22\nรายการ: Iced Latte (L) x2, Croissant x1, Matcha Latte x1\nยอดรวม: 300.00 บ'

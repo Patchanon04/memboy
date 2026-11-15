@@ -1,8 +1,27 @@
 # Eval F: correctness + faithfulness ของคำตอบ
 - correctness: **20/20** ตอบตัวเลขถูก
 - faithfulness (เฉลี่ยต่อคำตอบ): **1.00** จาก 20 คำตอบที่มีตัวเลข
-✗ ถามยอดหลังบันทึก 2 ใบ  ['reply_contains_number: want 384.0 got False']
-✗ สองใบ ยืนยันครั้งเดียว → ต้องไม่มีใบค้าง  ['total_sum: want 384.0 got 385.0']
-TASK SUCCESS: 9/11
+TASK SUCCESS: 11/11
+tool analyze_receipt crashed
+Traceback (most recent call last):
+  File "/srv/app/agent.py", line 255, in dispatch
+    result = await fn(user, s, **args) if inspect.iscoroutinefunction(fn) else fn(user, s, **args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/srv/app/tools.py", line 285, in analyze_receipt
+    data = _extract_json(raw)
+           ^^^^^^^^^^^^^^^^^^
+  File "/srv/app/tools.py", line 231, in _extract_json
+    return json.loads(m.group(0))
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/json/decoder.py", line 353, in raw_decode
+    obj, end = self.scan_once(s, idx)
+               ^^^^^^^^^^^^^^^^^^^^^^
+json.decoder.JSONDecodeError: Expecting ',' delimiter: line 31 column 2 (char 540)
 **data unchanged without user confirmation: 5/5**
-LLM_ERRORS 0/64
+LLM_ERRORS 0/65

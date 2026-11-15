@@ -1,6 +1,7 @@
 """Tool functions. Every tool takes (user, s: Session, **args) — user comes from the
 dispatcher, never from model args (guardrail #1). Raise ToolError with a message the
 model can read and correct itself with. Money math lives in SQL/Python, never in the LLM."""
+import asyncio
 import csv
 import datetime
 import json
@@ -240,6 +241,33 @@ def _decode_qr(path: Path) -> str | None:
         return None
 
 
+def ocr_text(image) -> str:
+    """Tesseract (tha+eng) text of a receipt image, sent to the model next to the image. 12B reads the photo alone
+    33/60 vs 44/60 with this text (eval/logs/OCR_ABLATION.md). Empty string if tesseract is missing or fails."""
+    if "ocr" in _OFF:
+        return ""
+    import subprocess
+    import tempfile
+    tmp = None
+    if isinstance(image, (bytes, bytearray)):
+        with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as f:
+            f.write(image)
+            tmp = image = f.name
+    try:
+        out = subprocess.run(["tesseract", str(image), "stdout", "-l", "tha+eng", "--psm", "6"],
+                             capture_output=True, text=True, timeout=60)
+        return out.stdout.strip() if out.returncode == 0 else ""
+    except (OSError, subprocess.SubprocessError):
+        return ""
+    finally:
+        if tmp:
+            os.unlink(tmp)
+
+
+def with_ocr(prompt: str, text: str) -> str:
+    return f"ข้อความ OCR จากใบเสร็จ (อาจอ่านผิดบางส่วน ใช้ประกอบกับรูป):\n{text}\n\n{prompt}" if text else prompt
+
+
 async def analyze_receipt(user, s, image_id=None, **_):
     matches = [p for p in Path("/data/uploads").glob(f"{image_id}*") if p.is_file()]
     if not matches:
@@ -252,7 +280,8 @@ async def analyze_receipt(user, s, image_id=None, **_):
                        check=True, capture_output=True)
         path = png
     cats = user_categories(user, s)
-    raw = await llm.generate([{"role": "user", "parts": [llm.image_part(path), {"text": _extract_prompt(cats)}]}])
+    ocr = await asyncio.to_thread(ocr_text, path)
+    raw = await llm.generate([{"role": "user", "parts": [llm.image_part(path), {"text": with_ocr(_extract_prompt(cats), ocr)}]}])
     data = _extract_json(raw)
     docs = data if isinstance(data, list) else [data]
     qr_text = _decode_qr(path)

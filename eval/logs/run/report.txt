@@ -77,13 +77,13 @@ Failures:
 
 | vendor | date | total | vat | category | all-5 |
 |---|---|---|---|---|---|
-| 84% | 75% | 94% | 79% | 86% | **103/200** |
+| 94% | 81% | 94% | 88% | 94% | **151/200** |
 
 ## Extraction — HELD-OUT test set (seed 7, never used for tuning) · `gemma4:12b` · 100 files
 
 | vendor | date | total | vat | category | all-5 |
 |---|---|---|---|---|---|
-| 86% | 76% | 91% | 81% | 82% | **54/100** |
+| 90% | 84% | 92% | 87% | 92% | **79/100** |
 
 ## Extraction — HANDWRITTEN cash bills (separate hard set, synthetic, not a supported input) · `gemma4:12b` · 30 files
 
@@ -91,18 +91,18 @@ Failures:
 |---|---|---|---|---|---|
 | 93% | 97% | 100% | 100% | 97% | **27/30** |
 
-## Eval B — end-to-end task success: 9/11
+## Eval B — end-to-end task success: 11/11
 
 - ✅ บันทึกบิลตรงๆ 
 - ✅ แก้ยอดก่อนยืนยัน 
 - ✅ ปฏิเสธไม่บันทึก 
 - ✅ บิลผิดโปรไฟล์ → ย้าย 
 - ✅ บันทึกแล้วลบแล้วกู้ 
-- ❌ ถามยอดหลังบันทึก 2 ใบ — reply_contains_number: want 384.0 got False
+- ✅ ถามยอดหลังบันทึก 2 ใบ 
 - ✅ บิลซ้ำ → ไม่บันทึกซ้ำ 
 - ✅ จำงบ + เตือนเมื่อเกิน 
 - ✅ ติ๊กเบิกแล้ว + รายงานเฉพาะยังไม่เบิก 
-- ❌ สองใบ ยืนยันครั้งเดียว → ต้องไม่มีใบค้าง — total_sum: want 384.0 got 379.0
+- ✅ สองใบ ยืนยันครั้งเดียว → ต้องไม่มีใบค้าง 
 - ✅ รูปไม่ใช่บิล 
 
 ## Slip extraction + QR consistency (30 synthetic slips, 6 layouts, 5 deliberate mismatches)
@@ -110,30 +110,30 @@ Failures:
 | field | accuracy |
 |---|---|
 | doc_type | 100% |
-| total | 97% |
-| ref | 87% |
-| qr_status | 90% |
-| **all 4** | **25/30** |
+| total | 100% |
+| ref | 80% |
+| qr_status | 80% |
+| **all 4** | **24/30** |
 
-Misses: slip_18_L5_MISMATCH.png ['ref']; slip_19_L0.png ['ref', 'qr_status']; slip_20_L1.png ['ref', 'qr_status']; slip_26_L1.png ['total', 'qr_status']; slip_30_L5_MISMATCH.png ['ref']
+Misses: slip_05_L4.png ['ref', 'qr_status']; slip_09_L2.png ['ref', 'qr_status']; slip_10_L3.png ['ref', 'qr_status']; slip_15_L2.png ['ref', 'qr_status']; slip_27_L2.png ['ref', 'qr_status']; slip_29_L4.png ['ref', 'qr_status']
 
 ## Eval C — loop metrics (turns answered by `gemma4:12b`)
 
-- turns: 1116 · LLM calls: 2259 · JSON first-try: **97.3%** · tool calls: 1078 (avg 0.97/turn) · tool errors: 86 · loop-cap hits: 0
-- per tool: summarize_expenses 312, analyze_receipt 234, find_invoices 169, save_invoice 141, update_invoice 42, manage_profile 39, delete_invoice 30, mark_reimbursed 22, generate_report 20, remember_note 19, restore_invoice 15, analyze_trends 10, split_bill 9, export_csv 4, get_invoice_image 4, manage_category 4, convert_currency 4
+- turns: 1493 · LLM calls: 3026 · JSON first-try: **97.5%** · tool calls: 1451 (avg 0.97/turn) · tool errors: 105 · loop-cap hits: 0
+- per tool: summarize_expenses 390, analyze_receipt 354, save_invoice 209, find_invoices 208, update_invoice 55, manage_profile 51, delete_invoice 43, mark_reimbursed 33, generate_report 27, remember_note 25, restore_invoice 21, analyze_trends 10, split_bill 9, export_csv 4, get_invoice_image 4, manage_category 4, convert_currency 4
 
 ### Latency & tokens (เทิร์นที่วัดหลังติดตั้ง instrumentation)
 
-- เวลาต่อเทิร์น: p50 **3.91s** · p90 **22.15s** · สูงสุด 316.44s (n=1116) — 88% ของเวลาอยู่ที่การเรียก LLM
-- token เฉลี่ยต่อเทิร์น: เข้า 5217 · ออก 390 (รวมทั้งชุด 5,822,434 / 435,580)
+- เวลาต่อเทิร์น: p50 **3.83s** · p90 **17.91s** · สูงสุด 316.44s (n=1493) — 89% ของเวลาอยู่ที่การเรียก LLM
+- token เฉลี่ยต่อเทิร์น: เข้า 5242 · ออก 357 (รวมทั้งชุด 7,826,712 / 533,488)
 
 ### Safety — confirm-before-mutate (program-enforced)
 
-- gated tool calls parked for a preview: 49 · executed after the user's own confirmation: 113 · **executed without a confirming user message: 0** (must be 0; n=1116 turns)
+- gated tool calls parked for a preview: 66 · executed after the user's own confirmation: 174 · **executed without a confirming user message: 0** (must be 0; n=1493 turns)
 - non-receipt images rejected (doc_type=other): **12/12** (eval/non_receipts, synthetic)
 
 ### Agency depth
 
-- tool-chain length distribution: {0: 74, 1: 1006, 2: 36} — turns with ≥2 tool calls: **36** (3%)
-- ask-back turns (no tool, clarifying question): 15 (1%)
-- self-recovery after a tool error (agent tried another call): 32/86
+- tool-chain length distribution: {0: 88, 1: 1359, 2: 46} — turns with ≥2 tool calls: **46** (3%)
+- ask-back turns (no tool, clarifying question): 16 (1%)
+- self-recovery after a tool error (agent tried another call): 42/105

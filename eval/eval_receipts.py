@@ -33,7 +33,9 @@ async def extract(model, path):
     data, mime = to_image(path)
     part = {"inline_data": {"mime_type": mime, "data": base64.b64encode(data).decode()}}
     try:
-        text = await llm.generate([{"role": "user", "parts": [part, {"text": PROMPT}]}], model=model)
+        ocr = await asyncio.to_thread(tools.ocr_text, data)  # same as the app (EVAL_OCR=0 for the image-only baseline)
+        prompt = tools.with_ocr(PROMPT, ocr) if os.environ.get("EVAL_OCR", "1") != "0" else PROMPT
+        text = await llm.generate([{"role": "user", "parts": [part, {"text": prompt}]}], model=model)
     except llm.LLMError as e:
         return {"_raw": f"http {e}"}  # an outage, not a model mistake (RETRY_FAILED re-asks these)
     m = re.search(r"\{.*\}", text, re.S)

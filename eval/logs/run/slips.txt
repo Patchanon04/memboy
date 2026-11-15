@@ -2,33 +2,33 @@
 ✓ slip_02_L1.png               {'doc_type': True, 'total': True, 'ref': True, 'qr_status': True}
 ✓ slip_03_L2.png               {'doc_type': True, 'total': True, 'ref': True, 'qr_status': True}
 ✓ slip_04_L3.png               {'doc_type': True, 'total': True, 'ref': True, 'qr_status': True}
-✓ slip_05_L4.png               {'doc_type': True, 'total': True, 'ref': True, 'qr_status': True}
+✗ slip_05_L4.png               {'doc_type': True, 'total': True, 'ref': False, 'qr_status': False}
 ✓ slip_06_L5_MISMATCH.png      {'doc_type': True, 'total': True, 'ref': True, 'qr_status': True}
 ✓ slip_07_L0.png               {'doc_type': True, 'total': True, 'ref': True, 'qr_status': True}
 ✓ slip_08_L1.png               {'doc_type': True, 'total': True, 'ref': True, 'qr_status': True}
-✓ slip_09_L2.png               {'doc_type': True, 'total': True, 'ref': True, 'qr_status': True}
-✓ slip_10_L3.png               {'doc_type': True, 'total': True, 'ref': True, 'qr_status': True}
+✗ slip_09_L2.png               {'doc_type': True, 'total': True, 'ref': False, 'qr_status': False}
+✗ slip_10_L3.png               {'doc_type': True, 'total': True, 'ref': False, 'qr_status': False}
 ✓ slip_11_L4.png               {'doc_type': True, 'total': True, 'ref': True, 'qr_status': True}
 ✓ slip_12_L5_MISMATCH.png      {'doc_type': True, 'total': True, 'ref': True, 'qr_status': True}
 ✓ slip_13_L0.png               {'doc_type': True, 'total': True, 'ref': True, 'qr_status': True}
 ✓ slip_14_L1.png               {'doc_type': True, 'total': True, 'ref': True, 'qr_status': True}
-✓ slip_15_L2.png               {'doc_type': True, 'total': True, 'ref': True, 'qr_status': True}
+✗ slip_15_L2.png               {'doc_type': True, 'total': True, 'ref': False, 'qr_status': False}
 ✓ slip_16_L3.png               {'doc_type': True, 'total': True, 'ref': True, 'qr_status': True}
 ✓ slip_17_L4.png               {'doc_type': True, 'total': True, 'ref': True, 'qr_status': True}
-✗ slip_18_L5_MISMATCH.png      {'doc_type': True, 'total': True, 'ref': False, 'qr_status': True}
-✗ slip_19_L0.png               {'doc_type': True, 'total': True, 'ref': False, 'qr_status': False}
-✗ slip_20_L1.png               {'doc_type': True, 'total': True, 'ref': False, 'qr_status': False}
+✓ slip_18_L5_MISMATCH.png      {'doc_type': True, 'total': True, 'ref': True, 'qr_status': True}
+✓ slip_19_L0.png               {'doc_type': True, 'total': True, 'ref': True, 'qr_status': True}
+✓ slip_20_L1.png               {'doc_type': True, 'total': True, 'ref': True, 'qr_status': True}
 ✓ slip_21_L2.png               {'doc_type': True, 'total': True, 'ref': True, 'qr_status': True}
 ✓ slip_22_L3.png               {'doc_type': True, 'total': True, 'ref': True, 'qr_status': True}
 ✓ slip_23_L4.png               {'doc_type': True, 'total': True, 'ref': True, 'qr_status': True}
 ✓ slip_24_L5_MISMATCH.png      {'doc_type': True, 'total': True, 'ref': True, 'qr_status': True}
 ✓ slip_25_L0.png               {'doc_type': True, 'total': True, 'ref': True, 'qr_status': True}
-✗ slip_26_L1.png               {'doc_type': True, 'total': False, 'ref': True, 'qr_status': False}
-✓ slip_27_L2.png               {'doc_type': True, 'total': True, 'ref': True, 'qr_status': True}
+✓ slip_26_L1.png               {'doc_type': True, 'total': True, 'ref': True, 'qr_status': True}
+✗ slip_27_L2.png               {'doc_type': True, 'total': True, 'ref': False, 'qr_status': False}
 ✓ slip_28_L3.png               {'doc_type': True, 'total': True, 'ref': True, 'qr_status': True}
-✓ slip_29_L4.png               {'doc_type': True, 'total': True, 'ref': True, 'qr_status': True}
-✗ slip_30_L5_MISMATCH.png      {'doc_type': True, 'total': True, 'ref': False, 'qr_status': True}
+✗ slip_29_L4.png               {'doc_type': True, 'total': True, 'ref': False, 'qr_status': False}
+✓ slip_30_L5_MISMATCH.png      {'doc_type': True, 'total': True, 'ref': True, 'qr_status': True}
 
-SLIPS ACCURACY: doc_type=100%  total=97%  ref=87%  qr_status=90%  all=25/30
-per layout: {0: '4/5', 1: '3/5', 2: '5/5', 3: '5/5', 4: '5/5', 5: '3/5'}
+SLIPS ACCURACY: doc_type=100%  total=100%  ref=80%  qr_status=80%  all=24/30
+per layout: {0: '5/5', 1: '5/5', 2: '2/5', 3: '4/5', 4: '3/5', 5: '5/5'}
 QR mismatch detection: 5/5
