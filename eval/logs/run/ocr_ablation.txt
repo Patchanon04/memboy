@@ -1,0 +1,70 @@
+0 files already done, 60 to go
+001_th_clean.png       ocr  0.4s/ 584ch  image: 5/5   1.9s   259tok  image+ocr: 5/5   2.1s   434tok  ocr: 4/5   1.8s   340tok
+002_th_photo.jpg       ocr  0.4s/ 635ch  image: 5/5   2.1s   270tok  image+ocr: 5/5   2.2s   439tok  ocr: 3/5   2.0s   334tok
+003_en_clean.jpg       ocr  0.4s/ 312ch  image: 5/5   1.8s   251tok  image+ocr: 5/5   1.9s   389tok  ocr: 5/5   1.8s   303tok
+004_en_camera.png      ocr  0.2s/  63ch  image: 3/5   1.9s   243tok  image+ocr: 3/5   1.9s   284tok  ocr: 2/5   1.5s   206tok
+005_en_camera.png      ocr  0.3s/ 396ch  image: 5/5   1.9s   259tok  image+ocr: 5/5   2.0s   376tok  ocr: 3/5   1.6s   282tok
+006_en_clean.pdf       ocr  0.2s/ 456ch  image: 5/5   2.1s   271tok  image+ocr: 5/5   2.3s   422tok  ocr: 5/5   2.0s   316tok
+007_th_clean.png       ocr  0.2s/ 746ch  image: 5/5   2.1s   251tok  image+ocr: 5/5   2.2s   440tok  ocr: 4/5   2.0s   354tok
+008_en_photo.png       ocr  0.2s/ 164ch  image: 5/5   2.0s   251tok  image+ocr: 5/5   2.0s   339tok  ocr: 5/5   2.0s   253tok
+009_th_camera.png      ocr  0.3s/ 162ch  image: 1/5   2.1s   252tok  image+ocr: 1/5   2.1s   331tok  ocr: 0/5   1.2s   244tok
+010_en_photo.png       ocr  0.4s/ 648ch  image: 4/5   2.0s   259tok  image+ocr: 5/5   2.2s   448tok  ocr: 5/5   2.1s   354tok
+011_en_photo.pdf       ocr  0.3s/ 397ch  image: 5/5   2.1s   261tok  image+ocr: 5/5   2.1s   382tok  ocr: 5/5   2.7s   286tok
+012_th_clean.png       ocr  0.2s/ 261ch  image: 5/5   2.0s   248tok  image+ocr: 5/5   2.3s   346tok  ocr: 4/5   1.9s   263tok
+013_th_camera.png      ocr  0.3s/ 273ch  image: 1/5   2.1s   248tok  image+ocr: 1/5   2.1s   314tok  ocr: 0/5   1.2s   231tok
+014_th_photo.pdf       ocr  0.4s/ 521ch  image: 4/5   2.3s   291tok  image+ocr: 5/5   2.3s   472tok  ocr: 5/5   2.2s   346tok
+015_th_photo.jpg       ocr  0.2s/ 508ch  image: 3/5   2.1s   270tok  image+ocr: 5/5   2.3s   467tok  ocr: 5/5   2.2s   362tok
+016_en_camera.jpg      ocr  0.1s/  48ch  image: 2/5   1.9s   243tok  image+ocr: 2/5   1.9s   278tok  ocr: 2/5   1.1s   200tok
+017_th_clean.jpg       ocr  0.3s/ 432ch  image: 5/5   1.9s   252tok  image+ocr: 4/5   2.1s   408tok  ocr: 4/5   2.0s   321tok
+018_th_camera.jpg      ocr  0.2s/ 174ch  image: 5/5   2.1s   251tok  image+ocr: 5/5   2.1s   342tok  ocr: 2/5   1.6s   256tok
+019_th_photo.jpg       ocr  0.3s/ 556ch  image: 4/5   2.1s   261tok  image+ocr: 5/5   2.3s   440tok  ocr: 3/5   2.0s   344tok
+020_th_photo.png       ocr  0.2s/ 307ch  image: 5/5   2.2s   261tok  image+ocr: 5/5   2.4s   391tok  ocr: 4/5   2.0s   295tok
+021_en_camera.png      ocr  0.2s/ 324ch  image: 5/5   2.0s   259tok  image+ocr: 5/5   2.2s   386tok  ocr: 3/5   1.8s   292tok
+022_th_photo.jpg       ocr  0.4s/ 628ch  image: 5/5   2.1s   281tok  image+ocr: 5/5   2.2s   477tok  ocr: 4/5   1.9s   361tok
+023_en_clean.pdf       ocr  0.3s/ 197ch  image: 5/5   1.8s   248tok  image+ocr: 5/5   1.8s   343tok  ocr: 5/5   1.7s   260tok
+024_th_camera.jpg      ocr  0.3s/ 192ch  image: 1/5   2.0s   281tok  image+ocr: 3/5   2.0s   367tok  ocr: 2/5   1.5s   251tok
+025_th_photo.jpg       ocr  0.3s/ 522ch  image: 4/5   2.2s   270tok  image+ocr: 5/5   2.1s   437tok  ocr: 3/5   1.9s   332tok
+026_th_camera.jpg      ocr  0.3s/ 157ch  image: 2/5   1.7s   251tok  image+ocr: 1/5   1.5s   323tok  ocr: 1/5   1.2s   237tok
+027_en_photo.pdf       ocr  0.3s/ 296ch  image: 5/5   1.8s   288tok  image+ocr: 5/5   1.9s   421tok  ocr: 5/5   1.7s   298tok
+028_th_camera.pdf      ocr  0.2s/ 269ch  image: 3/5   2.2s   314tok  image+ocr: 5/5   2.3s   402tok  ocr: 1/5   1.6s   253tok
+029_en_clean.jpg       ocr  0.1s/ 374ch  image: 4/5   1.9s   251tok  image+ocr: 5/5   2.0s   371tok  ocr: 5/5   1.9s   285tok
+030_en_photo.pdf       ocr  0.2s/ 358ch  image: 5/5   1.9s   261tok  image+ocr: 5/5   2.0s   400tok  ocr: 5/5   1.9s   304tok
+031_th_camera.jpg      ocr  0.3s/ 396ch  image: 4/5   2.0s   252tok  image+ocr: 4/5   2.0s   404tok  ocr: 4/5   1.7s   317tok
+032_th_camera.jpg      ocr  0.2s/ 330ch  image: 5/5   1.9s   243tok  image+ocr: 5/5   2.0s   359tok  ocr: 5/5   1.8s   281tok
+033_th_clean.png       ocr  0.3s/ 450ch  image: 3/5   1.9s   252tok  image+ocr: 5/5   5.9s   430tok  ocr: 5/5  23.2s   343tok
+034_en_camera.png      ocr  0.3s/ 263ch  image: 5/5  23.0s   251tok  image+ocr: 5/5  26.8s   366tok  ocr: 5/5  30.0s   280tok
+035_th_camera.png      ocr  0.3s/ 197ch  image: 0/5  27.9s   243tok  image+ocr: 0/5  29.7s   334tok  ocr: 0/5  23.6s   256tok
+036_th_clean.png       ocr  0.3s/ 430ch  image: 5/5  43.7s   252tok  image+ocr: 5/5  26.7s   420tok  ocr: 4/5  67.2s   333tok
+037_en_clean.pdf       ocr  0.4s/ 366ch  image: 5/5   8.9s   288tok  image+ocr: 5/5  11.1s   427tok  ocr: 5/5  10.3s   304tok
+038_th_camera.pdf      ocr  0.3s/ 313ch  image: 2/5   1.8s   281tok  image+ocr: 2/5   2.2s   428tok  ocr: 2/5   1.6s   312tok
+039_en_photo.jpg       ocr  0.2s/ 283ch  image: 4/5   1.8s   243tok  image+ocr: 5/5   1.9s   345tok  ocr: 5/5   1.8s   267tok
+040_th_photo.png       ocr  0.3s/ 423ch  image: 5/5   1.9s   252tok  image+ocr: 5/5   2.3s   418tok  ocr: 4/5   2.0s   331tok
+041_th_photo.jpg       ocr  0.2s/ 621ch  image: 3/5   2.0s   271tok  image+ocr: 5/5   2.3s   455tok  ocr: 4/5   2.0s   349tok
+042_en_photo.png       ocr  0.3s/ 580ch  image: 4/5  16.4s   270tok  image+ocr: 5/5  22.7s   449tok  ocr: 5/5  28.0s   344tok
+043_th_camera.png      ocr  0.1s/   5ch  image: 1/5  34.7s   292tok  image+ocr: 0/5  22.2s   315tok  ocr: 0/5  16.7s   188tok
+044_th_clean.png       ocr  0.4s/ 734ch  image: 5/5  30.4s   281tok  image+ocr: 5/5  35.9s   477tok  ocr: 5/5  23.4s   361tok
+045_th_camera.jpg      ocr  0.3s/ 252ch  image: 4/5  33.7s   251tok  image+ocr: 5/5  28.0s   394tok  ocr: 4/5  24.3s   308tok
+046_en_camera.png      ocr  0.4s/ 258ch  image: 5/5  24.5s   243tok  image+ocr: 5/5  17.3s   378tok  ocr: 5/5   1.8s   300tok
+047_th_camera.png      ocr  0.2s/ 230ch  image: 3/5   2.0s   261tok  image+ocr: 4/5   1.9s   355tok  ocr: 3/5   1.6s   259tok
+048_en_clean.jpg       ocr  0.2s/ 614ch  image: 5/5   1.8s   259tok  image+ocr: 5/5   1.9s   444tok  ocr: 5/5   1.8s   350tok
+049_en_camera.jpg      ocr  0.2s/ 376ch  image: 5/5   1.8s   251tok  image+ocr: 5/5   2.0s   393tok  ocr: 4/5   1.8s   307tok
+050_th_clean.jpg       ocr  0.2s/ 420ch  image: 4/5   1.5s   243tok  image+ocr: 4/5   1.9s   393tok  ocr: 4/5   1.8s   315tok
+051_th_photo.jpg       ocr  0.3s/ 554ch  image: 5/5   2.0s   271tok  image+ocr: 5/5   2.2s   443tok  ocr: 4/5   2.0s   337tok
+052_en_camera.pdf      ocr  0.3s/ 329ch  image: 5/5   2.1s   291tok  image+ocr: 5/5   2.2s   420tok  ocr: 3/5   2.0s   294tok
+053_th_photo.jpg       ocr  0.2s/ 146ch  image: 4/5   2.0s   252tok  image+ocr: 4/5   2.0s   313tok  ocr: 2/5   1.6s   226tok
+054_en_photo.png       ocr  0.3s/ 244ch  image: 5/5   1.8s   251tok  image+ocr: 5/5   1.8s   355tok  ocr: 5/5   1.7s   269tok
+055_en_camera.png      ocr  0.3s/ 455ch  image: 5/5   1.9s   251tok  image+ocr: 5/5   2.0s   383tok  ocr: 5/5   1.8s   297tok
+056_th_photo.png       ocr  0.2s/ 446ch  image: 5/5   1.9s   251tok  image+ocr: 5/5   1.9s   376tok  ocr: 5/5   1.8s   290tok
+057_en_photo.png       ocr  0.2s/ 280ch  image: 0/5   1.6s   243tok  image+ocr: 4/5   2.0s   377tok  ocr: 5/5   1.9s   299tok
+058_th_camera.png      ocr  0.3s/ 285ch  image: 4/5   1.9s   261tok  image+ocr: 3/5   2.0s   383tok  ocr: 2/5   1.9s   287tok
+059_en_photo.jpg       ocr  0.2s/ 194ch  image: 5/5   1.8s   251tok  image+ocr: 5/5   1.9s   344tok  ocr: 5/5   1.7s   258tok
+060_en_photo.jpg       ocr  0.2s/ 411ch  image: 5/5   1.9s   243tok  image+ocr: 5/5   2.0s   387tok  ocr: 5/5   1.8s   309tok
+
+# OCR ablation · `gemma4:12b` · 60 files (tesseract 5 tha+eng, psm 6; OCR mean 0.27s/file)
+
+| condition | vendor | date | total | vat | category | all-5 | LLM p50 | LLM p90 | LLM mean | +OCR mean | prompt tok mean | retries |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| image | 77% | 73% | 92% | 80% | 80% | **33/60** | 2.0s | 24.5s | 5.7s | 5.7s | 260 | 0 |
+| image+ocr | 87% | 77% | 92% | 88% | 90% | **44/60** | 2.1s | 22.7s | 5.5s | 5.8s | 391 | 0 |
+| ocr | 87% | 50% | 68% | 75% | 92% | **26/60** | 1.9s | 23.4s | 5.6s | 5.9s | 296 | 0 |
+report: /srv/eval/logs/OCR_ABLATION.md

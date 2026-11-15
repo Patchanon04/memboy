@@ -20,7 +20,7 @@
 ✓ #20  A-report         ['export_csv']  
 ✓ #21  A-profile        ['manage_profile']  
 ✓ #22  A-profile        ['manage_profile']  
-✗ #23  A-profile        []  ← first tool None != 'manage_profile'
+✓ #23  A-profile        ['manage_profile']  
 ✓ #24  A-profile        ['update_invoice']  
 ✓ #25  A-note           ['remember_note']  
 ✗ #26  A-note           []  ← first tool None != 'remember_note'
@@ -54,7 +54,7 @@
 ✓ #54  A-trends         ['analyze_trends']  
 
 MODEL: gemma4:12b
-  A: 38/43 = 88%
+  A: 39/43 = 91%
   D: 6/6 = 100%
   E: 2/5 = 40%
-  ALL: 46/54 = 85%
+  ALL: 47/54 = 87%

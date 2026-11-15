@@ -1,0 +1,482 @@
+[
+ {
+  "vendor": "ส้มตำนัวนัว (Somtum Nua Nua)",
+  "category": "อาหาร"
+ },
+ {
+  "vendor": "Cafe Amazon",
+  "category": "อาหาร"
+ },
+ {
+  "vendor": "ก๋วยเตี๋ยวเรือพี่จ๊อด",
+  "category": "อาหาร"
+ },
+ {
+  "vendor": "Starbucks Coffee",
+  "category": "อาหาร"
+ },
+ {
+  "vendor": "ร้านข้าวแกงป้าแมว",
+  "category": "อาหาร"
+ },
+ {
+  "vendor": "After You",
+  "category": "อาหาร"
+ },
+ {
+  "vendor": "ส้มตำไทย ทาโร่",
+  "category": "อาหาร"
+ },
+ {
+  "vendor": "KFC Thailand",
+  "category": "อาหาร"
+ },
+ {
+  "vendor": "ข้าวมันไก่ประตูน้ำ",
+  "category": "อาหาร"
+ },
+ {
+  "vendor": "Swensen's Ice Cream",
+  "category": "อาหาร"
+ },
+ {
+  "vendor": "ร้านกาแฟบ้านสวน",
+  "category": "อาหาร"
+ },
+ {
+  "vendor": "ตำมั่วแซ่บเวอร์",
+  "category": "อาหาร"
+ },
+ {
+  "vendor": "The Pizza Company",
+  "category": "อาหาร"
+ },
+ {
+  "vendor": "กะเพราไก่ไข่ดาว",
+  "category": "อาหาร"
+ },
+ {
+  "vendor": "Mixue Ice Cream & Tea",
+  "category": "อาหาร"
+ },
+ {
+  "vendor": "สตรีทฟู้ดหน้าปากซอย",
+  "category": "อาหาร"
+ },
+ {
+  "vendor": "MK Restaurants",
+  "category": "อาหาร"
+ },
+ {
+  "vendor": "เบเกอรี่โฮมเมด",
+  "category": "อาหาร"
+ },
+ {
+  "vendor": "บัวลอยน้ำขิง",
+  "category": "อาหาร"
+ },
+ {
+  "vendor": "Subway Thailand",
+  "category": "อาหาร"
+ },
+ {
+  "vendor": "PTT Station",
+  "category": "เดินทาง"
+ },
+ {
+  "vendor": "Bangkok Express Way",
+  "category": "เดินทาง"
+ },
+ {
+  "vendor": "AirAsia",
+  "category": "เดินทาง"
+ },
+ {
+  "vendor": "Thai Airways",
+  "category": "เดินทาง"
+ },
+ {
+  "vendor": "Grab Taxi",
+  "category": "เดินทาง"
+ },
+ {
+  "vendor": "Win Express",
+  "category": "เดินทาง"
+ },
+ {
+  "vendor": "Circle K Convenience",
+  "category": "เดินทาง"
+ },
+ {
+  "vendor": "Bangkok Airport Express",
+  "category": "เดินทาง"
+ },
+ {
+  "vendor": "City Bus Terminal",
+  "category": "เดินทาง"
+ },
+ {
+  "vendor": "Highway Service Station",
+  "category": "เดินทาง"
+ },
+ {
+  "vendor": "Bangkok Parking Zone",
+  "category": "เดินทาง"
+ },
+ {
+  "vendor": "Thai Smile",
+  "category": "เดินทาง"
+ },
+ {
+  "vendor": "Shell Thailand",
+  "category": "เดินทาง"
+ },
+ {
+  "vendor": "Caltex Gas Station",
+  "category": "เดินทาง"
+ },
+ {
+  "vendor": "Metro Transit",
+  "category": "เดินทาง"
+ },
+ {
+  "vendor": "Local Taxi Service",
+  "category": "เดินทาง"
+ },
+ {
+  "vendor": "Thai Ferry",
+  "category": "เดินทาง"
+ },
+ {
+  "vendor": "City Shuttle",
+  "category": "เดินทาง"
+ },
+ {
+  "vendor": "Bypass Express",
+  "category": "เดินทาง"
+ },
+ {
+  "vendor": "Thai Taxi Hub",
+  "category": "เดินทาง"
+ },
+ {
+  "vendor": "Grand Hyatt Erawan Bangkok",
+  "category": "ที่พัก"
+ },
+ {
+  "vendor": "Siam Intercontinental",
+  "category": "ที่พัก"
+ },
+ {
+  "vendor": "The Standard, Bangkok",
+  "category": "ที่พัก"
+ },
+ {
+  "vendor": "Bua Hall Resort",
+  "category": "ที่พัก"
+ },
+ {
+  "vendor": "Riverside Boutique",
+  "category": "ที่พัก"
+ },
+ {
+  "vendor": "The Hive Hostel",
+  "category": "ที่พัก"
+ },
+ {
+  "vendor": "Stay_Easy_Inn",
+  "category": "ที่พัก"
+ },
+ {
+  "vendor": "บ้านสวนริมน้ำ รีสอร์ท",
+  "category": "ที่พัก"
+ },
+ {
+  "vendor": "สวนมะลิ โฮสเทล",
+  "category": "ที่พัก"
+ },
+ {
+  "vendor": "Agoda Thailand",
+  "category": "ที่พัก"
+ },
+ {
+  "vendor": "Booking.com",
+  "category": "ที่พัก"
+ },
+ {
+  "vendor": "Traveloka",
+  "category": "ที่พัก"
+ },
+ {
+  "vendor": "HopInn",
+  "category": "ที่พัก"
+ },
+ {
+  "vendor": "The Sense Hotel",
+  "category": "ที่พัก"
+ },
+ {
+  "vendor": "Mahanakhon Hill",
+  "category": "ที่พัก"
+ },
+ {
+  "vendor": "บ้านพักริมเขา",
+  "category": "ที่พัก"
+ },
+ {
+  "vendor": "Chill Out Hostel",
+  "category": "ที่พัก"
+ },
+ {
+  "vendor": "City Stay Apartments",
+  "category": "ที่พัก"
+ },
+ {
+  "vendor": "Grand Palace Residency",
+  "category": "ที่พัก"
+ },
+ {
+  "vendor": "Little Garden Boutique",
+  "category": "ที่พัก"
+ },
+ {
+  "vendor": "OfficeMate (ออฟฟิศเมท)",
+  "category": "อุปกรณ์"
+ },
+ {
+  "vendor": "B2S",
+  "category": "อุปกรณ์"
+ },
+ {
+  "vendor": "ร้านเครื่องเขียนใจดี",
+  "category": "อุปกรณ์"
+ },
+ {
+  "vendor": "IT City",
+  "category": "อุปกรณ์"
+ },
+ {
+  "vendor": "JIB Thailand",
+  "category": "อุปกรณ์"
+ },
+ {
+  "vendor": "ร้านคอมพิวเตอร์แอนด์เซอร์วิส",
+  "category": "อุปกรณ์"
+ },
+ {
+  "vendor": "HomePro (โฮมโปร)",
+  "category": "อุปกรณ์"
+ },
+ {
+  "vendor": "Thai Watsadu (ไทวัสดุ)",
+  "category": "อุปกรณ์"
+ },
+ {
+  "vendor": "ร้านวัสดุก่อสร้างชัยเจริญ",
+  "category": "อุปกรณ์"
+ },
+ {
+  "vendor": "Global House (โกลบอลเฮ้าส์)",
+  "category": "อุปกรณ์"
+ },
+ {
+  "vendor": "ร้านอะไหล่ยนต์สมบูรณ์",
+  "category": "อุปกรณ์"
+ },
+ {
+  "vendor": "Power Buy",
+  "category": "อุปกรณ์"
+ },
+ {
+  "vendor": "ร้านถ่ายเอกสารและงานพิมพ์ด่วน",
+  "category": "อุปกรณ์"
+ },
+ {
+  "vendor": "More Gadget",
+  "category": "อุปกรณ์"
+ },
+ {
+  "vendor": "ร้านเครื่องเขียนสยาม",
+  "category": "อุปกรณ์"
+ },
+ {
+  "vendor": "Build_Pro Construction",
+  "category": "อุปกรณ์"
+ },
+ {
+  "vendor": "ร้านอะไหล่ไฟฟ้าวิชัย",
+  "category": "อุปกรณ์"
+ },
+ {
+  "vendor": "Digital World Store",
+  "category": "อุปกรณ์"
+ },
+ {
+  "vendor": "รวมพลเครื่องเขียน",
+  "category": "อุปกรณ์"
+ },
+ {
+  "vendor": "Mega Construction Supply",
+  "category": "อุปกรณ์"
+ },
+ {
+  "vendor": "Pharmacy Plus (ฟาร์มาซี พลัส)",
+  "category": "สุขภาพ"
+ },
+ {
+  "vendor": "คลินิกหมอยาใจดี",
+  "category": "สุขภาพ"
+ },
+ {
+  "vendor": "Grand Health Hospital",
+  "category": "สุขภาพ"
+ },
+ {
+  "vendor": "สปารัตนพฤกษ์",
+  "category": "สุขภาพ"
+ },
+ {
+  "vendor": "Vitality Fitness Center",
+  "category": "สุขภาพ"
+ },
+ {
+  "vendor": "ร้านยาพฤกษา",
+  "category": "สุขภาพ"
+ },
+ {
+  "vendor": "Wellness Spa & Massage",
+  "category": "สุขภาพ"
+ },
+ {
+  "vendor": "ไทยเนอร์ส คลินิก",
+  "category": "สุขภาพ"
+ },
+ {
+  "vendor": "FitZone Studio",
+  "category": "สุขภาพ"
+ },
+ {
+  "vendor": "Healthy Life Pharmacy",
+  "category": "สุขภาพ"
+ },
+ {
+  "vendor": "ศูนย์กายภาพบำบัดและนวดไทย",
+  "category": "สุขภาพ"
+ },
+ {
+  "vendor": "Green Garden Clinic",
+  "category": "สุขภาพ"
+ },
+ {
+  "vendor": "Mega Health Care",
+  "category": "สุขภาพ"
+ },
+ {
+  "vendor": "ร้านยาคุณป้า",
+  "category": "สุขภาพ"
+ },
+ {
+  "vendor": "Zenith Wellness Center",
+  "category": "สุขภาพ"
+ },
+ {
+  "vendor": "ฟิตเนสไทยแลนด์",
+  "category": "สุขภาพ"
+ },
+ {
+  "vendor": "Happy Smile Clinic",
+  "category": "สุขภาพ"
+ },
+ {
+  "vendor": "สบายกายสปา",
+  "category": "สุขภาพ"
+ },
+ {
+  "vendor": "Medipro Pharmacy",
+  "category": "สุขภาพ"
+ },
+ {
+  "vendor": "Harmony Wellness Hub",
+  "category": "สุขภาพ"
+ },
+ {
+  "vendor": "7-Eleven",
+  "category": "ของใช้"
+ },
+ {
+  "vendor": "Lotus's",
+  "category": "ของใช้"
+ },
+ {
+  "vendor": "Big C",
+  "category": "ของใช้"
+ },
+ {
+  "vendor": "CJ More",
+  "category": "ของใช้"
+ },
+ {
+  "vendor": "Tops Market",
+  "category": "ของใช้"
+ },
+ {
+  "vendor": "Villa Market",
+  "category": "ของใช้"
+ },
+ {
+  "vendor": "Gourmet Market",
+  "category": "ของใช้"
+ },
+ {
+  "vendor": "ร้านขายของชำป้าแดง",
+  "category": "ของใช้"
+ },
+ {
+  "vendor": "บ้านใกล้เรือนเคียง มินิมาร์ท",
+  "category": "ของใช้"
+ },
+ {
+  "vendor": "ร้านสะดวกซื้อ ทรัพย์ทวี",
+  "category": "ของใช้"
+ },
+ {
+  "vendor": "Fresh Mart",
+  "category": "ของใช้"
+ },
+ {
+  "vendor": "Daily Needs Store",
+  "category": "ของใช้"
+ },
+ {
+  "vendor": "ตลาดสดพลาซ่า",
+  "category": "ของใช้"
+ },
+ {
+  "vendor": "บ้านสวน ของใช้ในบ้าน",
+  "category": "ของใช้"
+ },
+ {
+  "vendor": "Modern Trade Express",
+  "category": "ของใช้"
+ },
+ {
+  "vendor": "ร้านโชห่วยใจดี",
+  "category": "ของใช้"
+ },
+ {
+  "vendor": "Easy Life Mart",
+  "category": "ของใช้"
+ },
+ {
+  "vendor": "สยามมินิมาร์ท",
+  "category": "ของใช้"
+ },
+ {
+  "vendor": "Happy Home Shop",
+  "category": "ของใช้"
+ },
+ {
+  "vendor": "ร้านมั่งมี ประโภค",
+  "category": "ของใช้"
+ }
+]

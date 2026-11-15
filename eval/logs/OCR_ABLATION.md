@@ -1,41 +1,47 @@
-# OCR ablation · `gemma-4-26b-a4b-it` · 60 files (tesseract 5 tha+eng, psm 6; OCR mean 0.32s/file)
+# OCR ablation · `gemma4:12b` · 60 files (tesseract 5 tha+eng, psm 6; OCR mean 0.27s/file)
 
 | condition | vendor | date | total | vat | category | all-5 | LLM p50 | LLM p90 | LLM mean | +OCR mean | prompt tok mean | retries |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| image | 95% | 93% | 97% | 97% | 97% | **56/60** | 25.9s | 146.2s | 46.0s | 46.0s | 463 | 12 |
-| image+ocr | 93% | 92% | 95% | 95% | 93% | **55/60** | 26.4s | 116.8s | 52.6s | 52.9s | 579 | 15 |
-| ocr | 82% | 53% | 72% | 75% | 85% | **30/60** | 31.7s | 243.2s | 74.2s | 74.5s | 323 | 19 |
+| image | 77% | 73% | 92% | 80% | 80% | **33/60** | 2.0s | 24.5s | 5.7s | 5.7s | 260 | 0 |
+| image+ocr | 87% | 77% | 92% | 88% | 90% | **44/60** | 2.1s | 22.7s | 5.5s | 5.8s | 391 | 0 |
+| ocr | 87% | 50% | 68% | 75% | 92% | **26/60** | 1.9s | 23.4s | 5.6s | 5.9s | 296 | 0 |
 
-files where conditions disagree (image / image+ocr / ocr, fields correct of 5): 31
+files where conditions disagree (image / image+ocr / ocr, fields correct of 5): 37
 
 - 001_th_clean.png: 5 / 5 / 4
-- 004_en_camera.png: 5 / 5 / 3
+- 002_th_photo.jpg: 5 / 5 / 3
+- 004_en_camera.png: 3 / 3 / 2
 - 005_en_camera.png: 5 / 5 / 3
-- 009_th_camera.png: 5 / 5 / 0
+- 007_th_clean.png: 5 / 5 / 4
+- 009_th_camera.png: 1 / 1 / 0
+- 010_en_photo.png: 4 / 5 / 5
 - 012_th_clean.png: 5 / 5 / 4
-- 013_th_camera.png: 3 / 3 / 0
-- 016_en_camera.jpg: 5 / 5 / 2
-- 017_th_clean.jpg: 5 / 5 / 4
+- 013_th_camera.png: 1 / 1 / 0
+- 014_th_photo.pdf: 4 / 5 / 5
+- 015_th_photo.jpg: 3 / 5 / 5
+- 017_th_clean.jpg: 5 / 4 / 4
 - 018_th_camera.jpg: 5 / 5 / 2
-- 019_th_photo.jpg: 5 / 5 / 0
-- 020_th_photo.png: 5 / 0 / 0
-- 021_en_camera.png: 0 / 0 / 3
-- 022_th_photo.jpg: 0 / 5 / 4
-- 024_th_camera.jpg: 5 / 5 / 2
-- 025_th_photo.jpg: 5 / 5 / 0
-- 026_th_camera.jpg: 4 / 3 / 0
-- 027_en_photo.pdf: 5 / 0 / 5
-- 028_th_camera.pdf: 5 / 5 / 3
-- 031_th_camera.jpg: 5 / 5 / 3
-- 035_th_camera.png: 5 / 5 / 0
-- 038_th_camera.pdf: 5 / 5 / 4
+- 019_th_photo.jpg: 4 / 5 / 3
+- 020_th_photo.png: 5 / 5 / 4
+- 021_en_camera.png: 5 / 5 / 3
+- 022_th_photo.jpg: 5 / 5 / 4
+- 024_th_camera.jpg: 1 / 3 / 2
+- 025_th_photo.jpg: 4 / 5 / 3
+- 026_th_camera.jpg: 2 / 1 / 1
+- 028_th_camera.pdf: 3 / 5 / 1
+- 029_en_clean.jpg: 4 / 5 / 5
+- 033_th_clean.png: 3 / 5 / 5
+- 036_th_clean.png: 5 / 5 / 4
+- 039_en_photo.jpg: 4 / 5 / 5
 - 040_th_photo.png: 5 / 5 / 4
-- 041_th_photo.jpg: 5 / 5 / 4
-- 043_th_camera.png: 5 / 5 / 0
-- 047_th_camera.png: 5 / 5 / 3
+- 041_th_photo.jpg: 3 / 5 / 4
+- 042_en_photo.png: 4 / 5 / 5
+- 043_th_camera.png: 1 / 0 / 0
+- 045_th_camera.jpg: 4 / 5 / 4
+- 047_th_camera.png: 3 / 4 / 3
 - 049_en_camera.jpg: 5 / 5 / 4
-- 050_th_clean.jpg: 5 / 5 / 4
 - 051_th_photo.jpg: 5 / 5 / 4
 - 052_en_camera.pdf: 5 / 5 / 3
-- 053_th_photo.jpg: 5 / 5 / 2
-- 058_th_camera.png: 5 / 5 / 1
+- 053_th_photo.jpg: 4 / 4 / 2
+- 057_en_photo.png: 0 / 4 / 5
+- 058_th_camera.png: 4 / 3 / 2

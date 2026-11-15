@@ -621,6 +621,10 @@ def get_invoice_image(user, s, invoice_id=None, **_):
 
 
 # ---------- 14. categories ----------
+def count_tagged(user, s, name) -> int:
+    return s.scalar(select(func.count()).select_from(Invoice).join(Profile).where(Profile.user_id == user.id, Invoice.category == name)) or 0
+
+
 def manage_category(user, s, action=None, name=None, new_name=None, **_):
     customs = list(s.scalars(select(Category).where(Category.user_id == user.id)))
     if action == "list":
@@ -641,7 +645,7 @@ def manage_category(user, s, action=None, name=None, new_name=None, **_):
     if action == "remove":
         s.delete(c)
         s.commit()
-        n = s.scalar(select(func.count()).select_from(Invoice).join(Profile).where(Profile.user_id == user.id, Invoice.category == name))
+        n = count_tagged(user, s, name)
         return {"removed": name, "invoices_still_tagged": n, "note": "บิลเก่ายังติดหมวดเดิม ชวน user ย้ายหมวดถ้าต้องการ"}
     if action == "rename":
         if not new_name:

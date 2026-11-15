@@ -1,13 +1,14 @@
 {
- "gemma-4-26b-a4b-it": [
+ "gemma4:12b": [
   {
    "file": "001_th_handwritten.jpg",
    "pred": {
     "vendor": "บ้านพักริมน้ำ",
-    "date": "2026-09-03",
+    "date_raw": "3 ก.ย. 69",
     "total": 2550,
     "vat": 0,
-    "category": "ที่พัก"
+    "category": "ที่พัก",
+    "date": "2026-09-03"
    },
    "ok": {
     "vendor": true,
@@ -20,11 +21,12 @@
   {
    "file": "002_th_handwritten.jpg",
    "pred": {
-    "vendor": "แท็ก ซีป้ายเหลือง",
-    "date": "2026-03-06",
+    "vendor": "แท็กซี่ป้ายเหลือง",
+    "date_raw": "6/3/2569",
     "total": 460,
     "vat": 0,
-    "category": "เดินทาง"
+    "category": "เดินทาง",
+    "date": "2026-03-06"
    },
    "ok": {
     "vendor": true,
@@ -38,14 +40,15 @@
    "file": "003_th_handwritten.jpg",
    "pred": {
     "vendor": "บ้านพักริมน้ำ",
-    "date": "2026-05-10",
+    "date_raw": "10 ธ.ค. 69",
     "total": 2700,
     "vat": 0,
-    "category": "ที่พัก"
+    "category": "ที่พัก",
+    "date": "2026-12-10"
    },
    "ok": {
     "vendor": true,
-    "date": false,
+    "date": true,
     "total": true,
     "vat": true,
     "category": true
@@ -55,10 +58,11 @@
    "file": "004_th_handwritten.jpg",
    "pred": {
     "vendor": "แท็กซี่ป้ายเหลือง",
-    "date": "2026-04-08",
+    "date_raw": "8/4/69",
     "total": 1760,
     "vat": 0,
-    "category": "เดินทาง"
+    "category": "เดินทาง",
+    "date": "2026-04-08"
    },
    "ok": {
     "vendor": true,
@@ -71,11 +75,12 @@
   {
    "file": "005_th_handwritten.jpg",
    "pred": {
-    "vendor": "ร้านยาเภสัชกรนิด",
-    "date": "2026-10-09",
+    "vendor": "ร้านยาเภสัชกรนิ่ม",
+    "date_raw": "9/10/69",
     "total": 1316.1,
     "vat": 86.1,
-    "category": "สุขภาพ"
+    "category": "สุขภาพ",
+    "date": "2026-10-09"
    },
    "ok": {
     "vendor": true,
@@ -88,11 +93,12 @@
   {
    "file": "006_th_handwritten.jpg",
    "pred": {
-    "vendor": "ร้านยาเภสัชกรนิด",
-    "date": "2026-03-19",
+    "vendor": "ร้านยาเศรษฐกรนิต",
+    "date_raw": "19 มี.ค. 69",
     "total": 2150.7,
     "vat": 140.7,
-    "category": "สุขภาพ"
+    "category": "สุขภาพ",
+    "date": "2026-03-19"
    },
    "ok": {
     "vendor": true,
@@ -106,10 +112,11 @@
    "file": "007_th_handwritten.jpg",
    "pred": {
     "vendor": "ร้านวัสดุก่อสร้างรุ่งเรือง",
-    "date": "2026-11-02",
+    "date_raw": "2 พ.ย. 69",
     "total": 3176,
     "vat": 0,
-    "category": "อุปกรณ์"
+    "category": "อุปกรณ์",
+    "date": "2026-11-02"
    },
    "ok": {
     "vendor": true,
@@ -123,10 +130,11 @@
    "file": "008_th_handwritten.jpg",
    "pred": {
     "vendor": "ร้านซ่อมมือถือเอก",
-    "date": "2026-05-03",
+    "date_raw": "3/5/2026",
     "total": 4090,
     "vat": 0,
-    "category": "อุปกรณ์"
+    "category": "อุปกรณ์",
+    "date": "2026-05-03"
    },
    "ok": {
     "vendor": true,
@@ -139,11 +147,12 @@
   {
    "file": "009_th_handwritten.jpg",
    "pred": {
-    "vendor": "ร้านซ่อมมือถือเอก",
-    "date": "2026-07-11",
+    "vendor": "ร้านซ่อมมือถือเจ๋ง",
+    "date_raw": "11/7/69",
     "total": 4062,
     "vat": 0,
-    "category": "อุปกรณ์"
+    "category": "อุปกรณ์",
+    "date": "2026-07-11"
    },
    "ok": {
     "vendor": true,
@@ -157,10 +166,11 @@
    "file": "010_th_handwritten.jpg",
    "pred": {
     "vendor": "บ้านพักริมน้ำ",
-    "date": "2026-08-27",
+    "date_raw": "27/8/69",
     "total": 2728.5,
     "vat": 178.5,
-    "category": "ที่พัก"
+    "category": "ที่พัก",
+    "date": "2026-08-27"
    },
    "ok": {
     "vendor": true,
@@ -174,10 +184,11 @@
    "file": "011_th_handwritten.jpg",
    "pred": {
     "vendor": "ร้านป้าแดง ขายของชำ",
-    "date": "2026-12-15",
+    "date_raw": "15/12/69",
     "total": 310,
     "vat": 0,
-    "category": "ของใช้"
+    "category": "ของใช้",
+    "date": "2026-12-15"
    },
    "ok": {
     "vendor": true,
@@ -190,11 +201,12 @@
   {
    "file": "012_th_handwritten.jpg",
    "pred": {
-    "vendor": "ครัวลุงหนวด",
-    "date": "2026-08-19",
+    "vendor": "ครึ่งลุงหวด",
+    "date_raw": "19 ส.ค. 69",
     "total": 415,
     "vat": 0,
-    "category": "อาหาร"
+    "category": "อาหาร",
+    "date": "2026-08-19"
    },
    "ok": {
     "vendor": true,
@@ -208,10 +220,11 @@
    "file": "013_th_handwritten.jpg",
    "pred": {
     "vendor": "ตลาดสดโพธิ์ศรี แผง 12",
-    "date": "2026-08-14",
+    "date_raw": "14/8/2569",
     "total": 740,
     "vat": 0,
-    "category": "อาหาร"
+    "category": "อาหาร",
+    "date": "2026-08-14"
    },
    "ok": {
     "vendor": true,
@@ -224,11 +237,12 @@
   {
    "file": "014_th_handwritten.jpg",
    "pred": {
-    "vendor": "ร้าน วัสดุก่อสร้างรุ่งเรือง",
-    "date": "2026-02-13",
+    "vendor": "ร้าน วัสดุก่อสร้าง ทุ่งเครื่อง",
+    "date_raw": "13/2/2569",
     "total": 4081,
     "vat": 0,
-    "category": "อุปกรณ์"
+    "category": "อุปกรณ์",
+    "date": "2026-02-13"
    },
    "ok": {
     "vendor": true,
@@ -241,14 +255,15 @@
   {
    "file": "015_th_handwritten.jpg",
    "pred": {
-    "vendor": "คลินิกหมอฟัน ยิ้มสวย",
-    "date": "2026-06-19",
+    "vendor": "ศศินิพพมณ์",
+    "date_raw": "19/6/2026",
     "total": 3830,
     "vat": 0,
-    "category": "สุขภาพ"
+    "category": "สุขภาพ",
+    "date": "2026-06-19"
    },
    "ok": {
-    "vendor": true,
+    "vendor": false,
     "date": true,
     "total": true,
     "vat": true,
@@ -258,11 +273,12 @@
   {
    "file": "016_th_handwritten.jpg",
    "pred": {
-    "vendor": "ร้านยาเภสัชกรนิด",
-    "date": "2026-08-26",
+    "vendor": "ร้านยาเกลัสขกรนิต",
+    "date_raw": "26/8/2569",
     "total": 2320,
     "vat": 0,
-    "category": "สุขภาพ"
+    "category": "สุขภาพ",
+    "date": "2026-08-26"
    },
    "ok": {
     "vendor": true,
@@ -275,11 +291,12 @@
   {
    "file": "017_th_handwritten.jpg",
    "pred": {
-    "vendor": "ร้านวัสดุก่อสร้างรุ่งเรือง",
-    "date": "2026-06-15",
+    "vendor": "ร้านวัสดุก่อสร้างมุ่งเรื่อง",
+    "date_raw": "15/6/2569",
     "total": 3432.56,
     "vat": 224.56,
-    "category": "อุปกรณ์"
+    "category": "อุปกรณ์",
+    "date": "2026-06-15"
    },
    "ok": {
     "vendor": true,
@@ -292,15 +309,16 @@
   {
    "file": "018_th_handwritten.jpg",
    "pred": {
-    "vendor": "ร้านเครื่องเขียนน้องปี",
-    "date": "2026-01-26",
+    "vendor": "ร้านเครื่องเขียนน้องบี",
+    "date_raw": "26/1/66",
     "total": 165,
     "vat": 0,
-    "category": "อุปกรณ์"
+    "category": "อุปกรณ์",
+    "date": "2023-01-26"
    },
    "ok": {
     "vendor": true,
-    "date": true,
+    "date": false,
     "total": true,
     "vat": true,
     "category": true
@@ -309,11 +327,12 @@
   {
    "file": "019_th_handwritten.jpg",
    "pred": {
-    "vendor": "อู่ช่างเบิร์ด",
-    "date": "2026-10-09",
+    "vendor": "อู่ช้างเบิร์ด",
+    "date_raw": "9/10/2026",
     "total": 1080.7,
     "vat": 70.7,
-    "category": "เดินทาง"
+    "category": "เดินทาง",
+    "date": "2026-10-09"
    },
    "ok": {
     "vendor": true,
@@ -326,28 +345,30 @@
   {
    "file": "020_th_handwritten.jpg",
    "pred": {
-    "vendor": "ร้านซ่อมมือถือเอก",
-    "date": "2026-10-23",
+    "vendor": "ร้านชำมอมมี่ก๊อกเก๊ก",
+    "date_raw": "23/10/69",
     "total": 3831,
     "vat": 0,
-    "category": "อุปกรณ์"
+    "category": "ของใช้",
+    "date": "2026-10-23"
    },
    "ok": {
-    "vendor": true,
+    "vendor": false,
     "date": true,
     "total": true,
     "vat": true,
-    "category": true
+    "category": false
    }
   },
   {
    "file": "021_th_handwritten.jpg",
    "pred": {
-    "vendor": "อู่ช่างเปิรุต",
-    "date": "2026-11-20",
+    "vendor": "อู่ช้างเบิร์ด",
+    "date_raw": "20/11/69",
     "total": 310,
     "vat": 0,
-    "category": "เดินทาง"
+    "category": "เดินทาง",
+    "date": "2026-11-20"
    },
    "ok": {
     "vendor": true,
@@ -360,11 +381,12 @@
   {
    "file": "022_th_handwritten.jpg",
    "pred": {
-    "vendor": "ครัว ลุงหนวด",
-    "date": "2026-08-04",
+    "vendor": "ครัวลุงหนอต",
+    "date_raw": "4/8/2026",
     "total": 160,
     "vat": 0,
-    "category": "อาหาร"
+    "category": "อาหาร",
+    "date": "2026-08-04"
    },
    "ok": {
     "vendor": true,
@@ -378,10 +400,11 @@
    "file": "023_th_handwritten.jpg",
    "pred": {
     "vendor": "ร้านวัสดุก่อสร้างรุ่งเรือง",
-    "date": "2026-01-06",
+    "date_raw": "6/1/2026",
     "total": 195,
     "vat": 0,
-    "category": "อุปกรณ์"
+    "category": "อุปกรณ์",
+    "date": "2026-01-06"
    },
    "ok": {
     "vendor": true,
@@ -394,11 +417,12 @@
   {
    "file": "024_th_handwritten.jpg",
    "pred": {
-    "vendor": "ร้านป้าแดง ขายของชำ",
-    "date": "2026-02-12",
+    "vendor": "ร้านบ้านแดง ขายของชำ",
+    "date_raw": "12/2/2026",
     "total": 302,
     "vat": 0,
-    "category": "ของใช้"
+    "category": "ของใช้",
+    "date": "2026-02-12"
    },
    "ok": {
     "vendor": true,
@@ -411,11 +435,12 @@
   {
    "file": "025_th_handwritten.jpg",
    "pred": {
-    "vendor": "ร้านเครื่องเขียนน้องปี",
-    "date": "2026-09-16",
+    "vendor": "ร้านเครื่องเขียนน้องบี",
+    "date_raw": "16 ก.ย. 69",
     "total": 760,
     "vat": 0,
-    "category": "อุปกรณ์"
+    "category": "อุปกรณ์",
+    "date": "2026-09-16"
    },
    "ok": {
     "vendor": true,
@@ -429,10 +454,11 @@
    "file": "026_th_handwritten.jpg",
    "pred": {
     "vendor": "ร้านวัสดุก่อสร้างรุ่งเรือง",
-    "date": "2026-10-02",
+    "date_raw": "2/10/2569",
     "total": 2755,
     "vat": 0,
-    "category": "อุปกรณ์"
+    "category": "อุปกรณ์",
+    "date": "2026-10-02"
    },
    "ok": {
     "vendor": true,
@@ -445,11 +471,12 @@
   {
    "file": "027_th_handwritten.jpg",
    "pred": {
-    "vendor": "ร้านเครื่องเขียนน้องปี",
-    "date": "2026-04-03",
+    "vendor": "ร้านเครื่องเขียนน้องปิ๊ง",
+    "date_raw": "3/4/2026",
     "total": 1739.82,
     "vat": 113.82,
-    "category": "อุปกรณ์"
+    "category": "อุปกรณ์",
+    "date": "2026-04-03"
    },
    "ok": {
     "vendor": true,
@@ -462,11 +489,12 @@
   {
    "file": "028_th_handwritten.jpg",
    "pred": {
-    "vendor": "ร้านยาเภสัชกรนุช",
-    "date": "2026-05-25",
+    "vendor": "ร้านยาเค้สชกรินทร์",
+    "date_raw": "25/5/2026",
     "total": 3670,
     "vat": 0,
-    "category": "สุขภาพ"
+    "category": "สุขภาพ",
+    "date": "2026-05-25"
    },
    "ok": {
     "vendor": true,
@@ -479,11 +507,12 @@
   {
    "file": "029_th_handwritten.jpg",
    "pred": {
-    "vendor": "คลินิกหมอฟัน ยิ้มสวย",
-    "date": "2026-05-15",
+    "vendor": "คลินิกหมออัพฟันชิ้นสวย",
+    "date_raw": "15/5/2026",
     "total": 2010,
     "vat": 0,
-    "category": "สุขภาพ"
+    "category": "สุขภาพ",
+    "date": "2026-05-15"
    },
    "ok": {
     "vendor": true,
@@ -496,11 +525,12 @@
   {
    "file": "030_th_handwritten.jpg",
    "pred": {
-    "vendor": "ร้านวัสดุก่อสร้างรุ่งเรือง",
-    "date": "2026-06-27",
+    "vendor": "ร้านนุสตร์ ดูก่อสร้างมุ่งเรือง",
+    "date_raw": "27/6/2569",
     "total": 1822,
     "vat": 0,
-    "category": "อุปกรณ์"
+    "category": "อุปกรณ์",
+    "date": "2026-06-27"
    },
    "ok": {
     "vendor": true,

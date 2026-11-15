@@ -2,7 +2,7 @@
 
 Names: eval/ontology_names.json if it exists (written by a person who has not read app/ontology.py), else Gemma is asked
 to invent them (it has never seen our keyword list → blind to the rule; but they are AI-invented, not real shops).
-Embedding: gemini-embedding-001; every keyword + subcategory name is a labelled point, a vendor goes to the category of
+Embedding: bge-m3 on the same Ollama server (OpenAI-standard /v1/embeddings); every keyword + subcategory name is a labelled point, a vendor goes to the category of
 its most similar point (kNN, k=1). Embedding only "claims" a name above a similarity threshold, like the keyword rule.
 
     python -m eval.eval_embedding   (inside the app container)   → eval/logs/EMBEDDING.md"""
@@ -17,31 +17,18 @@ import numpy as np
 
 from app import ontology
 
-KEY = os.environ["GEMINI_API_KEY"]
-HDR = {"x-goog-api-key": KEY}  # header, not ?key=: an error message must never carry the key into a log
-API = "https://generativelanguage.googleapis.com/v1beta/models"
-GEN = "gemma-4-26b-a4b-it"
-EMB = "gemini-embedding-001"
+from app import llm
+
+EMB = os.environ.get("EMBED_MODEL", "bge-m3")
+GEN = llm.MODEL
 EVAL = Path("/srv/eval")
 CATS = list(ontology.TREE)
 HUMAN = EVAL / "ontology_names.json"
-INVENTED = EVAL / "ontology_names_gemma.json"
+INVENTED = EVAL / "ontology_names_llm.json"
 
 
 async def gen(c, prompt, temperature):
-    r = None
-    for attempt in range(4):
-        try:
-            r = await c.post(f"{API}/{GEN}:generateContent", headers=HDR, timeout=360,
-                             json={"contents": [{"role": "user", "parts": [{"text": prompt}]}],
-                                   "generationConfig": {"temperature": temperature}})
-        except httpx.TimeoutException:
-            continue
-        if r.status_code == 200:
-            parts = r.json()["candidates"][0]["content"]["parts"]
-            return "".join(p.get("text", "") for p in parts if not p.get("thought"))
-        await asyncio.sleep(3 * (attempt + 1))
-    raise RuntimeError(f"gemma gave up: {r.status_code if r else 'timeout'}")
+    return await llm.generate([{"role": "user", "parts": [{"text": prompt}]}], temperature=temperature)
 
 
 def json_in(text):
@@ -71,16 +58,11 @@ async def invent_names(c):
 async def embed(c, texts):
     vecs = []
     for i in range(0, len(texts), 50):
-        body = {"requests": [{"model": f"models/{EMB}", "content": {"parts": [{"text": t}]}, "taskType": "CLASSIFICATION"}
-                             for t in texts[i:i + 50]]}
-        for attempt in range(8):
-            r = await c.post(f"{API}/{EMB}:batchEmbedContents", headers=HDR, json=body)
-            if r.status_code == 200:
-                break
-            await asyncio.sleep(65 if r.status_code == 429 else 5)  # free tier: per-minute quota, wait it out
+        r = await c.post(f"{llm.BASE_URL}/embeddings", headers={"Authorization": f"Bearer {llm.API_KEY}"} if llm.API_KEY else {},
+                         json={"model": EMB, "input": texts[i:i + 50]})
         if r.status_code != 200:
-            raise RuntimeError(f"embedding http {r.status_code}")  # no raise_for_status: it prints the URL
-        vecs += [e["values"] for e in r.json()["embeddings"]]
+            raise RuntimeError(f"embedding http {r.status_code}")
+        vecs += [e["embedding"] for e in sorted(r.json()["data"], key=lambda e: e["index"])]
     m = np.array(vecs, dtype=np.float32)
     return m / np.linalg.norm(m, axis=1, keepdims=True)
 
@@ -97,10 +79,10 @@ async def llm_classify(c, names):
 
 
 async def main():
-    async with httpx.AsyncClient(timeout=120) as c:
+    async with httpx.AsyncClient(timeout=300) as c:
         rows = json.loads(HUMAN.read_text(encoding="utf-8")) if HUMAN.exists() else (
             json.loads(INVENTED.read_text(encoding="utf-8")) if INVENTED.exists() else await invent_names(c))
-        source = "written by a person who has not read ontology.py" if HUMAN.exists() else "invented by Gemma (never saw the keywords)"
+        source = "written by a person who has not read ontology.py" if HUMAN.exists() else f"invented by {GEN} (never saw the keywords)"
         names = [r["vendor"] for r in rows]
         gold = [r["category"] for r in rows]
 
@@ -112,16 +94,16 @@ async def main():
         best = sim.argmax(1)
         emb_cat = [points[j][1] for j in best]
         emb_sim = sim.max(1)
-        llm = await llm_classify(c, names)
+        cls = await llm_classify(c, names)
 
     n = len(rows)
     kw = [ontology.classify(x) for x in names]
     kw_claim = [i for i in range(n) if kw[i]]
     kw_right = sum(kw[i][0] == gold[i] for i in kw_claim)
     emb_right_all = sum(emb_cat[i] == gold[i] for i in range(n))
-    llm_right = sum(llm.get(names[i]) == gold[i] for i in range(n))
+    llm_right = sum(cls.get(names[i]) == gold[i] for i in range(n))
     # the systems as they would run: keyword first, then the fallback for names the keywords don't know
-    sys_now = sum((kw[i][0] if kw[i] else llm.get(names[i])) == gold[i] for i in range(n))
+    sys_now = sum((kw[i][0] if kw[i] else cls.get(names[i])) == gold[i] for i in range(n))
     sys_emb = sum((kw[i][0] if kw[i] else emb_cat[i]) == gold[i] for i in range(n))
     curve = []
     for t in (0.60, 0.65, 0.70, 0.75, 0.80):
@@ -136,14 +118,14 @@ async def main():
              f"| Gemma picks the category | {n}/{n} | {llm_right}/{n} |",
              f"| **keyword → Gemma (what runs now)** | {n}/{n} | **{sys_now}/{n}** |",
              f"| **keyword → embedding** | {n}/{n} | **{sys_emb}/{n}** |", "",
-             f"On the {len(miss)} names the keywords don't know: Gemma {sum(llm.get(names[i]) == gold[i] for i in miss)}/{len(miss)} · "
+             f"On the {len(miss)} names the keywords don't know: Gemma {sum(cls.get(names[i]) == gold[i] for i in miss)}/{len(miss)} · "
              f"embedding {sum(emb_cat[i] == gold[i] for i in miss)}/{len(miss)}", "",
              "Embedding with a similarity threshold (claim only when sure):", "", "| threshold | claimed | correct |", "|---|---|---|",
              *curve, "", "Wrong answers (name: gold | keyword | embedding | gemma):"]
     for i in range(n):
         k = kw[i][0] if kw[i] else "-"
-        if (kw[i] and k != gold[i]) or emb_cat[i] != gold[i] or llm.get(names[i]) != gold[i]:
-            lines.append(f"- {names[i]}: {gold[i]} | {k} | {emb_cat[i]} ({emb_sim[i]:.2f}) | {llm.get(names[i])}")
+        if (kw[i] and k != gold[i]) or emb_cat[i] != gold[i] or cls.get(names[i]) != gold[i]:
+            lines.append(f"- {names[i]}: {gold[i]} | {k} | {emb_cat[i]} ({emb_sim[i]:.2f}) | {cls.get(names[i])}")
     (EVAL / "logs" / "EMBEDDING.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     print("\n".join(lines))
 

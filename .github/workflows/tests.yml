@@ -9,7 +9,7 @@ jobs:
       - name: Fake env (all suites stub the LLM; no real key needed)
         run: |
           cat > .env <<'ENV'
-          GEMINI_API_KEY=ci-dummy-key
+          LLM_API_KEY=
           WEB_PASSWORD=ci
           PUBLIC_BASE_URL=http://localhost:8080
           LINE_CHANNEL_SECRET=

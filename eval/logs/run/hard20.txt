@@ -1,0 +1,24 @@
+
+== gemma4:12b ==
+file                               vendor     date    total      vat category
+01_7eleven.png                          ✓        ✗        ✓        ✗        ✓
+02_coffee.png                           ✓        ✓        ✓        ✓        ✓
+03_tax_invoice.png                      ✓        ✓        ✓        ✓        ✓
+04_restaurant.png                       ✓        ✗        ✓        ✓        ✓
+05_grab.png                             ✓        ✗        ✗        ✓        ✓
+06_taxi_handwritten.png                 ✓        ✗        ✓        ✗        ✓
+07_ptt_fuel.png                         ✓        ✓        ✓        ✓        ✓
+08_hotel.png                            ✓        ✗        ✓        ✗        ✓
+09_pharmacy.png                         ✗        ✗        ✓        ✗        ✓
+10_cash_bill_form.png                   ✓        ✗        ✓        ✓        ✓
+11_lineman.png                          ✓        ✗        ✓        ✓        ✓
+12_parking.png                          ✗        ✗        ✓        ✓        ✓
+13_mookata.png                          ✗        ✗        ✓        ✓        ✗
+14_cafe_amazon.png                      ✓        ✗        ✗        ✗        ✓
+15_online_order.png                     ✓        ✗        ✗        ✗        ✓
+16_tollway.png                          ✓        ✓        ✓        ✓        ✓
+17_bigc.png                             ✓        ✗        ✗        ✗        ✓
+18_it_repair.png                        ✓        ✗        ✓        ✗        ✓
+19_bts.png                              ✓        ✗        ✗        ✓        ✓
+20_japanese_service_charge.png          ✓        ✗        ✓        ✗        ✓
+ACCURACY                             85%      20%      75%      55%      95%    all-5-correct: 4/20

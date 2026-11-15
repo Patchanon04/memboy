@@ -61,20 +61,20 @@ turn log เก็บเฉพาะชื่อ tool/ผลสำเร็จ/i
 | W3.5 รูปคืน/compare/กราฟ/สลิป+QR/undo/Flex/FX/PDF input/หลายใบ/สรุปสัปดาห์ | ✅ โค้ด | สลิป QR verified/mismatch/dup-ref live ผ่าน; cron ผ่าน arq |
 | W3.6 หารบิล/ค้น item/trends/รายงานอัตโนมัติ/ค้นหลวม/หมวด custom | ✅ โค้ด | tools 19 ตัว |
 | W3.7 onboarding + LIFF dashboard | ✅ โค้ด / ⏳ LIFF | /dashboard + /api/dashboard (dev uid mode ผ่าน); เปิดในแอป LINE ต้องมี LINE Login channel + `LIFF_ID` — ยังไม่ได้ทำ (harness X2) |
-| W4 eval A/B/C/D | ✅ **รันแล้ว** | Eval A/D tool-selection 54 เคส: **26B 54/54 (หลังแก้ scorer/เกณฑ์ที่ผิด — ดิบ 44/48), 31B 47/48**; Eval B end-to-end 10 scenario: **9/10** (ตกเคสเตือนงบ → เพิ่ม month_total_so_far ใน save_invoice); Eval C: JSON first-try **98.3%** บน 298 calls, loop-cap 0; extraction 200 ใบ: 95.5% (v3 prompt); **สลิป 30 ใบ 6 layout: 30/30 ทุก field, QR mismatch จับได้ 5/5**; PDF input/FX/บิลหลายใบ probe ผ่าน — รายงานรวม `eval/logs/EVAL_REPORT.md` |
+| W4 eval A/B/C/D | ✅ **รันแล้ว** (Gemma 4 12B) | Eval A/D tool-selection 54 เคส: **46/54**; Eval B end-to-end 11 scenario: **9/11**; Eval C: JSON first-try **96.1%** บน 259 calls; extraction held-out 100 ใบ: **54/100**; **สลิป 30 ใบ 6 layout: 25/30, QR mismatch จับได้ 5/5**; รายงานรวม `eval/logs/EVAL_REPORT.md` |
 | Web UI ทดสอบ (login + แชท + quick reply + ลิงก์ PDF/CSV, agent เดียวกับ LINE) | ✅ | เปิดผ่าน cloudflared ให้ทีมเทสได้ทันทีโดยไม่ต้องรอ LINE |
 | W5 ความเร็วเทิร์นรูป | ✅ live | จาก 53 เทิร์นรูปจริง: call แรกเป็น analyze_receipt 53/53 → route ตรง (`ROUTE_IMAGE`), รับคำตอบ prose หลัง tool (11/53 เคยเสีย retry) → **p50 72 s → 42 s** (2 calls แทน 3) |
 | OCR ablation | ✅ รันแล้ว | 60 ใบ: รูปอย่างเดียว **97%** vs รูป+OCR 96% vs OCR อย่างเดียว 55%; รูปกิน ~460 token, latency มาจาก API ไม่ใช่ input → ไม่ใช้ OCR (`eval/logs/OCR_ABLATION.md`) |
 | ช่อง discount | ✅ | สกัด + เช็คเลข `subtotal - discount + vat = total` (เคสจริง: ส่วนลด 30 เคยถูกเตือนผิด) + แก้ได้ + CSV; migrate ด้วย ALTER IF NOT EXISTS |
 | MCP server | ✅ ทดสอบผ่าน | tools ชุดเดียวกับ agent เปิดให้ client ภายนอก: stdio (`.mcp.json`) + **HTTP `/mcp`** (stateless, bearer `MCP_TOKEN`, `X-MemBoy-User` แยกข้อมูล) — `tests.test_mcp` ผ่านทั้งสอง transport, ทดสอบผ่าน tunnel จริง |
 | Ops บนเครื่อง dev | ✅ | `tunnel_watch.py` เฝ้า quick tunnel + ตั้ง LINE webhook เอง (เช็ค body, 3-strike, เขียน `data/public_base_url` ให้ container อ่านสด); compose `restart: unless-stopped`; สาเหตุ Docker Desktop ดับซ้ำ = socket `dockerInference` ค้าง (README troubleshooting) |
-| **ค้าง** | rotate Gemini key + LINE token ก่อนส่ง (เคยหลุดใน log), **URL ถาวร** (Railway/named tunnel — quick tunnel เปลี่ยน hostname ทุกครั้งที่ restart ทำให้ MCP client ภายนอกต้องแก้ URL), LIFF (LINE Login channel), `git tag v1.0` | — |
+| **ค้าง** | rotate LINE token ก่อนส่ง (เคยหลุดใน log), **URL ถาวร** (Railway/named tunnel — quick tunnel เปลี่ยน hostname ทุกครั้งที่ restart ทำให้ MCP client ภายนอกต้องแก้ URL), LIFF (LINE Login channel), `git tag v1.0` | — |
 
 ## การตัดสินใจที่ปิดแล้ว (พร้อมเหตุผล)
 
 | เรื่อง | ตัดสินใจ | เหตุผล |
 |---|---|---|
-| LLM | **Gemma 4** (ผ่าน Gemini API) — **ล็อก `gemma-4-26b-a4b-it`** (Eval A: 26B 48/48 vs 31B 47/48 + เร็วกว่า/timeout น้อยกว่า) | open source ตามธีมโปรเจกต์; eval 200 ใบ (คละโหด): ถูกครบ 5 field 95.5% หลังจูน prompt v3, 26b เร็วกว่า/timeout น้อยกว่า/แม่นเท่า 31b; free tier |
+| LLM | **Gemma 4 12B** (`gemma4:12b`) บน Ollama ในเครื่อง ผ่าน OpenAI-standard `/v1/chat/completions` | open source ตามธีมโปรเจกต์; ข้อมูลไม่ออกนอกเครื่อง ไม่มี rate limit; held-out 54/100, ถามยอด 20/20 faithfulness 1.00 |
 | Tool calling | **ทำเองผ่าน prompt** — Gemma ไม่มี native function calling: system prompt นิยาม tools + สั่งตอบ `{"tool": ..., "args": ...}` → parse → execute → ยัดผลกลับ → วน | จุดขายกับอาจารย์: agentic ทั้งระบบเขียนเองจริง ไม่พึ่ง FC ของ platform; eval ยืนยันแล้วว่า Gemma ตาม JSON format ได้ดี |
 | Agent loop | เขียนเอง (while + parse + dispatch) | เกณฑ์คะแนน Implementation |
 | DB | PostgreSQL + SQLAlchemy | JSONB เก็บ items, query สรุปยอด |
@@ -100,7 +100,7 @@ LINE OA ── webhook ──> FastAPI ──> agent loop (Gemma 4 + JSON tool c
 memboy/
 ├── docker-compose.yml          # app + postgres, volume ./data:/data
 ├── Dockerfile                  # python:3.11-slim + weasyprint deps + ฟอนต์ Sarabun
-├── .env.example                # LINE_CHANNEL_SECRET/TOKEN, GEMINI_API_KEY, DATABASE_URL
+├── .env.example                # LINE_CHANNEL_SECRET/TOKEN, LLM_BASE_URL/LLM_MODEL, DATABASE_URL
 ├── app/
 │   ├── main.py                 # FastAPI: /webhook, /files/{id}.pdf, /health
 │   ├── agent.py                # agent loop: history + parse JSON tool call + dispatch (เขียนเอง)
@@ -181,7 +181,7 @@ categories    (id, user_id FK, name UNIQUE per user)              -- หมว�
 - `chat_cli.py` ก่อน แล้วค่อยต่อ webhook
 - loop: history → Gemma → parse JSON tool call → dispatch → ยัด result กลับ → วนจนได้ text ตอบ; ทุก event เข้า loop ทางเดียว (ไม่มี if image แยก)
 - กัน format หลุด: validate JSON ด้วย pydantic; parse ไม่ผ่าน → ส่ง error กลับให้โมเดลแก้เอง (สูงสุด 2 ครั้ง) แล้วค่อย fallback เป็นตอบ text; กรอง thought parts ออกก่อน parse
-- **Eval A: tool-selection benchmark (~40 เคส)** — เคส = ข้อความ+context → tool+args ที่คาดหวัง, รันผ่าน chat_cli แบบ batch, เทียบอัตโนมัติ → ใช้ตัดสิน 26b-a4b vs 31b อย่างเป็นทางการ แล้วล็อกตัว default (เคสสร้างครั้งเดียว ใช้เป็น regression ทุกครั้งที่แก้ prompt)
+- **Eval A: tool-selection benchmark (~40 เคส)** — เคส = ข้อความ+context → tool+args ที่คาดหวัง, รันผ่าน chat_cli แบบ batch, เทียบอัตโนมัติ → ใช้วัดทุกครั้งที่เปลี่ยนโมเดล (เคสสร้างครั้งเดียว ใช้เป็น regression ทุกครั้งที่แก้ prompt)
 - tools 1,2,3,7 + confirm flow (draft → ยืนยัน → confirmed)
 - ✅ จบเมื่อ: ใน CLI ส่งรูป → agent วิเคราะห์ → ถามยืนยัน → "บันทึกเลย" → อยู่ใน DB; รูปแมว → agent ปฏิเสธเอง
 
@@ -241,7 +241,7 @@ categories    (id, user_id FK, name UNIQUE per user)              -- หมว�
 6. **Error ไม่รั่วถึง user** — exception ใน tool → log เต็ม + ตอบ user สั้นๆ สุภาพ ไม่โชว์ stack trace/SQL
 7. **Rate limit ต่อ user** ✅ — เกิน 10 เทิร์น/นาที → ตอบ "รอสักครู่" โดยไม่เรียก LLM (events.rate_limited) — บังคับทั้งทาง LINE และหน้าเว็บ (probe จริง: 10 ผ่าน / 11-12 ได้ 429)
 8. **Resize รูปก่อนส่ง LLM** ✅ — ย่อ ≤1280px JPEG ตอนรับจาก LINE (events.shrink)
-9. **เพดานเวลาต่อเทิร์น + fallback โมเดล** ✅ — LLM timeout 70s แล้วลองอีกโมเดล (26b↔31b); ทั้งเทิร์นไม่เกิน 150s; LLM ล่ม/หมดเวลา → user ได้ข้อความบอกตรงๆ; job ตายหลัง retry 3 → push แจ้ง user ให้ส่งใหม่
+9. **เพดานเวลาต่อเทิร์น + fallback โมเดล** ✅ — LLM timeout ตาม `LLM_TIMEOUT_S` แล้วลองโมเดลถัดไปใน `LLM_FALLBACK`; ทั้งเทิร์นไม่เกิน 150s; LLM ล่ม/หมดเวลา → user ได้ข้อความบอกตรงๆ; job ตายหลัง retry 3 → push แจ้ง user ให้ส่งใหม่
 
 **Determinism (ของฟรีถ้าทำแต่แรก)**
 1. **`temperature: 0`** ทุก call — ทั้งสกัดบิลและเลือก tool ให้ผลซ้ำได้ ใกล้ deterministic ที่สุดที่ LLM ให้ได้
@@ -261,12 +261,12 @@ categories    (id, user_id FK, name UNIQUE per user)              -- หมว�
 |---|---|
 | WeasyPrint + ฟอนต์ไทยใน docker | ทำ W1 วันแรก ไม่ใช่ W3 |
 | iterate ผ่าน LINE ช้า | dev ใน chat_cli.py, LINE เป็นแค่ transport |
-| Gemini API 503/429 | retry 2-3 ครั้ง (โค้ดมีแล้วใน prototype) |
+| LLM server 429/5xx | retry 2-3 ครั้ง (โค้ดมีแล้วใน prototype) |
 | Gemma หลุด JSON format ใน tool call | validate + ให้โมเดลแก้เอง 2 รอบ; ถ้าอัตราหลุดสูงจนใช้ไม่ได้ (วัดใน W2) ค่อยพิจารณาเปลี่ยนโมเดล — รู้เร็วตั้งแต่สัปดาห์ 2 ไม่ใช่กลางเทอม |
 | Gemma thought parts ปนใน output | กรอง `thought: true` ออกก่อน parse (โค้ดมีแล้ว) |
 | วันที่ปี 2 หลัก | ปิดแล้ว — กติกา v3 พิสูจน์บน 200 ใบ (date 96%, พลาดที่เหลือคือภาพเบลอซึ่ง confirm flow ดักไว้) |
 | agent บันทึกซ้ำ/มั่ว | บังคับที่ tool (draft state ใน DB) ไม่พึ่ง prompt |
-| free tier rate limit / โมเดลล่มตอน demo | สลับ 26b↔31b ได้ทันที (ทั้งคู่คือ Gemma 4, prompt เดียวกัน); เติม billing ขั้นต่ำกันเหนียว; และมี video demo สำรองอยู่แล้ว |
+| โมเดลล่มตอน demo | รันในเครื่อง ไม่มี rate limit; ตั้ง `LLM_FALLBACK` ได้; มี video demo สำรองอยู่แล้ว |
 | Docker Desktop + VPN/WARP: POST ใหญ่ (รูป base64) ค้าง/timeout จาก container ทั้งที่ host ปกติ | ตั้ง MTU 1400 ที่ compose network (แก้แล้ว — เจอจริงตอน probe, อาการคือ ReadTimeout เฉพาะ call ที่มีรูป) |
 | frankfurter.app ล่ม/ไม่มีสกุลนั้น | cache rate ที่เคยดึงลง DB; ไม่ได้จริงๆ เก็บบิลเป็นสกุลเดิม + ติด flag ให้ user ใส่ rate เอง |
 | บิลหลายใบ → confirm กำกวม | draft มี id สั้น (#1 #2 #3) ให้ user อ้างถึงรายใบ; "บันทึกทั้งหมด" ต้องผ่าน check_duplicate รายใบ |
@@ -295,6 +295,6 @@ categories    (id, user_id FK, name UNIQUE per user)              -- หมว�
 
 ## ของที่มีอยู่แล้ว (จาก chat-test) เอาไปใช้ต่อ
 
-- `receipts/` 20 + `receipts_hard/` 20 + `dataset/` 200 (TH/EN, png/jpg/pdf, 3 ระดับความยาก) + labels + `make_receipts.py`/`make_hard.py`/`make_dataset.py`/`eval_receipts.py` + ผล eval 3 เวอร์ชัน (`eval_results_baseline/v2/v3.json`) → ย้ายเข้า `eval/`
-- โค้ด retry Gemini, การกรอง thought parts, resize รูปก่อนส่ง
+- `receipts/` 20 + `receipts_hard/` 20 + `dataset/` 200 (TH/EN, png/jpg/pdf, 3 ระดับความยาก) + labels + `make_receipts.py`/`make_hard.py`/`make_dataset.py`/`eval_receipts.py` → ย้ายเข้า `eval/`
+- โค้ด retry LLM, การกรอง thought parts, resize รูปก่อนส่ง
 - ความรู้: LINE ส่ง PDF ตรงไม่ได้, reply token สั้น, claude.CMD/newline บน Windows

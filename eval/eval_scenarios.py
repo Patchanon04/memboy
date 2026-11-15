@@ -32,7 +32,7 @@ SCENARIOS = [
     {"name": "จำงบ + เตือนเมื่อเกิน", "turns": ["จำไว้ว่างบเดือนนี้ 100 บาท", ("img", f"{R}/02_coffee.png"), "ยืนยัน"],
      "check": {"notes": 1, "confirmed": 1, "last_reply_mentions_budget": True}},
     {"name": "ติ๊กเบิกแล้ว + รายงานเฉพาะยังไม่เบิก", "turns": [("img", f"{R}/02_coffee.png"), "ยืนยัน", ("img", f"{R}/05_grab.png"), "ยืนยัน",
-                                                    "บิลกาแฟเบิกแล้ว", "ขอ PDF เฉพาะที่ยังไม่ได้เบิก"],
+                                                    "บิลกาแฟเบิกแล้ว", "ยืนยัน", "ขอ PDF เฉพาะที่ยังไม่ได้เบิก"],
      "check": {"reimbursed": 1, "files": 1}},
     {"name": "สองใบ ยืนยันครั้งเดียว → ต้องไม่มีใบค้าง", "turns": [("img", f"{R}/02_coffee.png"), ("img", f"{R}/05_grab.png"), "ยืนยัน บันทึกเลย"],
      "check": {"confirmed": 2, "drafts": 0, "total_sum": 384.0}},

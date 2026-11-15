@@ -1,361 +1,20 @@
 {
- "gemma-4-31b-it": [
-  {
-   "file": "01_7eleven.png",
-   "pred": {
-    "vendor": "7-Eleven",
-    "date": "2023-08-23",
-    "total": 84.0,
-    "vat": 5.5,
-    "category": "อาหาร"
-   },
-   "ok": {
-    "vendor": true,
-    "date": false,
-    "total": true,
-    "vat": true,
-    "category": true
-   }
-  },
-  {
-   "file": "02_coffee.png",
-   "pred": {
-    "vendor": "Bean There Café",
-    "date": "2026-08-22",
-    "total": 300.0,
-    "vat": 19.63,
-    "category": "อาหาร"
-   },
-   "ok": {
-    "vendor": true,
-    "date": true,
-    "total": true,
-    "vat": true,
-    "category": true
-   }
-  },
-  {
-   "file": "03_tax_invoice.png",
-   "pred": {
-    "vendor": "บริษัท เทคโนไอที โซลูชั่น จำกัด",
-    "date": "2026-08-15",
-    "total": 16199.8,
-    "vat": 1059.8,
-    "category": "อุปกรณ์"
-   },
-   "ok": {
-    "vendor": true,
-    "date": true,
-    "total": true,
-    "vat": true,
-    "category": true
-   }
-  },
-  {
-   "file": "04_restaurant.png",
-   "pred": {
-    "vendor": "ครัวคุณยาย",
-    "date": "2026-08-20",
-    "total": 470.0,
-    "vat": 0,
-    "category": "อาหาร"
-   },
-   "ok": {
-    "vendor": true,
-    "date": true,
-    "total": true,
-    "vat": true,
-    "category": true
-   }
-  },
-  {
-   "file": "05_grab.png",
-   "pred": {
-    "vendor": "Grab",
-    "date": "2025-08-19",
-    "total": 84.0,
-    "vat": 0,
-    "category": "เดินทาง"
-   },
-   "ok": {
-    "vendor": true,
-    "date": false,
-    "total": true,
-    "vat": true,
-    "category": true
-   }
-  },
-  {
-   "file": "06_taxi_handwritten.png",
-   "pred": {
-    "vendor": "สมชาย",
-    "date": "2023-08-18",
-    "total": 425,
-    "vat": 0,
-    "category": "เดินทาง"
-   },
-   "ok": {
-    "vendor": false,
-    "date": false,
-    "total": true,
-    "vat": true,
-    "category": true
-   }
-  },
-  {
-   "file": "07_ptt_fuel.png",
-   "pred": {
-    "vendor": "PTT Station",
-    "date": "2026-08-17",
-    "total": 1200.0,
-    "vat": 78.5,
-    "category": "เดินทาง"
-   },
-   "ok": {
-    "vendor": true,
-    "date": true,
-    "total": true,
-    "vat": true,
-    "category": true
-   }
-  },
-  {
-   "file": "08_hotel.png",
-   "pred": {
-    "vendor": "The Riverside Hotel Chiang Mai",
-    "date": "2026-08-12",
-    "total": 4354.9,
-    "vat": 284.9,
-    "category": "ที่พัก"
-   },
-   "ok": {
-    "vendor": true,
-    "date": true,
-    "total": true,
-    "vat": true,
-    "category": true
-   }
-  },
-  {
-   "file": "09_pharmacy.png",
-   "pred": {
-    "vendor": "ร้านยาเกศธรใจดี",
-    "date": "2022-08-24",
-    "total": 223.0,
-    "vat": 14.3,
-    "category": "สุขภาพ"
-   },
-   "ok": {
-    "vendor": true,
-    "date": false,
-    "total": true,
-    "vat": false,
-    "category": true
-   }
-  },
-  {
-   "file": "10_cash_bill_form.png",
-   "pred": {
-    "vendor": "ร้านเครื่องเขียนสมบูรณ์",
-    "date": "2023-08-14",
-    "total": 1125,
-    "vat": 0,
-    "category": "อุปกรณ์"
-   },
-   "ok": {
-    "vendor": true,
-    "date": false,
-    "total": true,
-    "vat": true,
-    "category": true
-   }
-  },
-  {
-   "file": "11_lineman.png",
-   "pred": {
-    "vendor": "ข้าวมันไก่เจ๊หมวย (ซอยลาดกระบัง 46)",
-    "date": "2026-08-13",
-    "total": 210.0,
-    "vat": 0,
-    "category": "อาหาร"
-   },
-   "ok": {
-    "vendor": true,
-    "date": true,
-    "total": true,
-    "vat": true,
-    "category": true
-   }
-  },
-  {
-   "file": "12_parking.png",
-   "pred": {
-    "vendor": "ลานจอดรถ เซ็นทรัล",
-    "date": "2023-08-12",
-    "total": 40.0,
-    "vat": 0,
-    "category": "เดินทาง"
-   },
-   "ok": {
-    "vendor": true,
-    "date": false,
-    "total": true,
-    "vat": true,
-    "category": true
-   }
-  },
-  {
-   "file": "13_mookata.png",
-   "pred": {
-    "vendor": "หมูกระทะ ฉุยเพ็ญ นุพัทธ์",
-    "date": "2022-08-22",
-    "total": 1313.0,
-    "vat": 0,
-    "category": "อาหาร"
-   },
-   "ok": {
-    "vendor": false,
-    "date": false,
-    "total": true,
-    "vat": true,
-    "category": true
-   }
-  },
-  {
-   "file": "14_cafe_amazon.png",
-   "pred": {
-    "vendor": "Café Amazon",
-    "date": "2020-08-10",
-    "total": 185.0,
-    "vat": 12.1,
-    "category": "อาหาร"
-   },
-   "ok": {
-    "vendor": true,
-    "date": false,
-    "total": true,
-    "vat": true,
-    "category": true
-   }
-  },
-  {
-   "file": "15_online_order.png",
-   "pred": {
-    "vendor": "Lazada",
-    "date": "2020-08-09",
-    "total": 3894.8,
-    "vat": 254.8,
-    "category": "อุปกรณ์"
-   },
-   "ok": {
-    "vendor": true,
-    "date": false,
-    "total": true,
-    "vat": true,
-    "category": true
-   }
-  },
-  {
-   "file": "16_tollway.png",
-   "pred": {
-    "vendor": "การทางพิเศษแห่งประเทศไทย",
-    "date": "2026-08-08",
-    "total": 50.0,
-    "vat": 0,
-    "category": "เดินทาง"
-   },
-   "ok": {
-    "vendor": false,
-    "date": true,
-    "total": true,
-    "vat": true,
-    "category": true
-   }
-  },
-  {
-   "file": "17_bigc.png",
-   "pred": {
-    "vendor": "Big C",
-    "date": "2020-08-07",
-    "total": 1166.0,
-    "vat": 76.28,
-    "category": "อาหาร"
-   },
-   "ok": {
-    "vendor": true,
-    "date": false,
-    "total": true,
-    "vat": true,
-    "category": false
-   }
-  },
-  {
-   "file": "18_it_repair.png",
-   "pred": {
-    "vendor": "QUICKFIX COMPUTER SERVICE",
-    "date": "2026-08-06",
-    "total": 2557.3,
-    "vat": 167.3,
-    "category": "อุปกรณ์"
-   },
-   "ok": {
-    "vendor": true,
-    "date": true,
-    "total": true,
-    "vat": true,
-    "category": true
-   }
-  },
-  {
-   "file": "19_bts.png",
-   "pred": {
-    "vendor": "BTS SkyTrain",
-    "date": "2023-08-05",
-    "total": 300.0,
-    "vat": 0,
-    "category": "เดินทาง"
-   },
-   "ok": {
-    "vendor": true,
-    "date": false,
-    "total": true,
-    "vat": true,
-    "category": true
-   }
-  },
-  {
-   "file": "20_japanese_service_charge.png",
-   "pred": {
-    "vendor": "SUSHI-YA",
-    "date": "2026-08-04",
-    "total": 1506.56,
-    "vat": 98.56,
-    "category": "อาหาร"
-   },
-   "ok": {
-    "vendor": true,
-    "date": true,
-    "total": true,
-    "vat": true,
-    "category": true
-   }
-  }
- ],
- "gemma-4-26b-a4b-it": [
+ "gemma4:12b": [
   {
    "file": "01_7eleven.png",
    "pred": {
     "vendor": "7-ELEVEN",
-    "date": "2023-08-26",
+    "date_raw": "23/09/2565",
     "total": 84.0,
-    "vat": 5.5,
-    "category": "อาหาร"
+    "vat": 0,
+    "category": "อาหาร",
+    "date": "2022-09-23"
    },
    "ok": {
     "vendor": true,
     "date": false,
     "total": true,
-    "vat": true,
+    "vat": false,
     "category": true
    }
   },
@@ -363,10 +22,11 @@
    "file": "02_coffee.png",
    "pred": {
     "vendor": "Bean There Café",
-    "date": "2026-08-22",
+    "date_raw": "22 Aug 2026",
     "total": 300.0,
     "vat": 19.63,
-    "category": "อาหาร"
+    "category": "อาหาร",
+    "date": "2026-08-22"
    },
    "ok": {
     "vendor": true,
@@ -379,11 +39,12 @@
   {
    "file": "03_tax_invoice.png",
    "pred": {
-    "vendor": "บริษัท เทคโนไอที โซลูชั่น จำกัด",
-    "date": "2026-08-15",
+    "vendor": "บริษัท เทคโนโลยี โซลูชั่น จำกัด",
+    "date_raw": "15/08/2026",
     "total": 16199.8,
     "vat": 1059.8,
-    "category": "อุปกรณ์"
+    "category": "อุปกรณ์",
+    "date": "2026-08-15"
    },
    "ok": {
     "vendor": true,
@@ -397,14 +58,15 @@
    "file": "04_restaurant.png",
    "pred": {
     "vendor": "ครัวคุณยาย",
-    "date": "2026-08-20",
+    "date_raw": "20/2/2569 19:25",
     "total": 470.0,
     "vat": 0,
-    "category": "อาหาร"
+    "category": "อาหาร",
+    "date": "2026-02-20"
    },
    "ok": {
     "vendor": true,
-    "date": true,
+    "date": false,
     "total": true,
     "vat": true,
     "category": true
@@ -414,15 +76,16 @@
    "file": "05_grab.png",
    "pred": {
     "vendor": "Grab",
-    "date": "2026-08-19",
-    "total": 84.0,
+    "date_raw": "19 ธ.ค. 2020",
+    "total": 89.0,
     "vat": 0,
-    "category": "เดินทาง"
+    "category": "เดินทาง",
+    "date": "2020-12-19"
    },
    "ok": {
     "vendor": true,
-    "date": true,
-    "total": true,
+    "date": false,
+    "total": false,
     "vat": true,
     "category": true
    }
@@ -430,17 +93,18 @@
   {
    "file": "06_taxi_handwritten.png",
    "pred": {
-    "vendor": null,
-    "date": "2026-08-18",
+    "vendor": "บิลเงินสด",
+    "date_raw": "18/8/09",
     "total": 425,
-    "vat": 0,
-    "category": "เดินทาง"
+    "vat": 76,
+    "category": "เดินทาง",
+    "date": "2009-08-18"
    },
    "ok": {
-    "vendor": false,
-    "date": true,
+    "vendor": true,
+    "date": false,
     "total": true,
-    "vat": true,
+    "vat": false,
     "category": true
    }
   },
@@ -448,10 +112,11 @@
    "file": "07_ptt_fuel.png",
    "pred": {
     "vendor": "PTT Station",
-    "date": "2026-08-17",
+    "date_raw": "17/08/2026",
     "total": 1200.0,
     "vat": 78.5,
-    "category": "เดินทาง"
+    "category": "เดินทาง",
+    "date": "2026-08-17"
    },
    "ok": {
     "vendor": true,
@@ -465,27 +130,11 @@
    "file": "08_hotel.png",
    "pred": {
     "vendor": "The Riverside Hotel Chiang Mai",
-    "date": "2026-08-12",
+    "date_raw": "13 Aug 2016",
     "total": 4354.9,
-    "vat": 284.9,
-    "category": "ที่พัก"
-   },
-   "ok": {
-    "vendor": true,
-    "date": true,
-    "total": true,
-    "vat": true,
-    "category": true
-   }
-  },
-  {
-   "file": "09_pharmacy.png",
-   "pred": {
-    "vendor": "ร้านยาเภสัชกรใจดี",
-    "date": "2024-06-24",
-    "total": 223.0,
-    "vat": 14.35,
-    "category": "สุขภาพ"
+    "vat": 304.0,
+    "category": "ที่พัก",
+    "date": "2016-08-13"
    },
    "ok": {
     "vendor": true,
@@ -496,17 +145,36 @@
    }
   },
   {
+   "file": "09_pharmacy.png",
+   "pred": {
+    "vendor": "ร้านขายยา",
+    "date_raw": "24/08/2566",
+    "total": 223.0,
+    "vat": 0,
+    "category": "สุขภาพ",
+    "date": "2023-08-24"
+   },
+   "ok": {
+    "vendor": false,
+    "date": false,
+    "total": true,
+    "vat": false,
+    "category": true
+   }
+  },
+  {
    "file": "10_cash_bill_form.png",
    "pred": {
-    "vendor": "ร้านเครื่องเขียนตงมูรณ์",
-    "date": "2026-08-14",
-    "total": 1125,
+    "vendor": "ร้านเครื่องเขียนเบญจมิตร",
+    "date_raw": "14/8/2566",
+    "total": 1125.0,
     "vat": 0,
-    "category": "อุปกรณ์"
+    "category": "อุปกรณ์",
+    "date": "2023-08-14"
    },
    "ok": {
     "vendor": true,
-    "date": true,
+    "date": false,
     "total": true,
     "vat": true,
     "category": true
@@ -515,15 +183,16 @@
   {
    "file": "11_lineman.png",
    "pred": {
-    "vendor": "ข้าวมันไก่เจ้หมวย (ซอยลาดกระบัง 46)",
-    "date": "2026-08-13",
+    "vendor": "LINE MAN",
+    "date_raw": "13 ม.ค. 2026 12:08",
     "total": 210.0,
     "vat": 0,
-    "category": "อาหาร"
+    "category": "อาหาร",
+    "date": "2026-01-13"
    },
    "ok": {
-    "vendor": false,
-    "date": true,
+    "vendor": true,
+    "date": false,
     "total": true,
     "vat": true,
     "category": true
@@ -532,15 +201,16 @@
   {
    "file": "12_parking.png",
    "pred": {
-    "vendor": "เซ็นทรัล",
-    "date": "2026-08-12",
+    "vendor": "หมออดครู เซ็นเตอร์",
+    "date_raw": "12/06/24",
     "total": 40.0,
     "vat": 0,
-    "category": "เดินทาง"
+    "category": "เดินทาง",
+    "date": "2024-06-12"
    },
    "ok": {
-    "vendor": true,
-    "date": true,
+    "vendor": false,
+    "date": false,
     "total": true,
     "vat": true,
     "category": true
@@ -549,34 +219,36 @@
   {
    "file": "13_mookata.png",
    "pred": {
-    "vendor": "หมูกระทะ บุฟเฟต์",
-    "date": "2020-06-21",
+    "vendor": "ห้างสรรพสินค้า เซ็นทรัล ช้อปปิ้ง เซ็นเตอร์",
+    "date_raw": "12/05/66 09:22",
     "total": 1313.0,
     "vat": 0,
-    "category": "อาหาร"
+    "category": "อุปกรณ์",
+    "date": "2023-05-12"
    },
    "ok": {
-    "vendor": true,
+    "vendor": false,
     "date": false,
     "total": true,
     "vat": true,
-    "category": true
+    "category": false
    }
   },
   {
    "file": "14_cafe_amazon.png",
    "pred": {
     "vendor": "Café Amazon",
-    "date": "2026-08-10",
-    "total": 185.0,
-    "vat": 12.1,
-    "category": "อาหาร"
+    "date_raw": "10/09/2016",
+    "total": 105.0,
+    "vat": 12.0,
+    "category": "อาหาร",
+    "date": "2016-09-10"
    },
    "ok": {
     "vendor": true,
-    "date": true,
-    "total": true,
-    "vat": true,
+    "date": false,
+    "total": false,
+    "vat": false,
     "category": true
    }
   },
@@ -584,30 +256,32 @@
    "file": "15_online_order.png",
    "pred": {
     "vendor": "Lazada",
-    "date": "2020-06-09",
-    "total": 3894.8,
-    "vat": 254.8,
-    "category": "อุปกรณ์"
+    "date_raw": "10 พ.ค. 2566",
+    "total": 3094.0,
+    "vat": 254.0,
+    "category": "อุปกรณ์",
+    "date": "2023-05-10"
    },
    "ok": {
     "vendor": true,
     "date": false,
-    "total": true,
-    "vat": true,
+    "total": false,
+    "vat": false,
     "category": true
    }
   },
   {
    "file": "16_tollway.png",
    "pred": {
-    "vendor": "การทางพิเศษแห่งประเทศไทย",
-    "date": "2026-08-08",
+    "vendor": "การทางพิเศษฯ",
+    "date_raw": "08/08/2026",
     "total": 50.0,
     "vat": 0,
-    "category": "เดินทาง"
+    "category": "เดินทาง",
+    "date": "2026-08-08"
    },
    "ok": {
-    "vendor": false,
+    "vendor": true,
     "date": true,
     "total": true,
     "vat": true,
@@ -618,33 +292,35 @@
    "file": "17_bigc.png",
    "pred": {
     "vendor": "Big C",
-    "date": "2020-08-07",
-    "total": 1166.0,
-    "vat": 76.28,
-    "category": "อาหาร"
+    "date_raw": "07/08/2018",
+    "total": 166.0,
+    "vat": 0,
+    "category": "ของใช้",
+    "date": "2018-08-07"
    },
    "ok": {
     "vendor": true,
     "date": false,
-    "total": true,
-    "vat": true,
-    "category": false
+    "total": false,
+    "vat": false,
+    "category": true
    }
   },
   {
    "file": "18_it_repair.png",
    "pred": {
     "vendor": "QUICKFIX COMPUTER SERVICE",
-    "date": "2026-08-06",
+    "date_raw": "06/08/2020",
     "total": 2557.3,
-    "vat": 167.3,
-    "category": "อุปกรณ์"
+    "vat": 147.3,
+    "category": "อุปกรณ์",
+    "date": "2020-08-06"
    },
    "ok": {
     "vendor": true,
-    "date": true,
+    "date": false,
     "total": true,
-    "vat": true,
+    "vat": false,
     "category": true
    }
   },
@@ -652,15 +328,16 @@
    "file": "19_bts.png",
    "pred": {
     "vendor": "BTS SkyTrain",
-    "date": "2026-08-05",
-    "total": 300.0,
+    "date_raw": "05/08/2019",
+    "total": 100.0,
     "vat": 0,
-    "category": "เดินทาง"
+    "category": "เดินทาง",
+    "date": "2019-08-05"
    },
    "ok": {
     "vendor": true,
-    "date": true,
-    "total": true,
+    "date": false,
+    "total": false,
     "vat": true,
     "category": true
    }
@@ -669,16 +346,17 @@
    "file": "20_japanese_service_charge.png",
    "pred": {
     "vendor": "SUSHI-YA",
-    "date": "2026-08-04",
+    "date_raw": "04/06/2015",
     "total": 1506.56,
-    "vat": 98.56,
-    "category": "อาหาร"
+    "vat": 140.0,
+    "category": "อาหาร",
+    "date": "2015-06-04"
    },
    "ok": {
     "vendor": true,
-    "date": true,
+    "date": false,
     "total": true,
-    "vat": true,
+    "vat": false,
     "category": true
    }
   }

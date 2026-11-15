@@ -1,10 +1,11 @@
 """Ablation: does OCR-before-LLM help speed or accuracy?  A image-only (prod) · B image+OCR text · C OCR text only.
-Same prompt/scoring as eval_receipts.py; all three conditions run back-to-back per file so API drift hits them equally.
+Same prompt/scoring as eval_receipts.py; all three conditions run back-to-back per file so load drift hits them equally.
 Run inside the app container (needs tesseract tha+eng):  EVAL_DIR=dataset python -m eval.eval_ocr_ablation [model] [N]
 """
 import asyncio
 import base64
 import json
+import re
 import os
 import statistics
 import subprocess
@@ -13,13 +14,11 @@ import tempfile
 import time
 from pathlib import Path
 
-import httpx
+from app import llm, tools
+from eval.eval_receipts import DIR, LABELS, PROMPT, score, to_image
 
-from eval.eval_receipts import DIR, KEY, LABELS, PROMPT, score, to_image
-
-MODEL = sys.argv[1] if len(sys.argv) > 1 else "gemma-4-26b-a4b-it"
+MODEL = sys.argv[1] if len(sys.argv) > 1 and sys.argv[1] else llm.MODEL
 N = int(sys.argv[2]) if len(sys.argv) > 2 else len(LABELS)
-URL = f"https://generativelanguage.googleapis.com/v1beta/models/{MODEL}:generateContent"
 COND = ("image", "image+ocr", "ocr")
 
 
@@ -48,43 +47,39 @@ def parts(cond, data, mime, text):
     return p
 
 
-async def call(client, body):
+async def call(contents):
     """Returns (pred, seconds, prompt_tokens, attempts)."""
-    from eval.eval_receipts import re
     t = time.perf_counter()
-    for attempt in range(4):
-        try:
-            r = await client.post(URL, params={"key": KEY}, json=body)
-        except httpx.HTTPError:  # timeouts AND "server disconnected" — the API drops connections under load
-            await asyncio.sleep(3 * (attempt + 1))
-            continue
-        if r.status_code in (429, 500, 502, 503, 504) and attempt < 3:
-            await asyncio.sleep(3 * (attempt + 1))
-            continue
-        if r.status_code != 200:
-            return {"_raw": f"http {r.status_code}"}, time.perf_counter() - t, 0, attempt + 1
-        j = r.json()
-        text = "".join(p.get("text", "") for p in j["candidates"][0]["content"]["parts"] if not p.get("thought"))
-        m = re.search(r"\{.*\}", text, re.S)
-        try:
-            pred = json.loads(m.group(0)) if m else {"_raw": text}
-        except json.JSONDecodeError:
-            pred = {"_raw": text}
-        return pred, time.perf_counter() - t, j.get("usageMetadata", {}).get("promptTokenCount", 0), attempt + 1
-    return {"_raw": "gave up"}, time.perf_counter() - t, 0, 4
+    acc = {"calls": 0, "llm_s": 0.0, "in_tok": 0, "out_tok": 0, "models": []}
+    tok = llm.USAGE.set(acc)
+    try:
+        text = await llm.generate(contents, model=MODEL)
+    except llm.LLMError as e:
+        return {"_raw": f"error {e}"}, time.perf_counter() - t, 0, 1
+    finally:
+        llm.USAGE.reset(tok)
+    m = re.search(r"\{.*\}", text, re.S)
+    try:
+        pred = json.loads(m.group(0)) if m else {"_raw": text}
+    except json.JSONDecodeError:
+        pred = {"_raw": text}
+    if "date_raw" in pred:  # same as the app: the model copies the date, code converts the year
+        pred["date"] = tools.thai_date(pred["date_raw"]) or pred.get("date")
+    return pred, time.perf_counter() - t, acc["in_tok"], 1
 
 
-PARTIAL = DIR / f"ocr_ablation_{MODEL}.partial.jsonl"
+SAFE = MODEL.replace(":", "-")
+PARTIAL = DIR / f"ocr_ablation_{SAFE}.partial.jsonl"
 
 
-async def one(client, sem, lab):
+async def one(sem, lab):
     async with sem:
         path = DIR / lab["file"]
         data, mime = await asyncio.to_thread(to_image, path)
         text, ocr_s = await asyncio.to_thread(ocr, data, mime)
         row = {"file": lab["file"], "ocr_s": round(ocr_s, 2), "ocr_chars": len(text)}
         for c in COND:
-            pred, s, ptok, att = await call(client, {"contents": [{"parts": parts(c, data, mime, text)}]})
+            pred, s, ptok, att = await call([{"role": "user", "parts": parts(c, data, mime, text)}])
             row[c] = {"ok": score(pred, lab), "llm_s": round(s, 2), "prompt_tok": ptok, "attempts": att, "pred": pred}
         print(f"{lab['file']:22} ocr {ocr_s:4.1f}s/{len(text):4}ch  " +
               "  ".join(f"{c}: {sum(row[c]['ok'].values())}/5 {row[c]['llm_s']:5.1f}s {row[c]['prompt_tok']:5}tok" for c in COND), flush=True)
@@ -108,11 +103,10 @@ async def main():
                 done[r["file"]] = r
     todo = [l for l in labs if l["file"] not in done]
     print(f"{len(done)} files already done, {len(todo)} to go", flush=True)
-    sem = asyncio.Semaphore(3)
-    async with httpx.AsyncClient(timeout=240) as client:
-        fresh = await asyncio.gather(*(one(client, sem, l) for l in todo))
+    sem = asyncio.Semaphore(1)  # one local GPU
+    fresh = await asyncio.gather(*(one(sem, l) for l in todo))
     rows = [done.get(l["file"]) or next(r for r in fresh if r["file"] == l["file"]) for l in labs]
-    out = DIR / f"ocr_ablation_{MODEL}.json"
+    out = DIR / f"ocr_ablation_{SAFE}.json"
     out.write_text(json.dumps(rows, ensure_ascii=False, indent=1), encoding="utf-8")
 
     fields = list(rows[0]["image"]["ok"])

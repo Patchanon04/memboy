@@ -1,0 +1,34 @@
+
+== gemma4:12b ==
+file                               vendor     date    total      vat category
+001_th_handwritten.jpg                  ✓        ✓        ✓        ✓        ✓
+002_th_handwritten.jpg                  ✓        ✓        ✓        ✓        ✓
+003_th_handwritten.jpg                  ✓        ✓        ✓        ✓        ✓
+004_th_handwritten.jpg                  ✓        ✓        ✓        ✓        ✓
+005_th_handwritten.jpg                  ✓        ✓        ✓        ✓        ✓
+006_th_handwritten.jpg                  ✓        ✓        ✓        ✓        ✓
+007_th_handwritten.jpg                  ✓        ✓        ✓        ✓        ✓
+008_th_handwritten.jpg                  ✓        ✓        ✓        ✓        ✓
+009_th_handwritten.jpg                  ✓        ✓        ✓        ✓        ✓
+010_th_handwritten.jpg                  ✓        ✓        ✓        ✓        ✓
+011_th_handwritten.jpg                  ✓        ✓        ✓        ✓        ✓
+012_th_handwritten.jpg                  ✓        ✓        ✓        ✓        ✓
+013_th_handwritten.jpg                  ✓        ✓        ✓        ✓        ✓
+014_th_handwritten.jpg                  ✓        ✓        ✓        ✓        ✓
+015_th_handwritten.jpg                  ✗        ✓        ✓        ✓        ✓
+016_th_handwritten.jpg                  ✓        ✓        ✓        ✓        ✓
+017_th_handwritten.jpg                  ✓        ✓        ✓        ✓        ✓
+018_th_handwritten.jpg                  ✓        ✗        ✓        ✓        ✓
+019_th_handwritten.jpg                  ✓        ✓        ✓        ✓        ✓
+020_th_handwritten.jpg                  ✗        ✓        ✓        ✓        ✗
+021_th_handwritten.jpg                  ✓        ✓        ✓        ✓        ✓
+022_th_handwritten.jpg                  ✓        ✓        ✓        ✓        ✓
+023_th_handwritten.jpg                  ✓        ✓        ✓        ✓        ✓
+024_th_handwritten.jpg                  ✓        ✓        ✓        ✓        ✓
+025_th_handwritten.jpg                  ✓        ✓        ✓        ✓        ✓
+026_th_handwritten.jpg                  ✓        ✓        ✓        ✓        ✓
+027_th_handwritten.jpg                  ✓        ✓        ✓        ✓        ✓
+028_th_handwritten.jpg                  ✓        ✓        ✓        ✓        ✓
+029_th_handwritten.jpg                  ✓        ✓        ✓        ✓        ✓
+030_th_handwritten.jpg                  ✓        ✓        ✓        ✓        ✓
+ACCURACY                             93%      97%     100%     100%      97%    all-5-correct: 27/30

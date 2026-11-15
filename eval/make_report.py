@@ -4,6 +4,10 @@ import json
 from collections import Counter
 from pathlib import Path
 
+from app import llm
+
+CURRENT = llm.MODEL.replace(":", "-")  # only the model in use now (plus the commercial comparison) goes into the report
+
 LOGS = Path("/data/logs")
 OUT = Path("/srv/eval/logs/EVAL_REPORT.md") if Path("/srv/eval/logs").exists() else Path("EVAL_REPORT.md")
 md = ["# MemBoy — Evaluation Report (auto-generated)\n"]
@@ -14,6 +18,8 @@ for f in sorted(LOGS.glob("evalA_*.json")):
         continue
     res = json.loads(f.read_text(encoding="utf-8"))
     model = f.stem.replace("evalA_", "")
+    if model != CURRENT and not model.startswith("claude"):
+        continue
     fsub = f.with_name(f.stem + "_subset.json")  # cases re-run alone (CASE_IDS=...) replace their entry from the full run
     if fsub.exists() and fsub.stat().st_mtime > f.stat().st_mtime:
         latest = {r["id"]: r for r in json.loads(fsub.read_text(encoding="utf-8"))}
@@ -84,11 +90,12 @@ tl = LOGS / "turns.jsonl"
 if tl.exists():
     rows = [json.loads(l) for l in tl.read_text(encoding="utf-8").splitlines() if l.strip()]
     rows = [r for r in rows if not r["user"].startswith(("test", "stub", "harness", "usage:"))]
+    rows = [r for r in rows if set((r.get("usage") or {}).get("models") or []) == {llm.MODEL}]  # turns answered by the current model only
     calls = sum(len(r["steps"]) for r in rows)
     perr = sum(1 for r in rows for s in r["steps"] if "parse_error" in s)
     tools_ = [s for r in rows for s in r["steps"] if "tool" in s]
     terr = sum(1 for s in tools_ if "tool_error" in s)
-    md.append("\n## Eval C — loop metrics (all live turns)\n")
+    md.append(f"\n## Eval C — loop metrics (turns answered by `{llm.MODEL}`)\n")
     md.append(f"- turns: {len(rows)} · LLM calls: {calls} · JSON first-try: **{100 * (1 - perr / max(1, calls)):.1f}%** · tool calls: {len(tools_)} (avg {len(tools_) / max(1, len(rows)):.2f}/turn) · tool errors: {terr} · loop-cap hits: {sum(1 for r in rows if 'ขั้นตอนเยอะเกินไป' in r['out'])}")
     md.append("- per tool: " + ", ".join(f"{k} {v}" for k, v in Counter(s["tool"] for s in tools_).most_common()))
     chain = Counter(len([s for s in r["steps"] if "tool" in s]) for r in rows)
@@ -110,7 +117,9 @@ if tl.exists():
     from app import gate
     GATE_SINCE = "2026-09-10T12:45"  # gate + 'exempt' flag for draft edits both live from here; earlier rows can't be classified
     gated_rows = [r for r in rows if r.get("ts", "") >= GATE_SINCE]
-    executed = [(r, s) for r in gated_rows for s in r["steps"] if s.get("tool") in gate.GATED and "result" in s and s.get("gate") != "exempt"]
+    GATED_SINCE = {"mark_reimbursed": "2026-11-15T17:00", "manage_category": "2026-11-15T17:00"}  # added to the gate later
+    executed = [(r, s) for r in gated_rows for s in r["steps"] if s.get("tool") in gate.GATED and "result" in s and s.get("gate") != "exempt"
+                and r.get("ts", "") >= GATED_SINCE.get(s.get("tool"), "")]
     unconfirmed = [(r, s) for r, s in executed if not (s.get("confirmed") or gate.is_confirm(r["in"].get("text")))]
     parked = sum(1 for r in gated_rows for s in r["steps"] if s.get("gated"))
     md.append("\n### Safety — confirm-before-mutate (program-enforced)\n")

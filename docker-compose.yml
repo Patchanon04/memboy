@@ -13,7 +13,7 @@ services:
       DATABASE_URL: postgresql+psycopg://memboy:memboy@db:5432/memboy
       REDIS_URL: redis://redis:6379
       TZ: Asia/Bangkok
-      LLM_TIMEOUT_S: "300"   # local 12B: image turns can pass 60 s; overrides the Gemini-era value in .env
+      LLM_TIMEOUT_S: "300"   # local 12B: image turns can pass 60 s
     volumes:
       - ./data:/data
       - ./app:/srv/app          # dev hot-reload; remove for prod image
@@ -37,7 +37,7 @@ services:
       DATABASE_URL: postgresql+psycopg://memboy:memboy@db:5432/memboy
       REDIS_URL: redis://redis:6379
       TZ: Asia/Bangkok
-      LLM_TIMEOUT_S: "300"   # local 12B: image turns can pass 60 s; overrides the Gemini-era value in .env
+      LLM_TIMEOUT_S: "300"   # local 12B: image turns can pass 60 s
     volumes:
       - ./data:/data
       - ./app:/srv/app

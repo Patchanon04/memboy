@@ -76,11 +76,15 @@ docker compose run --rm app python -m tests.test_harness   # ตาราง 18 
 | รันซ้ำ held-out (temperature 0) | คำตอบเหมือนเดิมครบ 5 ช่อง **98/100** · date/total/VAT เหมือนเดิม 100/100 | `eval_repeat.py` → `REPEAT.md` |
 | **คำตอบของ agent: correctness + faithfulness** (20 คำถามยอดเงิน บิลสังเคราะห์ 10 ใบ) | **20/20** · faithfulness **1.00** (ตัวเลข 77 ตัวมีที่มาใน context ทุกตัว) | `eval_faithfulness.py` → `FAITHFULNESS.md` |
 | **ถามคำถามเดิม 5 ครั้ง** (harness tuning) | สาระสำคัญคงเดิม **20/20** · ตัวเลขเหมือนกันทุกครั้ง 19/20 · ตอบถูก 100/100 | `eval_repeat5.py` → `REPEAT5_gemma4-12b.md` |
-| tool selection 54 เคส | 46/54 (ที่ผิดส่วนใหญ่เป็นคำสั่งซ้อนที่ทำแค่ครึ่งแรก) | `eval_tools.py` |
+| tool selection 54 เคส | 47/54 (ที่ผิดส่วนใหญ่เป็นคำสั่งซ้อนที่ทำแค่ครึ่งแรก) | `eval_tools.py` |
 | end-to-end 11 scenario (assert DB) | 9/11 (สองข้อที่ตกอ่านยอดบนรูปผิด เช่น 385 แทน 384) | `eval_scenarios.py` |
 | คำสั่งที่พิมพ์บนใบเสร็จ (prompt injection) | ข้อมูลไม่เปลี่ยน **5/5** | `eval_injection.py` → `INJECTION.md` |
 | รูปที่ไม่ใช่ใบเสร็จ | ไม่รับ **12/12** | `eval_reject.py` |
 | JSON ถูกตั้งแต่รอบแรก | 96.1% (259 ครั้ง) | turn log |
+| สลิปโอน 30 ใบ 6 layout | ถูกครบ 25/30 · QR ไม่ตรงกับยอด จับได้ **5/5** | `eval_slips.py` |
+| ใบเสร็จลายมือสังเคราะห์ 30 ใบ (ฟอนต์ลายมือ ไม่ใช่ลายมือจริง) | ถูกครบ 5 ช่อง 27/30 | `EVAL_DIR=handwritten eval_receipts.py` |
+| ชุดตัวอย่างแรก 20 ใบ / แบบยาก 20 ใบ | 8/20 / 4/20 (VAT กับวันที่ผิดบ่อยสุด) | `EVAL_DIR=receipts`, `receipts_hard` |
+| บั๊กเดิม ย้อนโค้ดแล้วถามซ้ำ 3 รอบ | ลบกำกวม: ถามกลับ 6/6 · vendor: ตอบถูก 396 ทุกรอบ (ใช้หมวดเรียกรถ) · ไม่มียอดรวม: ตอบแค่ 145 กับ 130 ทุกรอบ | `eval_before_fix.py` → `BEFORE_FIX.md` |
 | เวลา ส่งรูปจนได้ draft | ค่ากลาง 10 วิ (24 เทิร์นในชุดทดสอบ ไม่ใช่รูปจาก LINE จริง) · ถามยอด ~3 วิ | turn log |
 
 ผลดิบของทุกชุดในรอบนี้: `eval/logs/run/`
@@ -102,7 +106,7 @@ docker compose run --rm app python -m tests.test_harness   # ตาราง 18 
 | ตรวจคำตอบ (contract หลังตอบ) | แต่งยอด 5,400 ที่ไม่มีในผลจาก tool | ขอใหม่ ผู้ใช้ได้ 329 | ผู้ใช้ได้ 5,400 |
 
 **Contract ที่มีในโค้ด**
-- pre-tool-use: `agent.check_args` (argument ที่ไม่รู้จัก) · `gate.needs_gate`/`park` (tool ที่เปลี่ยนข้อมูลต้องยืนยัน) · `tools._num`/`_date`/ตรวจหมวด · `tools._own_invoice` (บิลคนอื่น)
+- pre-tool-use: `agent.check_args` (argument ที่ไม่รู้จัก) · `gate.needs_gate`/`park` (save, update บิลที่บันทึกแล้ว, delete, mark_reimbursed, manage_category ยกเว้น list ต้องยืนยัน) · `tools._num`/`_date`/ตรวจหมวด · `tools._own_invoice` (บิลคนอื่น)
 - post-tool-use: `tools._make_draft` (สมการ subtotal − discount + vat = total, checksum เลขผู้เสียภาษี, QR mismatch, บิล/เลขอ้างอิงซ้ำ) · `tools.thai_date` (โมเดลคัดลอกวันที่ โค้ดแปลงปี พ.ศ./ค.ศ.) · ontology แทนหมวดที่โมเดลเดา
 - ตรวจคำตอบสุดท้าย: `agent.unsupported_numbers` — ยอดเงินในคำตอบต้องมีอยู่ใน system prompt, ข้อความผู้ใช้ หรือ TOOL_RESULT (ไม่นับวันที่ เวลา เลขข้อ และจำนวนเต็ม < 10) ไม่ผ่านให้ตอบใหม่หนึ่งครั้ง ยังไม่ผ่านแนบหมายเหตุ · รันกับ 12B จริง 20 คำถามไม่เตือนผิดเลย
 
@@ -116,7 +120,7 @@ docker compose run --rm app python -m tests.test_harness   # ตาราง 18 
 | รันซ้ำได้คำตอบเดิมทุกช่อง | **98/100** | 91/100 |
 | ถามเดิม 5 ครั้ง: สาระคงเดิม / ตัวเลขเหมือนกันทุกครั้ง | 20/20 / **19/20** | 20/20 / 11/20 |
 | injection / รูปที่ไม่ใช่ใบเสร็จ | 5/5 / 12/12 | 5/5 / 12/12 |
-| tool selection / scenario | 46/54 / 9/11 | **52/54 / 11/11** |
+| tool selection / scenario | 47/54 / 9/11 | **52/54 / 11/11** |
 | อ่านใบเสร็จ held-out / ภาพใหม่ | 54/100 / 28/60 | **98/100 / 57/60** |
 
 ข้อจำกัด: CLI รับประวัติแชทแบบแยกบทบาทไม่ได้ จึงส่งเป็นข้อความก้อนเดียว · Sonnet 5.5 ตั้ง temperature 0 ไม่ได้ · ตัวที่ faithfulness ของ Sonnet โดนหักเป็นเลขข้อในรายการกับช่วงวันที่ ไม่ใช่การแต่งข้อมูล
@@ -146,10 +150,41 @@ docker compose run --rm app python -m tests.test_harness   # ตาราง 18 
 
 6 หมวด · 18 หมวดย่อย · 169 keyword · 49 คำพ้อง — หมวดที่เก็บใน DB ยังเป็น 6 ตัวเดิม หมวดย่อยคำนวณจากชื่อร้าน (ไม่เปลี่ยน schema)
 
-ผลกับ 12B: ปิด ontology แล้ว scenario 9 → 7 และถามยอด 20 → 19 (`ABLATION.md`) · ถ้าโมเดลส่งหมวดเป็น "ค่าน้ำมัน" เปิด ontology ได้ยอดถูก ปิดได้ 0 (`LAYERS.md`)
+หมวดที่โมเดลอ่านจากรูป เทียบกับให้ ontology ทับเมื่อรู้จักชื่อร้าน (`python -m eval.eval_ontology` → `ONTOLOGY.md`, ใช้ผลอ่านใบเสร็จของ 12B ไม่เรียก LLM ใหม่):
 
-> keyword เป็นคำทั่วไป เช่น ปั๊ม, บางจาก, สปา, ถ่ายเอกสาร ไม่ใช่ชื่อร้านสังเคราะห์
+| ชุด | ontology รู้จักชื่อร้าน | กฎถูก | โมเดลอย่างเดียว | โมเดล + ontology |
+|---|---|---|---|---|
+| ชุดจูน 200 | 194/200 | 194/194 | 173/200 | **180/200** (แก้ 8 ทำพัง 1) |
+| held-out 100 | 92/100 | 92/92 | 82/100 | **85/100** · ทำพัง 0 |
+| ภาพใหม่ 60 | 58/60 | 58/58 | 50/60 | **53/60** · ทำพัง 0 |
+
+ปิด ontology แล้ว scenario 9 → 7 และถามยอด 20 → 19 (`ABLATION.md`) · ถ้าโมเดลส่งหมวดเป็น "ค่าน้ำมัน" เปิด ontology ได้ยอดถูก ปิดได้ 0 (`LAYERS.md`)
+
+> ไม่ใช่ผลแบบ blind: keyword เขียนหลังเห็นเคสพลาดของชุดจูน · keyword เป็นคำทั่วไป เช่น ปั๊ม, บางจาก, สปา, ถ่ายเอกสาร ไม่ใช่ชื่อร้านสังเคราะห์
 > ไม่ใช่ OWL/RDF เพราะบอทต้องการ roll-up/lookup/synonym ไม่ใช่ reasoner
+
+## ลองแล้ว (Gemma 4 12B)
+
+**embedding แทนโมเดลจัดหมวดจากชื่อร้าน** (`eval_embedding.py` → `EMBEDDING.md`): ชื่อร้าน 120 ชื่อที่ 12B แต่ง (ไม่เคยเห็น keyword)
+
+| วิธี | ถูก |
+|---|---|
+| keyword ontology | 68/68 ของชื่อที่รู้จัก (รู้จัก 68/120) |
+| keyword → 12B (ที่ใช้อยู่) | **119/120** |
+| keyword → embedding (bge-m3 บน Ollama) | 101/120 |
+
+12B ได้เปรียบเพราะเป็นคนแต่งชื่อเอง แต่ห่างกัน 18 ชื่อ → ไม่ใช้ embedding
+
+**OCR ก่อนส่งให้โมเดล** (`EVAL_DIR=dataset python -m eval.eval_ocr_ablation "" 60` → `OCR_ABLATION.md`, tesseract tha+eng, 60 ใบแรกของชุดจูน):
+
+| เงื่อนไข | ถูกครบ 5 ช่อง | prompt token เฉลี่ย |
+|---|---|---|
+| รูปอย่างเดียว (ที่ใช้อยู่) | 33/60 | 260 |
+| รูป + ข้อความ OCR | **44/60** | 391 |
+| ข้อความ OCR อย่างเดียว | 26/60 (วันที่ 50%) | 296 |
+
+OCR ใช้เวลา ~0.3 วิต่อใบ · เวลาของ LLM ในรอบนี้ใช้เทียบไม่ได้ (มีงานอื่นใช้ Ollama ตัวเดียวกันระหว่างรัน โมเดลถูกสลับเข้าออก)
+ยังไม่ได้เปิดใช้ใน production: วัดบนชุดจูน ต้องยืนยันกับ held-out ก่อน
 
 ## Privacy — pseudonymization (`app/privacy.py`)
 
@@ -165,7 +200,7 @@ docker compose run --rm app python -m tests.test_harness   # ตาราง 18 
 - `PSEUDONYM_KEY` แยกจาก LINE secret เพราะ secret ต้อง rotate แต่ key นี้ห้ามเปลี่ยน (เปลี่ยน = คนเดียวกลายเป็นสองนามแฝง)
 - log เก่าแปลงแล้ว: `python -m app.privacy FILE.jsonl` (1,343 แถวใน turn log + 47 แถวใน `eval/logs/*.jsonl`) — harness D5 ตรวจว่าไม่มี id จริงหลุดเข้า log
 - ที่ยอมรับไว้: รูปสลิปมีชื่อผู้โอน/ผู้รับ ส่งให้ Gemma ทั้งรูป — ปิดชื่อก่อนส่งต้อง OCR+redact ซึ่งทดลองแล้วว่าช้าลงโดยไม่ได้ความแม่น · ตอนนี้โมเดลรันบนเครื่องเอง (Ollama) รูปไม่ออกนอกเครื่อง
-- ⚠️ id จริง 16 แถวเคยอยู่ใน `eval/logs/line_live_turns.jsonl` ที่ commit ไปแล้ว — ไฟล์ปัจจุบันสะอาด แต่ยังอยู่ใน git history
+- ⚠️ id จริง 16 แถวเคยอยู่ใน log ที่ commit ไปแล้ว — ไฟล์ถูกลบแล้ว แต่ยังอยู่ใน git history
 
 ## Troubleshooting (dev machine)
 
@@ -243,7 +278,7 @@ Optional extras: Cloudflare WAF rate-limit rule on `/webhook` and `/mcp`; Cloudf
 |---|---|---|
 | agent (Gemma 4) | intent across turns, tool choice, ask-back on ambiguity, wording | `app/agent.py` |
 | Python / SQL | money math, search, schema validation, arithmetic/tax-id/QR checks | `app/tools.py` |
-| control layer (the model cannot bypass) | per-user ownership at tool level · **confirm-before-save/edit/delete** (`app/gate.py`: the call is parked as a pending action, runs only after the user's own "ยืนยัน", 10-min TTL) · draft→confirmed · loop cap · rate limit | `app/gate.py`, `app/tools.py` |
+| control layer (the model cannot bypass) | per-user ownership at tool level · **confirm-before-save/edit/delete/mark-reimbursed/category-change** (`app/gate.py`: the call is parked as a pending action, runs only after the user's own "ยืนยัน", 10-min TTL) · draft→confirmed · loop cap · rate limit | `app/gate.py`, `app/tools.py` |
 | transport | LINE HMAC signature on every webhook, event idempotency, signed expiring file links, bearer token on `/mcp` | `app/main.py`, `app/files.py` |
 
 Retention: `purge_old_data` runs daily (reports >7 d, images of deleted invoices >30 d, orphan uploads >7 d, chat rows >30 d).

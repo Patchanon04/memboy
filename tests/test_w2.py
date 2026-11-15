@@ -1,4 +1,4 @@
-"""W2 tests that need no Gemini quota: tools against real Postgres + agent loop with a stubbed LLM.
+"""W2 tests that need no LLM: tools against real Postgres + agent loop with a stubbed LLM.
 Run: docker compose run -T --rm app python -m tests.test_w2
 """
 import asyncio
@@ -159,7 +159,7 @@ def test_tool_crash_does_not_leak():
     must not even reach the model (it lands in the log only)."""
     ext, uid = fresh_user("leak")
 
-    def boom(user, s, **kw):
+    def boom(user, s, vendor=None, date=None, total=None, **kw):  # named params: check_args must let the call through
         raise RuntimeError(f"psycopg.errors.UndefinedColumn: {SECRET}")
     orig = agent.TOOLS["check_duplicate"]
     agent.TOOLS["check_duplicate"] = (boom, orig[1], orig[2])
@@ -265,6 +265,32 @@ def test_confirmation_gate():
     asyncio.run(agent.run_turn(ext, text="บิลดราฟต์ยอดจริง 11"))
     with session() as s:
         assert s.get(Invoice, draft_id).total == 10, "confirmed invoice must not change before ยืนยัน"
+    stub_llm([json.dumps({"reply": "ยกเลิกแล้ว"})])
+    asyncio.run(agent.run_turn(ext, text="ยกเลิก"))
+
+    # (g) mark_reimbursed waits for ยืนยัน, then runs
+    stub_llm([json.dumps({"tool": "mark_reimbursed", "args": {"invoice_ids": [draft_id]}}), json.dumps({"reply": "รอยืนยัน"})])
+    asyncio.run(agent.run_turn(ext, text="ติ๊กว่าเบิกบิลดราฟต์แล้ว"))
+    with session() as s:
+        assert s.get(Invoice, draft_id).reimbursed_at is None, "must not mark before ยืนยัน"
+    stub_llm([json.dumps({"reply": "ติ๊กแล้ว"})])
+    asyncio.run(agent.run_turn(ext, text="ยืนยัน"))
+    with session() as s:
+        assert s.get(Invoice, draft_id).reimbursed_at is not None
+
+    # (h) manage_category: list runs at once, add/remove/rename wait
+    with session() as s:
+        u = s.get(User, uid)
+        assert not gate.needs_gate(u, s, "manage_category", {"action": "list"})
+        assert gate.needs_gate(u, s, "manage_category", {"action": "rename", "name": "a", "new_name": "b"})
+    stub_llm([json.dumps({"tool": "manage_category", "args": {"action": "add", "name": "ค่าเกต"}}), json.dumps({"reply": "รอยืนยัน"})])
+    asyncio.run(agent.run_turn(ext, text="เพิ่มหมวดค่าเกต"))
+    with session() as s:
+        assert "ค่าเกต" not in tools.user_categories(s.get(User, uid), s), "must not add before ยืนยัน"
+    stub_llm([json.dumps({"reply": "เพิ่มแล้ว"})])
+    asyncio.run(agent.run_turn(ext, text="ยืนยัน"))
+    with session() as s:
+        assert "ค่าเกต" in tools.user_categories(s.get(User, uid), s)
     print("test_confirmation_gate OK")
 
 def test_long_prose_is_a_reply():

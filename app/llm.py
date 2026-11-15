@@ -1,5 +1,5 @@
 """Gemma 4 12B on local Ollama through the OpenAI-standard Chat Completions endpoint — one function, retries.
-Any OpenAI-compatible server works (LLM_BASE_URL + LLM_API_KEY); callers keep passing Gemini-style
+Any OpenAI-compatible server works (LLM_BASE_URL + LLM_API_KEY); callers pass role/parts
 contents ({"role": "user"|"model", "parts": [{"text"} | {"inline_data"}]}) and this module converts them."""
 import asyncio
 import base64
@@ -33,7 +33,7 @@ class LLMError(Exception):
 
 
 def _messages(contents: list[dict]) -> list[dict]:
-    """Gemini-style contents -> OpenAI messages (model -> assistant, inline_data -> image_url data URI)."""
+    """role/parts contents -> OpenAI messages (model -> assistant, inline_data -> image_url data URI)."""
     out = []
     for c in contents:
         parts = []

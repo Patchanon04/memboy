@@ -5,7 +5,7 @@ filled-in parts glyph-by-glyph with per-character jitter (offset, rotation, size
 cream paper with rules, shadow and JPEG grain. Labels are exact because we generate the numbers ourselves.
 
     python eval/make_handwritten.py            -> eval/handwritten/ + labels.json   (30 bills, seed 99)
-Then inside the container:  EVAL_DIR=handwritten python -m eval.eval_receipts gemma-4-26b-a4b-it
+Then inside the container:  EVAL_DIR=handwritten python -m eval.eval_receipts
 """
 import json
 import os

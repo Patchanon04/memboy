@@ -1,6 +1,6 @@
 """Confirmation gate — the one rule the model cannot talk its way past.
 
-Saving a draft, editing a confirmed invoice and deleting are irreversible-ish; the professor's requirement is that
+Saving a draft, editing a confirmed invoice, deleting, marking reimbursed and changing categories alter saved data; the professor's requirement is that
 "confirm before save/edit/delete" is enforced by the program, not by the prompt. So a gated tool call is never
 executed on the turn the model makes it: it is parked as the user's pending_action and the model gets a preview
 to show. It runs only when the *next* user message is a confirmation — matched here, in code, by regex.
@@ -12,7 +12,7 @@ import re
 
 from app import tools
 
-GATED = {"save_invoice", "update_invoice", "delete_invoice"}
+GATED = {"save_invoice", "update_invoice", "delete_invoice", "mark_reimbursed", "manage_category"}
 # Thai has no word boundaries ("ยืนยันบันทึก" is one run), so \b only guards the Latin words.
 CONFIRM = re.compile(r"^\s*(ยืนยัน|บันทึกเลย|ถูกต้อง|ใช่(?!ไหม|มั้ย|หรือ|ป่าว|เปล่า)|ตกลง|โอเค|(?:ok|okay|yes|confirm)\b)", re.I)
 CANCEL = re.compile(r"^\s*(ยกเลิก|ไม่บันทึก|ไม่เอา|(?:cancel|no)\b)", re.I)
@@ -30,6 +30,8 @@ def is_cancel(text: str | None) -> bool:
 def needs_gate(user, s, tool: str, args: dict) -> bool:
     if tool not in GATED:
         return False
+    if tool == "manage_category":  # listing changes nothing; add/remove/rename do (rename retags old bills)
+        return args.get("action") != "list"
     if tool == "update_invoice":  # correcting a draft is part of the preview loop; only saved data is gated
         try:
             return tools._own_invoice(user, s, args.get("invoice_id")).status != "draft"
@@ -40,6 +42,13 @@ def needs_gate(user, s, tool: str, args: dict) -> bool:
 
 def preview(user, s, tool: str, args: dict) -> dict:
     """What the user is about to confirm — from the database, not from the model's memory."""
+    if tool == "manage_category":
+        n = tools.count_tagged(user, s, args.get("name")) if args.get("action") in ("remove", "rename") else 0
+        return {"action": args.get("action"), "name": args.get("name"), "new_name": args.get("new_name"), "invoices_with_this_category": n}
+    if tool == "mark_reimbursed":
+        ids = args.get("invoice_ids")
+        ids = ids if isinstance(ids, list) else [ids]
+        return {"undo": bool(args.get("undo")), "invoices": [tools._inv_dict(tools._own_invoice(user, s, i)) for i in ids]}
     if tool == "save_invoice" and str(args.get("draft_id")).lower() == "all":
         return {"drafts": tools._pending_drafts(user, s)}
     iv = tools._own_invoice(user, s, args.get("draft_id") or args.get("invoice_id"))  # raises ToolError if not ours
