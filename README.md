@@ -82,7 +82,6 @@ docker compose run --rm app python -m tests.test_harness   # ตาราง 18 
 | รูปที่ไม่ใช่ใบเสร็จ | ไม่รับ **12/12** | `eval_reject.py` |
 | JSON ถูกตั้งแต่รอบแรก | 96.1% (259 ครั้ง) | turn log |
 | เวลา ส่งรูปจนได้ draft | ค่ากลาง 10 วิ (24 เทิร์นในชุดทดสอบ ไม่ใช่รูปจาก LINE จริง) · ถามยอด ~3 วิ | turn log |
-| สลิปโอน 30 ใบ (วัดตอนใช้ 26B) | doc_type/total/ref/qr_status 100%, mismatch detection 5/5 | `eval_slips.py` |
 
 ผลดิบของทุกชุดในรอบนี้: `eval/logs/run/`
 
@@ -135,27 +134,6 @@ docker compose run --rm app python -m tests.test_harness   # ตาราง 18 
 - เรื่องวันที่ แก้หลังเห็นผลรอบแรก (19/100) โดยปรับกับชุดจูน 200 ใบ แล้วรันชุด held-out รอบเดียว
 - ทางแก้ต่อไป: finetune 12B ให้อ่านใบเสร็จไทย หรือใช้โมเดลอ่านภาพที่ดีกว่าเฉพาะขั้นอ่านรูป
 
-## ประวัติ: ช่วงแรกใช้ Gemma 4 26B ผ่าน Gemini API
-
-ก่อน 2026-11-15 ระบบใช้ Gemma 4 26B ผ่าน Gemini API ของ Google ย้ายมา 12B ในเครื่องเพราะ API timeout หนักจนรันชุดทดสอบไม่จบ (รอบหนึ่ง 23 จาก 84 เทิร์นล่ม)
-ตัวเลขชุดนั้น: held-out 90/100 · ภาพใหม่ 55/60 · รันซ้ำเหมือนเดิม 92/100 · tool selection 54/54 · scenario 11/11 · ถามยอด 20/20 faithfulness 0.99 · ลายมือสังเคราะห์ 29/30 · ส่งรูปจริงใน LINE ค่ากลาง 42 วิ (53 รูป) · JSON first-try 94.3% (1,747 calls)
-
-สิ่งที่แก้ระหว่างทางในช่วงนั้น (ก่อน → หลัง วัดกับ 26B):
-
-| ปัญหาที่เจอ | สิ่งที่ทำ | ก่อน → หลัง |
-|---|---|---|
-| ไม่รู้ว่าผิดตรงไหน | สร้างใบเสร็จสังเคราะห์ที่รู้เฉลย (ห้ามใช้ข้อมูลจริง → generate เอง ได้ ground truth ฟรี) | วัดได้ทุก field |
-| อ่านวันที่ผิด (พ.ศ./ค.ศ., ปี 2 หลัก) | เขียนกติกาวันที่ใน prompt แล้ว A/B ทุกเวอร์ชัน (ตอนนี้ย้ายไปแปลงในโค้ดแล้ว) | date **87% → 96%** · v2 ที่เขียนกติกาผิดข้อเดียวตกเหลือ 76% |
-| โมเดลคิดเลขเงินเอง | เลขทุกตัวคำนวณใน Python โมเดลแค่อ่านค่า | total/VAT 100% |
-| ส่วนลดไปปนยอดก่อนภาษี | เพิ่มช่อง `discount` + ตรวจสมการ | เลขไม่ลงตัว = เตือน |
-| เตือนงบไม่ได้ | tool คืน `month_total_so_far` แทนให้โมเดลบวก | end-to-end 9/10 → 11/11 |
-| ให้โมเดลตัดสินใจทุกจังหวะ | รูปเข้า `analyze_receipt` ตรง | 72 s → 42 s |
-| บันทึกผิดโดยไม่มีใครเห็น | confirmation gate ในโค้ด (`app/gate.py`) | บันทึกโดยไม่ยืนยัน 0 |
-| prompt ใหม่ทำของเก่าพัง | regression ทุกครั้งที่แก้: "ทำให้ครบทุกส่วน" ทำ agent ลบบิลเองตอนสั่งกำกวม | tool selection 50 → 54/54 |
-| tool เงียบเวลาได้ argument ที่ไม่รับ | `summarize_expenses` รับ vendor + `check_args` | ถามยอด 17 → 20/20 |
-| โมเดลบวกยอดจากรายการเอง | `find_invoices` คืน total ที่ Python คิด | faithfulness 0.95 → 0.99 |
-| ชื่อร้าน → หมวด (keyword vs embedding vs Gemma) | ชื่อร้าน 120 ชื่อที่ Gemma แต่ง: keyword 77/77 · keyword→Gemma 112 · keyword→embedding 109 → ไม่เอา embedding | `eval_embedding.py` → `EMBEDDING.md` |
-
 ## Ontology (`app/ontology.py`)
 
 ความรู้เรื่องหมวดค่าใช้จ่ายเขียนเป็นไฟล์ ไม่ปล่อยให้โมเดลเดา — 3 ความสัมพันธ์:
@@ -168,14 +146,9 @@ docker compose run --rm app python -m tests.test_harness   # ตาราง 18 
 
 6 หมวด · 18 หมวดย่อย · 169 keyword · 49 คำพ้อง — หมวดที่เก็บใน DB ยังเป็น 6 ตัวเดิม หมวดย่อยคำนวณจากชื่อร้าน (ไม่เปลี่ยน schema)
 
-ผล (`python -m eval.eval_ontology` → `eval/logs/ONTOLOGY.md`, replay ผลของ 26B ไม่เรียก LLM ใหม่) · กับ 12B: ปิด ontology แล้ว scenario 9 → 7 และถามยอด 20 → 19 (`ABLATION.md`):
+ผลกับ 12B: ปิด ontology แล้ว scenario 9 → 7 และถามยอด 20 → 19 (`ABLATION.md`) · ถ้าโมเดลส่งหมวดเป็น "ค่าน้ำมัน" เปิด ontology ได้ยอดถูก ปิดได้ 0 (`LAYERS.md`)
 
-| set | ontology รู้จักชื่อร้าน | กติกาถูก | model อย่างเดียว | model + ontology |
-|---|---|---|---|---|
-| ชุดจูน 200 | 194/200 | 194/194 | 198/200 | **200/200** |
-| held-out 100 | 92/100 | 92/92 | 96/100 | **98/100** · ทำของถูกพัง **0** |
-
-> ไม่ใช่ผลแบบ blind: keyword เขียนหลังเห็นเคสพลาดแล้ว (เป็นคำทั่วไป เช่น ปั๊ม, บางจาก, สปา, ถ่ายเอกสาร ไม่ใช่ชื่อร้านสังเคราะห์)
+> keyword เป็นคำทั่วไป เช่น ปั๊ม, บางจาก, สปา, ถ่ายเอกสาร ไม่ใช่ชื่อร้านสังเคราะห์
 > ไม่ใช่ OWL/RDF เพราะบอทต้องการ roll-up/lookup/synonym ไม่ใช่ reasoner
 
 ## Privacy — pseudonymization (`app/privacy.py`)
@@ -191,7 +164,7 @@ docker compose run --rm app python -m tests.test_harness   # ตาราง 18 
 - เป็น **pseudonymization ไม่ใช่ anonymization** โดยตั้งใจ — ถือ key + ตาราง users แล้วโยงกลับได้ เพื่อหา/ลบข้อมูลของคนที่ขอลบได้
 - `PSEUDONYM_KEY` แยกจาก LINE secret เพราะ secret ต้อง rotate แต่ key นี้ห้ามเปลี่ยน (เปลี่ยน = คนเดียวกลายเป็นสองนามแฝง)
 - log เก่าแปลงแล้ว: `python -m app.privacy FILE.jsonl` (1,343 แถวใน turn log + 47 แถวใน `eval/logs/*.jsonl`) — harness D5 ตรวจว่าไม่มี id จริงหลุดเข้า log
-- ที่ยอมรับไว้: รูปสลิปมีชื่อผู้โอน/ผู้รับ ส่งให้ Gemma ทั้งรูป — ปิดชื่อก่อนส่งต้อง OCR+redact ซึ่งทดลองแล้วว่าช้าลงโดยไม่ได้ความแม่น · ตอนนี้โมเดลรันบนเครื่องเอง (Ollama) รูปไม่ออกนอกเครื่อง (ตอนใช้ Gemini API, Google AI Studio เป็น data processor)
+- ที่ยอมรับไว้: รูปสลิปมีชื่อผู้โอน/ผู้รับ ส่งให้ Gemma ทั้งรูป — ปิดชื่อก่อนส่งต้อง OCR+redact ซึ่งทดลองแล้วว่าช้าลงโดยไม่ได้ความแม่น · ตอนนี้โมเดลรันบนเครื่องเอง (Ollama) รูปไม่ออกนอกเครื่อง
 - ⚠️ id จริง 16 แถวเคยอยู่ใน `eval/logs/line_live_turns.jsonl` ที่ commit ไปแล้ว — ไฟล์ปัจจุบันสะอาด แต่ยังอยู่ใน git history
 
 ## Troubleshooting (dev machine)
@@ -208,22 +181,6 @@ docker compose run --rm app python -m tests.test_harness   # ตาราง 18 
 - **LINE stops replying** — check `data/logs/watch.out`. The tunnel watchdog (`scripts/tunnel_watch.py`) needs
   3 consecutive failed `/health` (body `"ok":true`, not just HTTP 200) before it swaps hostnames; it writes the new
   URL to `data/public_base_url`, which the containers read per request, so no container restart is needed.
-
-## Ablation: OCR before the LLM? (eval/eval_ocr_ablation.py → eval/logs/OCR_ABLATION.md, measured on Gemma 4 26B via Gemini API)
-
-Question: would running Tesseract (tha+eng) first make extraction faster or more accurate than sending the photo straight to Gemma 4?
-60 synthetic receipts, same prompt/scoring as the main extraction eval, the three conditions run back-to-back per file. API failures ("gave up" after 4 tries) excluded.
-
-| condition | all-5 correct | LLM p50 | prompt tokens |
-|---|---|---|---|
-| image only (production) | **56/58 = 97%** | 25.6 s | 463 |
-| image + OCR text | 55/57 = 96% | 25.4 s (+0.3 s OCR) | 579 |
-| OCR text only | 30/55 = 55% (date 53%) | 29.7 s | 323 |
-
-Verdict: no. A receipt photo costs Gemma only ~460 tokens, so OCR text is not a smaller input; text-only loses layout
-(date 53%, total 72%) and the model dawdles on noisy OCR; image+OCR just adds tokens. Latency is dominated by the API round trip,
-not input size — so the speed work went into the loop instead: photos skip the "decide" call (`ROUTE_IMAGE`) and a plain-text
-answer after a tool result is accepted as the reply. Live photo turn: 72 s → ~42 s (p50).
 
 ## MCP server (app/mcp_server.py)
 
