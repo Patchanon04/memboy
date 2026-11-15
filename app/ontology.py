@@ -18,11 +18,11 @@ import re
 
 TREE: dict[str, dict[str, list[str]]] = {
     "อาหาร": {
-        "คาเฟ่": ["กาแฟ", "คาเฟ่", "coffee", "café", "cafe", "starbucks", "amazon", "bakery", "เบเกอรี่"],
+        "คาเฟ่": ["กาแฟ", "คาเฟ่", "coffee", "café", "cafe", "starbucks", "bakery", "เบเกอรี่"],
         "ร้านอาหาร": ["ก๋วยเตี๋ยว", "ข้าวแกง", "ข้าวมันไก่", "ข้าวขาหมู", "ข้าวต้ม", "ร้านข้าว", "ครัว", "ส้มตำ",
                       "หมูทอด", "หมูกระทะ", "โจ๊ก", "ชาบู", "บุฟเฟ่ต์", "ภัตตาคาร", "noodle", "burger", "pizza",
                       "restaurant", "kitchen", "salad", "grill", "sushi", "ramen", "kfc", "mcdonald"],
-        "เดลิเวอรี": ["grabfood", "lineman", "line man", "foodpanda", "robinhood"],
+        "เดลิเวอรี": ["grabfood", "grab food", "lineman", "line man", "foodpanda", "robinhood"],
     },
     "เดินทาง": {
         "เชื้อเพลิง": ["ปั๊ม", "บางจาก", "ปตท", "เชลล์", "คาลเท็กซ์", "น้ำมันเชื้อเพลิง", "bangchak", "ptt", "shell",
