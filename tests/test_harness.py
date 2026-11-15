@@ -177,7 +177,7 @@ def d1():
         status_code = 200
 
         def json(self):
-            return {"candidates": [{"content": {"parts": [{"text": '{"reply":"ok"}'}]}}]}
+            return {"choices": [{"message": {"content": '{"reply":"ok"}'}}]}
 
     class _Client:
         def __init__(self, *a, **k):
@@ -189,7 +189,7 @@ def d1():
         async def __aexit__(self, *a):
             return False
 
-        async def post(self, url, params=None, json=None):
+        async def post(self, url, json=None, **kw):
             captured.update(json or {})
             return _Resp()
 
@@ -198,9 +198,9 @@ def d1():
         asyncio.run(REAL_GENERATE([{"role": "user", "parts": [{"text": "hi"}]}]))
     finally:
         httpx.AsyncClient = real
-    t = captured.get("generationConfig", {}).get("temperature")
+    t = captured.get("temperature")
     assert t == 0.0, captured
-    return f"payload ที่ส่งจริงมี generationConfig.temperature = {t}"
+    return f"payload ที่ส่งจริงมี temperature = {t}"
 
 
 @check("D2", "เลขเงินมาจาก SQL + เช็ค subtotal+vat≈total", "unit")
@@ -272,7 +272,7 @@ def d5():
 
 @check("D6", "Pin รุ่นโมเดล (ไม่ใช้ alias ลอยๆ)", "unit")
 def d6():
-    assert "latest" not in llm.MODEL and llm.MODEL.startswith("gemma-4"), llm.MODEL
+    assert "latest" not in llm.MODEL and "gemma" in llm.MODEL, llm.MODEL
     return f"MODEL={llm.MODEL} · FALLBACK={llm.FALLBACK} (ระบุรุ่นเต็ม ไม่ใช่ alias)"
 
 

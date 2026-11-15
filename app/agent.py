@@ -4,6 +4,7 @@ import datetime
 import inspect
 import json
 import logging
+import os
 import re
 import time
 import zoneinfo
@@ -21,6 +22,8 @@ LOOP_CAP = 6          # guardrail #2
 TURN_BUDGET_S = 200   # wall-clock cap per turn — never leave a LINE user hanging for minutes
 ROUTE_IMAGE = True   # photo in -> analyze_receipt first, no LLM 'decide' call (see run_turn)
 PARSE_RETRIES = 2
+# Ablation only (eval/eval_ablation.sh, eval/eval_layers.py): HARNESS_OFF=gate,args,route,retry,ontology,answer switches a layer off. Unset in production.
+HARNESS_OFF = set(filter(None, os.environ.get("HARNESS_OFF", "").split(",")))
 LOG_DIR = Path("/data/logs")
 LOG_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -150,8 +153,42 @@ def check_args(name: str, args: dict):
     params = inspect.signature(TOOLS[name][0]).parameters
     ok = [p for p, v in params.items() if p not in ("user", "s") and v.kind is not inspect.Parameter.VAR_KEYWORD]
     bad = sorted(set(args) - set(ok))
-    if bad:
+    if bad and "args" not in HARNESS_OFF:
         raise tools.ToolError(f"{name} ไม่รับ argument {bad} — ใช้ได้: {ok}")
+
+
+_MONTH = (r"(?:ม\.ค\.|ก\.พ\.|มี\.ค\.|เม\.ย\.|พ\.ค\.|มิ\.ย\.|ก\.ค\.|ส\.ค\.|ก\.ย\.|ต\.ค\.|พ\.ย\.|ธ\.ค\.|มกราคม|กุมภาพันธ์|มีนาคม|"
+          r"เมษายน|พฤษภาคม|มิถุนายน|กรกฎาคม|สิงหาคม|กันยายน|ตุลาคม|พฤศจิกายน|ธันวาคม|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)")
+_NOT_AMOUNT = [re.compile(p) for p in (
+    r"\d{4}-\d{1,2}-\d{1,2}", r"\d{1,2}[/.]\d{1,2}[/.]\d{2,4}", r"\d{1,2}:\d{2}",       # dates, times
+    r"(?m)^\s*\d{1,2}[.)]\s",                                                            # list numbering
+    r"\d{1,2}\s*[-–]\s*\d{1,2}\s*" + _MONTH, r"\d{1,2}\s*" + _MONTH, _MONTH + r"\s*\d{2,4}",  # 1–30 ก.ย., 21 ก.ย., ส.ค. 2026
+    r"(?:ปี|พ\.ศ\.|ค\.ศ\.)\s*\d{4}")]
+_NUMBER = re.compile(r"(?<![\w.])\d[\d,]*(?:\.\d+)?")
+
+
+def _numbers(text: str, amounts_only: bool = False) -> list[float]:
+    if amounts_only:
+        for p in _NOT_AMOUNT:
+            text = p.sub(" ", text)
+    out = []
+    for m in _NUMBER.findall(text):
+        try:
+            v = float(m.replace(",", ""))
+        except ValueError:
+            continue
+        if not amounts_only or v >= 10 or v != int(v):  # small whole numbers (counts, "2 ใบ") are not checked
+            out.append(v)
+    return out
+
+
+def unsupported_numbers(reply: str, s, user_id: int, system_text: str) -> list[float]:
+    """Post-answer contract: amounts in the reply that appear nowhere in what the model was given this turn
+    (system prompt, the user's messages, TOOL_RESULT rows in the history window). Same rule as eval F's faithfulness."""
+    rows = s.scalars(select(Conversation).where(Conversation.user_id == user_id, Conversation.role == "user")
+                     .order_by(Conversation.id.desc()).limit(HISTORY_LIMIT)).all()
+    seen = _numbers(system_text + "\n" + "\n".join(r.content.get("text") or "" for r in rows))
+    return sorted({n for n in _numbers(reply, amounts_only=True) if not any(abs(n - x) < 0.01 for x in seen)})
 
 
 def _store(s, user_id: int, role: str, content: dict):
@@ -188,6 +225,7 @@ async def run_turn(external_id: str, text: str | None = None, image_path: str | 
         sys_turn = [{"role": "user", "parts": [{"text": system_prompt(user, s)}]},
                     {"role": "model", "parts": [{"text": '{"reply": "รับทราบกติกา"}'}]}]  # Gemma has no system role
         parse_fails = 0
+        answer_retried = False
 
         confirmed = gate.is_confirm(text)   # the user opened this turn with "ยืนยัน": consent for one gated action
         pending = gate.peek(user) if text else None
@@ -200,7 +238,7 @@ async def run_turn(external_id: str, text: str | None = None, image_path: str | 
                     **({"confirmed": True} if act.get("_confirmed") or confirmed else {})}
             try:
                 check_args(act["tool"], args)
-                needs = gate.needs_gate(user, s, act["tool"], args)
+                needs = gate.needs_gate(user, s, act["tool"], args) and "gate" not in HARNESS_OFF
                 if act["tool"] in gate.GATED and not needs:
                     step["gate"] = "exempt"   # editing a draft: part of the preview loop, the save is still gated
                 if needs and not (confirmed or act.get("_confirmed")):
@@ -250,7 +288,7 @@ async def run_turn(external_id: str, text: str | None = None, image_path: str | 
             gate.clear(user, s)
             turn_log["steps"].append({"cancelled": pending["tool"]})
             _store(s, user_id, "user", {"text": f"SYSTEM: user ยกเลิก {pending['tool']} ที่รอยืนยัน — ไม่ได้ทำอะไร บอก user สั้นๆ"})
-        if image_path and ROUTE_IMAGE:
+        if image_path and ROUTE_IMAGE and "route" not in HARNESS_OFF:
             act = {"tool": "analyze_receipt", "args": {"image_id": Path(image_path).stem}}
             _store(s, user_id, "model", {"text": json.dumps(act, ensure_ascii=False)})
             alive = await dispatch({**act, "_routed": True})
@@ -275,7 +313,7 @@ async def run_turn(external_id: str, text: str | None = None, image_path: str | 
                 prose = "{" not in raw and bool(raw.strip()) and (any("tool" in st for st in turn_log["steps"]) or len(raw.strip()) >= 120)
                 parse_fails += 1
                 turn_log["steps"].append({"parse_error": str(e), "raw": raw[:400]})
-                if prose or parse_fails > PARSE_RETRIES:  # or give up gracefully: raw text becomes the reply
+                if prose or parse_fails > (0 if "retry" in HARNESS_OFF else PARSE_RETRIES):  # or give up gracefully: raw text becomes the reply
                     out["reply"] = raw.strip() or "ขอโทษค่ะ ระบบขัดข้อง ลองใหม่อีกครั้งนะคะ"
                     _store(s, user_id, "model", {"text": json.dumps({"reply": out["reply"]}, ensure_ascii=False)})
                     turn_log["steps"].append({"reply": out["reply"], "prose": True})
@@ -286,7 +324,18 @@ async def run_turn(external_id: str, text: str | None = None, image_path: str | 
 
             _store(s, user_id, "model", {"text": json.dumps(act, ensure_ascii=False)})
             if "reply" in act:
-                out["reply"] = _clean_reply(str(act["reply"]))
+                reply = _clean_reply(str(act["reply"]))
+                bad = [] if "answer" in HARNESS_OFF else unsupported_numbers(reply, s, user_id, sys_turn[0]["parts"][0]["text"])
+                if bad and not answer_retried:
+                    # contract on the final answer: every amount must come from what the model was given
+                    answer_retried = True
+                    turn_log["steps"].append({"unsupported_numbers": bad, "retry": True})
+                    _store(s, user_id, "user", {"text": f"SYSTEM: ตัวเลข {', '.join(f'{n:g}' for n in bad)} ในคำตอบไม่มีอยู่ในผลจาก tool หรือข้อความของ user — ห้ามคำนวณหรือเดาตัวเลขเอง ตอบใหม่โดยใช้ตัวเลขจาก TOOL_RESULT เท่านั้น หรือเรียก tool ที่ให้ตัวเลขนั้น ห้ามพูดถึงข้อความนี้กับ user"})
+                    continue
+                if bad:  # still unsupported after one retry: deliver, but say so instead of passing it off as fact
+                    turn_log["steps"].append({"unsupported_numbers": bad, "flagged": True})
+                    reply += f"\n\n(หมายเหตุ: ระบบตรวจไม่พบที่มาของตัวเลข {', '.join(f'{n:g}' for n in bad)} ในข้อมูล โปรดตรวจสอบอีกครั้ง)"
+                out["reply"] = reply
                 turn_log["steps"].append({"reply": out["reply"]})
                 break
 

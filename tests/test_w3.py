@@ -45,6 +45,10 @@ def main():
             except tools.ToolError as e:
                 assert "ใช้ได้" in str(e)
         agent.check_args("summarize_expenses", {"vendor": "x", "date_from": "2026-08-01"})   # valid args pass
+        for raw, iso in [("14/7/69", "2026-07-14"), ("09/06/2569", "2026-06-09"), ("05/03/26", "2026-03-05"),
+                         ("27/10/2026", "2026-10-27"), ("3 Aug 2026", "2026-08-03"), ("9 มิ.ย. 2569", "2026-06-09"),
+                         ("2026-11-15", "2026-11-15"), ("9/6/69 08:16", "2026-06-09"), ("31/02/2026", None), ("", None)]:
+            assert tools.thai_date(raw) == iso, (raw, tools.thai_date(raw), iso)   # year conversion is code, not the model
         tools.update_invoice(u, s, invoice_id=b, fields={"profile": "ทริปหัวหิน"})
         assert tools.find_invoices(u, s)["count"] == 1
         tools.manage_profile(u, s, action="switch", name="ส่วนตัว")

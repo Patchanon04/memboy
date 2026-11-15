@@ -1,6 +1,6 @@
 """Eval A + D: tool-selection benchmark. Each case = seeded DB state + prior context + one message.
 Scores the FIRST tool the agent calls (+ arg subset), forbidden tools, and reply constraints.
-Run inside the container:  GEMMA_MODEL=gemma-4-26b-a4b-it python -m eval.eval_tools [cases.json]
+Run inside the container:  python -m eval.eval_tools [cases.json]   (model = LLM_MODEL, see app/llm.py)
 """
 import asyncio
 import json
@@ -12,7 +12,7 @@ from pathlib import Path
 
 from sqlalchemy import select
 
-from app import agent, tools
+from app import agent, llm, tools
 from app.db import Invoice, Note, Profile, User, init_db, session
 
 CASES = Path(sys.argv[1] if len(sys.argv) > 1 else Path(__file__).with_name("cases_tool_selection.json"))
@@ -145,11 +145,11 @@ async def main():
         g = groups.setdefault(r["group"].split("-")[0], [0, 0])
         g[0] += r["ok"]
         g[1] += 1
-    print("\nMODEL:", os.environ.get("GEMMA_MODEL", "gemma-4-26b-a4b-it"))
+    print("\nMODEL:", llm.MODEL)
     for g, (a, b) in groups.items():
         print(f"  {g}: {a}/{b} = {a / b:.0%}")
     print(f"  ALL: {sum(r['ok'] for r in results)}/{len(results)} = {sum(r['ok'] for r in results) / len(results):.0%}")
-    out = Path("/data/logs") / f"evalA_{os.environ.get('GEMMA_MODEL', 'gemma-4-26b-a4b-it')}{'_subset' if os.environ.get('CASE_IDS') else ''}.json"
+    out = Path("/data/logs") / f"evalA_{llm.MODEL.replace(':', '-')}{'_subset' if os.environ.get('CASE_IDS') else ''}.json"
     out.write_text(json.dumps(results, ensure_ascii=False, indent=1), encoding="utf-8")
 
 

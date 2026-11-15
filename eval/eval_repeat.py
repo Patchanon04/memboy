@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 D = Path(__file__).parent / "dataset_test"
-M = "gemma-4-26b-a4b-it"
+M = next(iter(json.loads((D / "eval_results.json").read_text(encoding="utf-8"))))  # the model that was run
 a = {r["file"]: r for r in json.loads((D / "eval_results.json").read_text(encoding="utf-8"))[M]}
 b = {r["file"]: r for r in json.loads((D / "eval_results_run2.json").read_text(encoding="utf-8"))[M]}
 FIELDS = ["vendor", "date", "total", "vat", "category"]

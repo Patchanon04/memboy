@@ -18,6 +18,7 @@ from app.db import Category, Invoice, Note, Profile, User, VendorPref
 CATS_DEFAULT = ["อาหาร", "เดินทาง", "ที่พัก", "อุปกรณ์", "สุขภาพ", "ของใช้"]
 MAX_CUSTOM_CATS = 20
 REPORTS = Path("/data/reports")
+_OFF = set(filter(None, os.environ.get("HARNESS_OFF", "").split(",")))  # ablation only, see agent.HARNESS_OFF
 
 
 class ToolError(Exception):
@@ -55,6 +56,40 @@ def _date(x, name="วันที่"):
         return datetime.date.fromisoformat(str(x)).isoformat()
     except ValueError:
         raise ToolError(f"{name} ต้องเป็น YYYY-MM-DD ได้รับ {x!r}")
+
+
+_MONTHS = {**{m: i for i, m in enumerate(["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"], 1)},
+           **{m: i for i, m in enumerate(["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."], 1)},
+           **{m: i for i, m in enumerate(["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม",
+                                         "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"], 1)}}
+
+
+def thai_date(raw) -> str | None:
+    """The model copies the date as printed; the year arithmetic is code (a 12B model got 32% of years right doing it itself).
+    Bills are day/month/year. 4-digit year > 2400 is พ.ศ. (−543); 2-digit 50–99 is พ.ศ. 25YY, 00–49 is ค.ศ. 20YY."""
+    s = str(raw or "").strip()
+    m = re.match(r"(\d{4})-(\d{1,2})-(\d{1,2})", s)
+    if m:
+        ys, mo, d = m.group(1), int(m.group(2)), int(m.group(3))
+    elif m := re.search(r"(\d{1,2})\s*[/.\-]\s*(\d{1,2})\s*[/.\-]\s*(\d{2,4})(?!\d)", s):
+        d, mo, ys = int(m.group(1)), int(m.group(2)), m.group(3)
+    elif m := re.search(r"(\d{1,2})\s*([A-Za-zก-๙.]+?)\.?\s+(\d{2,4})(?!\d)", s):
+        d, ys = int(m.group(1)), m.group(3)
+        word = m.group(2).lower()
+        mo = _MONTHS.get(word) or _MONTHS.get(word[:3]) or _MONTHS.get(word + ".")
+        if not mo:
+            return None
+    else:
+        return None
+    y = int(ys)
+    if len(ys) == 2:
+        y = 2500 + y - 543 if y >= 50 else 2000 + y
+    elif y > 2400:
+        y -= 543
+    try:
+        return datetime.date(y, mo, d).isoformat()
+    except ValueError:
+        return None
 
 
 def _active_profile(user: User, s) -> Profile:
@@ -119,7 +154,7 @@ def _query(user, s, date_from=None, date_to=None, vendor=None, category=None, re
         q = q.where(Invoice.invoice_date <= _date(date_to, "date_to"))
     if vendor:
         q = q.where(Invoice.vendor.ilike(f"%{vendor}%"))
-    hit = ontology.resolve(category) if category else None   # "ค่าน้ำมัน" → (เดินทาง, เชื้อเพลิง); custom names → None
+    hit = ontology.resolve(category) if category and "ontology" not in _OFF else None   # "ค่าน้ำมัน" → (เดินทาง, เชื้อเพลิง); custom names → None
     if category:
         q = q.where(Invoice.category == (hit[0] if hit else category))
     if reimbursed is True:
@@ -178,7 +213,7 @@ def _extract_prompt(cats):
     return f"""สกัดข้อมูลจากเอกสารในรูป ตอบเป็น JSON อย่างเดียว ห้ามมีข้อความอื่น:
 {{"doc_type": "receipt" | "transfer_slip" | "other" (receipt=ใบเสร็จ/ใบกำกับภาษี/บิล, transfer_slip=สลิปโอนเงิน, other=ไม่ใช่ทั้งสอง),
 "vendor": "ชื่อร้าน/บริษัท (สลิปโอน: ชื่อผู้รับเงิน)", "tax_id": "เลขประจำตัวผู้เสียภาษี 13 หลักถ้ามี ไม่มีให้ null",
-"date": "YYYY-MM-DD — กติกา: วันที่ในบิลเรียง วัน/เดือน/ปี เสมอ ห้ามตีความเป็น ปี/เดือน/วัน; ปี 4 หลักที่มากกว่า 2400 คือ พ.ศ. ให้ลบ 543; ปี 2 หลัก: ถ้า 50-99 คือ พ.ศ. ย่อ (25YY แล้วลบ 543 เช่น 69→2569→2026) ถ้า 00-49 คือ ค.ศ. 20YY (เช่น 26→2026)",
+"date_raw": "วันที่ตามที่พิมพ์ในบิล คัดลอกตัวอักษรตรงตามรูป ห้ามแปลงปีเอง ระบบแปลงให้ (เช่น 14/07/69, 09/06/2569, 3 Aug 2026)",
 "subtotal": ยอดรวมสินค้าก่อนหักส่วนลดและก่อน VAT เป็นตัวเลข (เท่ากับ total ถ้าไม่มีส่วนลด/VAT), "discount": ส่วนลดรวมเป็นตัวเลข (0 ถ้าไม่มี), "vat": ภาษีมูลค่าเพิ่มเป็นตัวเลข (0 ถ้าไม่มี), "total": ยอดสุทธิที่จ่ายจริงเป็นตัวเลข (subtotal - discount + vat),
 "currency": "THB หรือรหัสสกุลเงินอื่นถ้าบิลเป็นต่างประเทศ",
 "category": หนึ่งใน {cats} (ซูเปอร์มาร์เก็ต/ของกินของใช้ปนกัน = ของใช้),
@@ -223,6 +258,7 @@ async def analyze_receipt(user, s, image_id=None, **_):
     qr_text = _decode_qr(path)
     drafts, rejected = [], 0
     for d in docs:
+        d["date"] = thai_date(d.get("date_raw")) or d.get("date")  # year conversion in code, not by the model
         if d.get("doc_type", "receipt") == "other":
             rejected += 1
             continue
@@ -280,7 +316,7 @@ def _make_draft(user, s, d: dict, path: Path, qr_text: str | None) -> dict:
     pref = get_pref(user, s, d.get("vendor"))
     profile_id = _active_profile(user, s).id
     category = d.get("category") if d.get("category") in user_categories(user, s) else None
-    known = ontology.classify(d.get("vendor"))  # a vendor the ontology knows is classified by rule, not by the model's guess
+    known = None if "ontology" in _OFF else ontology.classify(d.get("vendor"))  # a vendor the ontology knows is classified by rule, not by the model's guess
     if known and known[0] in user_categories(user, s):
         category = known[0]
     if pref:  # agentic memory: the user corrected this vendor before — apply without being asked

@@ -6,12 +6,14 @@ services:
     restart: unless-stopped   # come back on their own after Docker Desktop restarts/updates
     build: .
     dns: [1.1.1.1, 8.8.8.8]
+    extra_hosts: ["host.docker.internal:host-gateway"]   # local Ollama on the host (custom dns skips Docker's own name)
     ports: ["127.0.0.1:8080:8080"]   # loopback only: the tunnel reaches the app on the compose network, the LAN must not
     env_file: .env
     environment:
       DATABASE_URL: postgresql+psycopg://memboy:memboy@db:5432/memboy
       REDIS_URL: redis://redis:6379
       TZ: Asia/Bangkok
+      LLM_TIMEOUT_S: "300"   # local 12B: image turns can pass 60 s; overrides the Gemini-era value in .env
     volumes:
       - ./data:/data
       - ./app:/srv/app          # dev hot-reload; remove for prod image
@@ -29,11 +31,13 @@ services:
     restart: unless-stopped   # come back on their own after Docker Desktop restarts/updates
     build: .
     dns: [1.1.1.1, 8.8.8.8]
+    extra_hosts: ["host.docker.internal:host-gateway"]   # local Ollama on the host (custom dns skips Docker's own name)
     env_file: .env
     environment:
       DATABASE_URL: postgresql+psycopg://memboy:memboy@db:5432/memboy
       REDIS_URL: redis://redis:6379
       TZ: Asia/Bangkok
+      LLM_TIMEOUT_S: "300"   # local 12B: image turns can pass 60 s; overrides the Gemini-era value in .env
     volumes:
       - ./data:/data
       - ./app:/srv/app

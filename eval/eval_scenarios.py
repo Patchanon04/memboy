@@ -36,7 +36,7 @@ SCENARIOS = [
      "check": {"reimbursed": 1, "files": 1}},
     {"name": "สองใบ ยืนยันครั้งเดียว → ต้องไม่มีใบค้าง", "turns": [("img", f"{R}/02_coffee.png"), ("img", f"{R}/05_grab.png"), "ยืนยัน บันทึกเลย"],
      "check": {"confirmed": 2, "drafts": 0, "total_sum": 384.0}},
-    {"name": "รูปไม่ใช่บิล", "turns": [("img", "/data/uploads/notabill.png"), "บันทึกให้หน่อยสิ"],
+    {"name": "รูปไม่ใช่บิล", "turns": [("img", "/srv/eval/non_receipts/01_landscape.png"), "บันทึกให้หน่อยสิ"],
      "check": {"confirmed": 0, "drafts": 0}},
 ]
 

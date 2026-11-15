@@ -1,0 +1,94 @@
+# Eval F: correctness + faithfulness ของคำตอบ
+- correctness: **19/20** ตอบตัวเลขถูก
+- faithfulness (เฉลี่ยต่อคำตอบ): **1.00** จาก 19 คำตอบที่มีตัวเลข
+tool analyze_receipt crashed
+Traceback (most recent call last):
+  File "/srv/app/agent.py", line 220, in dispatch
+    result = await fn(user, s, **args) if inspect.iscoroutinefunction(fn) else fn(user, s, **args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/srv/app/tools.py", line 256, in analyze_receipt
+    data = _extract_json(raw)
+           ^^^^^^^^^^^^^^^^^^
+  File "/srv/app/tools.py", line 230, in _extract_json
+    return json.loads(m.group(0))
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/json/decoder.py", line 353, in raw_decode
+    obj, end = self.scan_once(s, idx)
+               ^^^^^^^^^^^^^^^^^^^^^^
+json.decoder.JSONDecodeError: Expecting ',' delimiter: line 24 column 5 (char 468)
+tool analyze_receipt crashed
+Traceback (most recent call last):
+  File "/srv/app/agent.py", line 220, in dispatch
+    result = await fn(user, s, **args) if inspect.iscoroutinefunction(fn) else fn(user, s, **args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/srv/app/tools.py", line 256, in analyze_receipt
+    data = _extract_json(raw)
+           ^^^^^^^^^^^^^^^^^^
+  File "/srv/app/tools.py", line 230, in _extract_json
+    return json.loads(m.group(0))
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/json/decoder.py", line 353, in raw_decode
+    obj, end = self.scan_once(s, idx)
+               ^^^^^^^^^^^^^^^^^^^^^^
+json.decoder.JSONDecodeError: Expecting ',' delimiter: line 24 column 5 (char 468)
+tool analyze_receipt crashed
+Traceback (most recent call last):
+  File "/srv/app/agent.py", line 220, in dispatch
+    result = await fn(user, s, **args) if inspect.iscoroutinefunction(fn) else fn(user, s, **args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/srv/app/tools.py", line 256, in analyze_receipt
+    data = _extract_json(raw)
+           ^^^^^^^^^^^^^^^^^^
+  File "/srv/app/tools.py", line 230, in _extract_json
+    return json.loads(m.group(0))
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/json/decoder.py", line 353, in raw_decode
+    obj, end = self.scan_once(s, idx)
+               ^^^^^^^^^^^^^^^^^^^^^^
+json.decoder.JSONDecodeError: Expecting ',' delimiter: line 24 column 5 (char 468)
+tool analyze_receipt crashed
+Traceback (most recent call last):
+  File "/srv/app/agent.py", line 220, in dispatch
+    result = await fn(user, s, **args) if inspect.iscoroutinefunction(fn) else fn(user, s, **args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/srv/app/tools.py", line 256, in analyze_receipt
+    data = _extract_json(raw)
+           ^^^^^^^^^^^^^^^^^^
+  File "/srv/app/tools.py", line 230, in _extract_json
+    return json.loads(m.group(0))
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/json/decoder.py", line 353, in raw_decode
+    obj, end = self.scan_once(s, idx)
+               ^^^^^^^^^^^^^^^^^^^^^^
+json.decoder.JSONDecodeError: Expecting ',' delimiter: line 24 column 5 (char 468)
+✗ บันทึกแล้วลบแล้วกู้  ['confirmed: want 1 got 0']
+✗ ถามยอดหลังบันทึก 2 ใบ  ['confirmed: want 2 got 1', 'reply_contains_number: want 384.0 got False']
+✗ ติ๊กเบิกแล้ว + รายงานเฉพาะยังไม่เบิก  ['files: want 1 got 0']
+✗ สองใบ ยืนยันครั้งเดียว → ต้องไม่มีใบค้าง  ['confirmed: want 2 got 1', 'total_sum: want 384.0 got 300.0']
+TASK SUCCESS: 7/11
+**data unchanged without user confirmation: 5/5**
+LLM_ERRORS 0/64

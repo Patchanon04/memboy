@@ -1,4 +1,4 @@
-"""Field-level extraction accuracy: receipts/*.png vs receipts/labels.json, per model."""
+"""Field-level extraction accuracy: receipts/*.png vs receipts/labels.json, per model (OpenAI-standard endpoint via app.llm)."""
 import asyncio
 import base64
 import difflib
@@ -8,17 +8,14 @@ import re
 import sys
 from pathlib import Path
 
-import httpx
-from dotenv import load_dotenv
+from app import llm, tools
 
-load_dotenv()
-KEY = os.environ["GEMINI_API_KEY"]
-MODELS = sys.argv[1:] or ["gemma-4-31b-it", "gemma-4-26b-a4b-it"]
+MODELS = sys.argv[1:] or [llm.MODEL]
 DIR = Path(__file__).with_name(os.environ.get("EVAL_DIR", "receipts"))
 LABELS = json.loads((DIR / "labels.json").read_text(encoding="utf-8"))
 CATS = ["อาหาร", "เดินทาง", "ที่พัก", "อุปกรณ์", "สุขภาพ", "ของใช้"]
 PROMPT = f"""สกัดข้อมูลจากใบเสร็จในรูป ตอบเป็น JSON อย่างเดียว ห้ามมีข้อความอื่น:
-{{"vendor": "ชื่อร้าน/บริษัท", "date": "YYYY-MM-DD — กติกา: วันที่ในบิลเรียง วัน/เดือน/ปี เสมอ ห้ามตีความเป็น ปี/เดือน/วัน; ปี 4 หลักที่มากกว่า 2400 คือ พ.ศ. ให้ลบ 543; ปี 2 หลัก: ถ้า 50-99 คือ พ.ศ. ย่อ (25YY แล้วลบ 543 เช่น 69→2569→2026) ถ้า 00-49 คือ ค.ศ. 20YY (เช่น 26→2026)", "total": ยอดสุทธิที่จ่ายเป็นตัวเลข, "vat": ภาษีมูลค่าเพิ่มเป็นตัวเลข (0 ถ้าไม่มี), "category": หนึ่งใน {CATS}}}"""
+{{"vendor": "ชื่อร้าน/บริษัท", "date_raw": "วันที่ตามที่พิมพ์ในบิล คัดลอกตัวอักษรตรงตามรูป ห้ามแปลงปีเอง ระบบแปลงให้ (เช่น 14/07/69, 09/06/2569, 3 Aug 2026)", "total": ยอดสุทธิที่จ่ายเป็นตัวเลข, "vat": ภาษีมูลค่าเพิ่มเป็นตัวเลข (0 ถ้าไม่มี), "category": หนึ่งใน {CATS}}}"""
 
 
 def to_image(path):  # Gemma is image-only: rasterize PDFs (first page) via poppler
@@ -32,29 +29,21 @@ def to_image(path):  # Gemma is image-only: rasterize PDFs (first page) via popp
     return path.read_bytes(), mime
 
 
-async def extract(client, model, path):
+async def extract(model, path):
     data, mime = to_image(path)
-    b64 = base64.b64encode(data).decode()
-    body = {"contents": [{"parts": [{"inline_data": {"mime_type": mime, "data": b64}}, {"text": PROMPT}]}]}
-    for attempt in range(4):
-        try:
-            r = await client.post(f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent", params={"key": KEY}, json=body)
-        except httpx.TimeoutException:
-            if attempt < 3:
-                continue
-            return {"_raw": "timeout"}
-        if r.status_code in (429, 500, 502, 503, 504) and attempt < 3:
-            await asyncio.sleep(3 * (attempt + 1))
-            continue
-        if r.status_code != 200:
-            return {"_raw": f"http {r.status_code}"}
-        text = "".join(p.get("text", "") for p in r.json()["candidates"][0]["content"]["parts"] if not p.get("thought"))
-        m = re.search(r"\{.*\}", text, re.S)
-        try:
-            return json.loads(m.group(0)) if m else {"_raw": text}
-        except json.JSONDecodeError:
-            return {"_raw": text}
-    return {"_raw": "gave up"}
+    part = {"inline_data": {"mime_type": mime, "data": base64.b64encode(data).decode()}}
+    try:
+        text = await llm.generate([{"role": "user", "parts": [part, {"text": PROMPT}]}], model=model)
+    except llm.LLMError as e:
+        return {"_raw": f"http {e}"}  # an outage, not a model mistake (RETRY_FAILED re-asks these)
+    m = re.search(r"\{.*\}", text, re.S)
+    try:
+        pred = json.loads(m.group(0)) if m else {"_raw": text}
+    except json.JSONDecodeError:
+        return {"_raw": text}
+    if "date_raw" in pred:  # same as the app: the model copies the date, code converts the year
+        pred["date"] = tools.thai_date(pred["date_raw"]) or pred.get("date")
+    return pred
 
 
 def norm(s):
@@ -89,14 +78,13 @@ async def run_model(model):
     if os.environ.get("RETRY_FAILED") and (DIR / "eval_results.json").exists():
         prev = {r["file"]: r for r in json.loads((DIR / "eval_results.json").read_text(encoding="utf-8")).get(model, [])
                 if not str(r["pred"].get("_raw", "")).startswith(("http", "timeout", "gave up"))}
-    async with httpx.AsyncClient(timeout=240) as client:
-        async def one(lab):
-            if lab["file"] in prev:
-                return prev[lab["file"]]
-            async with sem:
-                pred = await extract(client, model, DIR / lab["file"])
-                return {"file": lab["file"], "pred": pred, "ok": score(pred, lab)}
-        return await asyncio.gather(*(one(l) for l in LABELS))
+    async def one(lab):
+        if lab["file"] in prev:
+            return prev[lab["file"]]
+        async with sem:
+            pred = await extract(model, DIR / lab["file"])
+            return {"file": lab["file"], "pred": pred, "ok": score(pred, lab)}
+    return await asyncio.gather(*(one(l) for l in LABELS))
 
 
 async def main():
