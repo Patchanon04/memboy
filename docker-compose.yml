@@ -14,6 +14,7 @@ services:
       REDIS_URL: redis://redis:6379
       TZ: Asia/Bangkok
       LLM_TIMEOUT_S: "300"   # local 12B: image turns can pass 60 s
+      LLM_KEEP_ALIVE: "24h"   # keep 12B in VRAM: a cold reload can fail when Windows commit memory is near the limit
     volumes:
       - ./data:/data
       - ./app:/srv/app          # dev hot-reload; remove for prod image
@@ -38,6 +39,7 @@ services:
       REDIS_URL: redis://redis:6379
       TZ: Asia/Bangkok
       LLM_TIMEOUT_S: "300"   # local 12B: image turns can pass 60 s
+      LLM_KEEP_ALIVE: "24h"   # keep 12B in VRAM: a cold reload can fail when Windows commit memory is near the limit
     volumes:
       - ./data:/data
       - ./app:/srv/app

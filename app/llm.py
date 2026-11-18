@@ -20,7 +20,7 @@ BASE_URL = os.environ.get("LLM_BASE_URL", "http://host.docker.internal:11434/v1"
 API_KEY = os.environ.get("LLM_API_KEY", "")          # Ollama needs none; OpenAI-compatible providers do
 MODEL = os.environ.get("LLM_MODEL", "gemma4:12b")
 FALLBACK = os.environ.get("LLM_FALLBACK", "")        # comma list, tried in order when the main model fails
-KEEP_ALIVE = os.environ.get("LLM_KEEP_ALIVE", "30m")  # Ollama-only field; set empty for providers that reject it
+KEEP_ALIVE = os.environ.get("LLM_KEEP_ALIVE", "24h")  # Ollama-only field; set empty for providers that reject it
 # gemma4 thinks by default: ~1,900 hidden tokens (~40 s) per call for the same JSON it writes in 0.7 s without
 REASONING = os.environ.get("LLM_REASONING_EFFORT", "none")
 # a runaway generation (seen once: ~600 tokens at 3 tok/s) kept the GPU busy after the client timed out — cap it
